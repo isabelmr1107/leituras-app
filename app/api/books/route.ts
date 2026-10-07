@@ -18,6 +18,6 @@ export async function POST(request:Request){
   const author=String(body.author||"").trim();
   const month=String(body.month||"Janeiro");
   if(!title||!author) return Response.json({error:"Título e autor são obrigatórios."},{status:400});
-  const rows=await sql`INSERT INTO books (user_id,title,author,status,rating,month,pages) VALUES (${session.user.id},${title},${author},"Quero ler",0,${month},0) RETURNING id,title,author,status,rating,month,pages`;
+  const rows=await sql`INSERT INTO books (user_id,title,author,status,rating,month,pages) VALUES (${session.user.id},${title},${author},'Quero ler',0,${month},0) RETURNING id,title,author,status,rating,month,pages`;
   return Response.json(rows[0],{status:201});
 }
