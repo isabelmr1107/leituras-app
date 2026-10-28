@@ -41,7 +41,7 @@ function variants(title:string) {
 async function jsonFrom(url: string): Promise<unknown> {
   const response = await fetch(url, {
     headers: { "Accept": "application/json", "User-Agent": "MinhaEstante/1.0 (book-cover-search)" },
-    signal: AbortSignal.timeout(3800),
+    signal: AbortSignal.timeout(6500),
     cache: "no-store",
   });
   if (!response.ok) throw new Error("Catálogo indisponível");
@@ -64,7 +64,7 @@ async function openLibrary(title:string, author:string, publisher:string):Promis
   const searches=terms.flatMap(term=>[
     {term, portuguese:true},
     {term, portuguese:false}
-  ]).slice(0,6);
+  ]).slice(0,8);
   await Promise.all(searches.map(async ({term,portuguese})=>{
     const q=term+(author?" "+author:"")+(portuguese?" language:por":"");
     const params=new URLSearchParams({q,limit:"60",fields:"title,author_name,cover_i,language,publisher,first_publish_year",lang:"pt"});
@@ -99,7 +99,7 @@ async function googleBooks(title:string,author:string,publisher:string):Promise<
     {query:title,lang:"pt",sort:"relevance"},
     {query:title,lang:"pt",sort:"newest"},
     ...terms.slice(1,3).map(term=>({query:term,lang:"",sort:"relevance"})),
-  ].slice(0,8);
+  ].slice(0,10);
   await Promise.all(searches.map(async ({query,lang,sort})=>{
     const params=new URLSearchParams({q:query,maxResults:"40",printType:"books",orderBy:sort});
     if(lang)params.set("langRestrict",lang);
@@ -160,8 +160,8 @@ export async function GET(request: Request) {
   const second: Result = google.status === "fulfilled" ? google.value : { coverUrl: null, source: null };
   const allOptions=[...(second.options||[]),...(first.options||[])];
   const matchingPublisher=publisher?allOptions.filter(x=>normalize(x.publisher||"").includes(normalize(publisher))):[];
-  const portuguese=allOptions.filter(x=>x.language==="pt"&&!matchingPublisher.includes(x));
-  const others=allOptions.filter(x=>x.language!=="pt"&&!matchingPublisher.includes(x));
+  const portuguese=allOptions.filter(x=>x.language?.startsWith("pt")&&!matchingPublisher.includes(x));
+  const others=allOptions.filter(x=>!x.language?.startsWith("pt")&&!matchingPublisher.includes(x));
   const options=[...matchingPublisher,...portuguese,...others]
     .filter((item,i,array)=>array.findIndex(x=>x.url===item.url)===i).slice(0,30);
   if (options.length) return Response.json({coverUrl: options[0].url, source: options[0].source, options});
