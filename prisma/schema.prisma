@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id           String @id @default(cuid())
+  name         String
+  email        String @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  books        Book[]
+  goals        ReadingGoal[]
+}
+model Book {
+  id          String @id @default(cuid())
+  userId      String
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  author      String
+  category    String?
+  coverUrl    String?
+  status      String @default("Quero ler")
+  rating      Int @default(0)
+  totalPages  Int @default(0)
+  currentPage Int @default(0)
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  entries     ReadingEntry[]
+  @@index([userId, status])
+}
+model ReadingEntry {
+  id        String @id @default(cuid())
+  bookId    String
+  book      Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  kind      String @default("Nota")
+  content   String
+  pagesRead Int @default(0)
+  createdAt DateTime @default(now())
+  @@index([bookId, createdAt])
+}
+model ReadingGoal {
+  id        String @id @default(cuid())
+  userId    String
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  year      Int
+  booksGoal Int @default(20)
+  @@unique([userId, year])
+}
