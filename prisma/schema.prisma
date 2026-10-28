@@ -13,6 +13,7 @@ model User {
   createdAt    DateTime @default(now())
   books        Book[]
   goals        ReadingGoal[]
+  shelves      Shelf[]
 }
 model Book {
   id          String @id @default(cuid())
@@ -31,6 +32,7 @@ model Book {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   entries     ReadingEntry[]
+  shelves     ShelfBook[]
   @@index([userId, status])
 }
 model ReadingEntry {
@@ -50,4 +52,22 @@ model ReadingGoal {
   year      Int
   booksGoal Int @default(20)
   @@unique([userId, year])
+}
+model Shelf {
+  id        String @id @default(cuid())
+  userId    String
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime @default(now())
+  books     ShelfBook[]
+  @@unique([userId, name])
+  @@index([userId, createdAt])
+}
+model ShelfBook {
+  shelfId String
+  bookId  String
+  shelf   Shelf @relation(fields: [shelfId], references: [id], onDelete: Cascade)
+  book    Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  @@id([shelfId, bookId])
+  @@index([bookId])
 }
