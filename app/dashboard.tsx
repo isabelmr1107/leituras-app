@@ -22,6 +22,7 @@ export default function Dashboard({name}:{name:string}){
   const [coverBusy,setCoverBusy]=useState(false);
   const [coverMessage,setCoverMessage]=useState("");
   const [coverIsbn,setCoverIsbn]=useState("");
+  const [coverOptions,setCoverOptions]=useState<{url:string;source:string;title:string}[]>([]);
   const [brokenCovers,setBrokenCovers]=useState<string[]>([]);
   const [loading,setLoading]=useState(true);
   const refresh=useCallback(async()=>{
@@ -41,18 +42,20 @@ export default function Dashboard({name}:{name:string}){
   const monthlyPages=months.map((_,i)=>entries.filter(e=>e.kind==="Sessão"&&new Date(e.createdAt).getFullYear()===year&&new Date(e.createdAt).getMonth()===i).reduce((n,e)=>n+e.pagesRead,0));
   const maxMonthly=Math.max(1,...monthlyPages);
   const average=read.filter(b=>b.rating).length?(read.filter(b=>b.rating).reduce((n,b)=>n+b.rating,0)/read.filter(b=>b.rating).length).toFixed(1):"—";
-  function edit(b?:Book){setEditing(b?.id||null);setForm(b?{title:b.title,author:b.author,category:b.category||"",coverUrl:b.coverUrl||"",status:b.status,rating:b.rating,totalPages:b.totalPages,currentPage:b.currentPage}:blank);setError("");setCoverMessage("");setCoverIsbn("");setOpen(true);}
+  function edit(b?:Book){setEditing(b?.id||null);setForm(b?{title:b.title,author:b.author,category:b.category||"",coverUrl:b.coverUrl||"",status:b.status,rating:b.rating,totalPages:b.totalPages,currentPage:b.currentPage}:blank);setError("");setCoverMessage("");setCoverIsbn("");setCoverOptions([]);setOpen(true);}
   async function findCover(){
     if(!form.title.trim()){setCoverMessage("Informe o título para procurar uma capa.");return;}
-    setCoverBusy(true);setCoverMessage("");
+    setCoverBusy(true);setCoverMessage("");setCoverOptions([]);
     try{
       const params=new URLSearchParams({title:form.title,author:form.author,...(coverIsbn.trim()?{isbn:coverIsbn.trim()}:{} )});
       const res=await fetch("/api/covers?"+params.toString());
       const data=await res.json();
       if(!res.ok)throw new Error(data.error||"Não foi possível pesquisar.");
-      if(!data.coverUrl){setCoverMessage("Nenhuma capa encontrada. Você pode adicionar uma URL manualmente.");return;}
-      setForm(previous=>({...previous,coverUrl:data.coverUrl}));
-      setCoverMessage("Capa encontrada! Confira antes de salvar.");
+      if(!data.coverUrl){setCoverMessage(data.message || "Nenhuma capa encontrada. Você pode adicionar uma URL manualmente.");return;}
+      const options:{url:string;source:string;title:string}[]=Array.isArray(data.options)?data.options.filter((x:{url?:unknown;source?:unknown;title?:unknown})=>typeof x.url==="string"&&typeof x.source==="string"&&typeof x.title==="string").slice(0,12):[];
+      setCoverOptions(options);
+      if(options.length<=1)setForm(previous=>({...previous,coverUrl:data.coverUrl}));
+      setCoverMessage(options.length>1?"Escolha uma capa para sua edição.":"Capa encontrada! Confira antes de salvar.");
     }catch(e){setCoverMessage(e instanceof Error?e.message:"Não foi possível buscar a capa.");}
     finally{setCoverBusy(false);}
   }
@@ -102,7 +105,7 @@ export default function Dashboard({name}:{name:string}){
     {view==="Perfil"&&<section className="section"><div className="profile-card"><div className="avatar">{name.charAt(0).toUpperCase()}</div><h2>{name}</h2><p>Seu espaço pessoal de leituras.</p><button className="primary" onClick={()=>signOut({callbackUrl:"/login"})}>Sair da conta</button></div></section>}
     </section>
     {open&&<div className="overlay" onMouseDown={()=>setOpen(false)}><form className="modal" onSubmit={saveBook} onMouseDown={e=>e.stopPropagation()}><div className="modal-head"><div><h2>{editing?"Editar livro":"Adicionar livro"}</h2><p>Preencha os dados da sua estante.</p></div><button type="button" className="close" onClick={()=>setOpen(false)}>×</button></div>
-      <div className="modal-scroll"><label>Título<input required maxLength={200} value={form.title} onChange={e=>setForm({...form,title:e.target.value})}/></label><label>Autor<input required maxLength={200} value={form.author} onChange={e=>setForm({...form,author:e.target.value})}/></label><label>Categoria<input maxLength={80} value={form.category} onChange={e=>setForm({...form,category:e.target.value})}/></label><label>URL da capa<input type="url" value={form.coverUrl} onChange={e=>setForm({...form,coverUrl:e.target.value})}/></label><label>ISBN para buscar a capa da edição (opcional)<input inputMode="numeric" placeholder="Ex.: 9788551015896" value={coverIsbn} onChange={e=>setCoverIsbn(e.target.value)} /></label><div className="cover-search"><button type="button" className="secondary-button" disabled={coverBusy} onClick={findCover}>{coverBusy?"Procurando…":"🔎 Buscar capa pelo título"}</button>{form.coverUrl&&<img src={form.coverUrl} alt="Prévia da capa selecionada" onError={e=>{e.currentTarget.style.display="none"}}/>}</div>{coverMessage&&<p className="auth-muted" role="status">{coverMessage}</p>}<label>Status<select value={form.status} onChange={e=>setForm({...form,status:e.target.value as Status})}>{(["Quero ler","Lendo","Lido","Abandonado"] as Status[]).map(s=><option key={s}>{s}</option>)}</select></label><label>Nota (0 a 5)<input type="number" min={0} max={5} value={form.rating} onChange={e=>setForm({...form,rating:Number(e.target.value)})}/></label><label>Total de páginas<input type="number" min={0} value={form.totalPages} onChange={e=>setForm({...form,totalPages:Number(e.target.value)})}/></label><label>Página atual<input type="number" min={0} value={form.currentPage} onChange={e=>setForm({...form,currentPage:Number(e.target.value)})}/></label></div>{error&&<p className="error" role="alert">{error}</p>}<button className="primary full" disabled={busy}>{busy?"Salvando…":"Salvar livro"}</button>
+      <div className="modal-scroll"><label>Título<input required maxLength={200} value={form.title} onChange={e=>setForm({...form,title:e.target.value})}/></label><label>Autor<input required maxLength={200} value={form.author} onChange={e=>setForm({...form,author:e.target.value})}/></label><label>Categoria<input maxLength={80} value={form.category} onChange={e=>setForm({...form,category:e.target.value})}/></label><label>URL da capa<input type="url" value={form.coverUrl} onChange={e=>setForm({...form,coverUrl:e.target.value})}/></label><label>ISBN para buscar a capa da edição (opcional)<input inputMode="numeric" placeholder="Ex.: 9788551015896" value={coverIsbn} onChange={e=>setCoverIsbn(e.target.value)} /></label><div className="cover-search"><button type="button" className="secondary-button" disabled={coverBusy} onClick={findCover}>{coverBusy?"Procurando…":"🔎 Buscar capa pelo título"}</button>{form.coverUrl&&<img src={form.coverUrl} alt="Prévia da capa selecionada" onError={e=>{e.currentTarget.style.display="none"}}/>}</div>{coverMessage&&<p className="auth-muted" role="status">{coverMessage}</p>}{coverOptions.length>1&&<div className="cover-picker" role="group" aria-label="Escolha a capa">{coverOptions.map((option,i)=><button type="button" key={option.url+i} className={form.coverUrl===option.url?"cover-option selected":"cover-option"} onClick={()=>setForm(prev=>({...prev,coverUrl:option.url}))} aria-pressed={form.coverUrl===option.url} title={option.title}><img src={option.url} alt={"Capa: "+option.title} loading="lazy" /><small>{option.source}</small></button>)}</div>}<label>Status<select value={form.status} onChange={e=>setForm({...form,status:e.target.value as Status})}>{(["Quero ler","Lendo","Lido","Abandonado"] as Status[]).map(s=><option key={s}>{s}</option>)}</select></label><label>Nota (0 a 5)<input type="number" min={0} max={5} value={form.rating} onChange={e=>setForm({...form,rating:Number(e.target.value)})}/></label><label>Total de páginas<input type="number" min={0} value={form.totalPages} onChange={e=>setForm({...form,totalPages:Number(e.target.value)})}/></label><label>Página atual<input type="number" min={0} value={form.currentPage} onChange={e=>setForm({...form,currentPage:Number(e.target.value)})}/></label></div>{error&&<p className="error" role="alert">{error}</p>}<button className="primary full" disabled={busy}>{busy?"Salvando…":"Salvar livro"}</button>
     </form></div>}
   </main>;
 }
