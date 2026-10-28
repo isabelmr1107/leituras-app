@@ -133,8 +133,8 @@ export async function GET(request: Request) {
   }
   // Consulta as fontes em paralelo para evitar ultrapassar o tempo da função.
   const [open, google] = await Promise.allSettled([openLibrary(title, author), googleBooks(title, author)]);
-  const first = open.status === "fulfilled" ? open.value : { coverUrl: null, source: null };
-  const second = google.status === "fulfilled" ? google.value : { coverUrl: null, source: null };
+  const first: Result = open.status === "fulfilled" ? open.value : { coverUrl: null, source: null };
+  const second: Result = google.status === "fulfilled" ? google.value : { coverUrl: null, source: null };
   const options = [...(second.options || []), ...(first.options || [])]
     .filter((item, i, array) => array.findIndex(x => x.url === item.url) === i)
     .slice(0, 12);
