@@ -34,14 +34,6 @@ const classicAliases: Record<string,string[]> = {
   "os miseraveis": ["les miserables"],
   "o pequeno principe": ["le petit prince"],
 };
-const brazilianEditions: Record<string,CoverOption[]> = {
-  "o morro dos ventos uivantes": [
-    {url:"https://http2.mlstatic.com/D_678096-MLU77232621402_072024-C.jpg",source:"Faro Editorial",title:"O Morro dos Ventos Uivantes",language:"pt",publisher:"Faro Editorial"},
-    {url:"https://cdn.awsli.com.br/2500x2500/2766/2766514/produto/342648457/9786558471011_imagensadicionais_01-ne274r3pwf.jpg",source:"Editora Record",title:"O Morro dos Ventos Uivantes",language:"pt",publisher:"Record",year:"2022"},
-  ],
-};
-brazilianEditions["morro dos ventos uivantes"]=brazilianEditions["o morro dos ventos uivantes"];
-brazilianEditions["wuthering heights"]=brazilianEditions["o morro dos ventos uivantes"];
 function variants(title:string) {
   const normal=normalize(title);
   return [...new Set([title, ...(classicAliases[normal] || []), normal.replace(/^(o|a|os|as) /,"")].filter(Boolean))].slice(0,4);
@@ -55,66 +47,83 @@ async function jsonFrom(url: string): Promise<unknown> {
   if (!response.ok) throw new Error("Catálogo indisponível");
   return response.json();
 }
-async function openLibrary(title: string, author: string): Promise<Result> {
-  const all: {option:CoverOption; rank:number}[] = [];
-  const terms=variants(title);
-  // Consultar traduções e título original aumenta as chances de encontrar capas.
-  await Promise.all(terms.map(async (term, index) => {
-    const params=new URLSearchParams({
-      q: term+(author?" "+author:""), limit:"35",
-      fields:"title,author_name,cover_i",
-      lang:"pt",
-    });
-    try {
-      const data=await jsonFrom("https://openlibrary.org/search.json?"+params) as {docs?:OpenDoc[]};
-      for(const item of data.docs || []){
-        if(!Number.isSafeInteger(item.cover_i) || !item.cover_i || item.cover_i<=0)continue;
-        const match=Math.max(...terms.map(t=>score(item.title||"",t)));
-        if(match<4.8)continue;
-        const option={url:"https://covers.openlibrary.org/b/id/"+item.cover_i+"-M.jpg",
-          source:"Open Library",title:item.title||title};
-        all.push({option,rank:match+(index===0?1:0)+(author?score((item.author_name||[]).join(" "),author)*0.25:0)});
-      }
-    }catch{/* outra fonte ainda pode funcionar */}
-  }));
-  all.sort((a,b)=>b.rank-a.rank);
-  const unique=all.filter((x,i)=>all.findIndex(y=>y.option.url===x.option.url)===i).slice(0,12).map(x=>x.option);
-  return {coverUrl:unique[0]?.url||null,source:unique[0]?.source||null,options:unique};
+
+type RankedCover = { option: CoverOption; rank: number };
+function uniqueOptions(results: RankedCover[], max = 30): CoverOption[] {
+  results.sort((a, b) => b.rank - a.rank);
+  const found = new Set<string>();
+  return results.filter(({ option }) => {
+    if (found.has(option.url)) return false;
+    found.add(option.url);
+    return true;
+  }).slice(0,max).map(x=>x.option);
 }
-async function googleBooks(title:string,author:string,publisher:string): Promise<Result> {
-  const terms=variants(title);
-  const all:{option:CoverOption;rank:number}[]=[];
-  // Primeiro prioriza o acervo em português brasileiro, depois busca sem filtro.
-  const queries=terms.flatMap(term=>[
-    ...(publisher?[{term,lang:"pt",query:term+" inpublisher:"+publisher}]:[]),
-    {term, lang:"pt", query:"intitle:"+term+(author?" inauthor:"+author:"")},
-    {term, lang:"", query:term+(author?" "+author:"")},
-  ]).slice(0,10);
-  await Promise.all(queries.map(async ({term,lang,query},index)=>{
-    const params=new URLSearchParams({q:query,maxResults:"30",printType:"books"});
-    if(lang){params.set("langRestrict",lang);params.set("orderBy","newest");}
+async function openLibrary(title:string, author:string, publisher:string):Promise<Result>{
+  const terms=variants(title), found:RankedCover[]=[];
+  // Open Library pode guardar diferentes edições brasileiras de uma obra.
+  const searches=terms.flatMap(term=>[
+    {term, portuguese:true},
+    {term, portuguese:false}
+  ]).slice(0,6);
+  await Promise.all(searches.map(async ({term,portuguese})=>{
+    const q=term+(author?" "+author:"")+(portuguese?" language:por":"");
+    const params=new URLSearchParams({q,limit:"60",fields:"title,author_name,cover_i,language,publisher,first_publish_year",lang:"pt"});
+    try{
+      const data=await jsonFrom("https://openlibrary.org/search.json?"+params) as {docs?:Array<OpenDoc&{language?:string[];publisher?:string[];first_publish_year?:number}>};
+      for(const book of data.docs||[]){
+        if(!Number.isSafeInteger(book.cover_i)||!book.cover_i||book.cover_i<=0)continue;
+        const match=Math.max(...terms.map(t=>score(book.title||"",t)));
+        if(match<4.7)continue;
+        const publishers=book.publisher||[], matchedPublisher=publisher&&publishers.some(p=>normalize(p).includes(normalize(publisher)));
+        const pt=book.language?.includes("por")||false;
+        found.push({option:{
+          url:"https://covers.openlibrary.org/b/id/"+book.cover_i+"-M.jpg",
+          title:book.title||title,source:"Open Library",language:pt?"pt":undefined,
+          publisher:publishers[0],year:book.first_publish_year?.toString()
+        },rank:match+(pt?5:0)+(matchedPublisher?8:0)+(portuguese?1:0)});
+      }
+    }catch{/* catálogo pode estar indisponível */}
+  }));
+  const options=uniqueOptions(found);
+  return {coverUrl:options[0]?.url||null,source:options[0]?.source||null,options};
+}
+async function googleBooks(title:string,author:string,publisher:string):Promise<Result>{
+  const terms=variants(title), found:RankedCover[]=[];
+  // Descobre a editora no próprio catálogo, sem uma lista fechada de editoras.
+  const searches=[
+    ...terms.filter(term=>normalize(term).includes("morro") || normalize(term)===normalize(title)).slice(0,2).flatMap(term=>[
+      {query:term+(author?" "+author:""),lang:"pt",sort:"relevance"},
+      {query:term,lang:"pt",sort:"newest"},
+    ]),
+    ...(publisher?[{query:title+" inpublisher:"+publisher,lang:"pt",sort:"relevance"}]:[]),
+    {query:title,lang:"pt",sort:"relevance"},
+    {query:title,lang:"pt",sort:"newest"},
+    ...terms.slice(1,3).map(term=>({query:term,lang:"",sort:"relevance"})),
+  ].slice(0,8);
+  await Promise.all(searches.map(async ({query,lang,sort})=>{
+    const params=new URLSearchParams({q:query,maxResults:"40",printType:"books",orderBy:sort});
+    if(lang)params.set("langRestrict",lang);
     try{
       const data=await jsonFrom("https://www.googleapis.com/books/v1/volumes?"+params) as {items?:GoogleVolume[]};
       for(const book of data.items||[]){
-        const info=book.volumeInfo;
-        const cover=info?.imageLinks?.thumbnail||info?.imageLinks?.smallThumbnail;
+        const info=book.volumeInfo, cover=info?.imageLinks?.thumbnail||info?.imageLinks?.smallThumbnail;
         if(!cover)continue;
-        const match=Math.max(...terms.map(t=>score(info?.title||"",t)));
-        if(match<4.8)continue;
-        const language=info?.language||"";
-        const option={url:cover.replace(/^http:\/\//,"https://"),source:"Google Books",
-          title:info?.title||title,language,publisher:info?.publisher,year:info?.publishedDate?.slice(0,4)};
-        const authorScore=author?score((info?.authors||[]).join(" "),author)*0.25:0;
-        const publishedYear=Number((info?.publishedDate||"").slice(0,4));
-        const recent=Number.isFinite(publishedYear)&&publishedYear>=2000?Math.min(2,(publishedYear-2000)/13):0;
-        const publisherMatch=publisher?score(info?.publisher||"",publisher):0;
-        all.push({option,rank:match+authorScore+(language==="pt"?5:0)+(lang==="pt"?2:0)+(publisherMatch>=7?10:0)+(index===0?0.5:0)+recent});
+        const match=Math.max(...terms.map(term=>score(info?.title||"",term)));
+        if(match<4.7)continue;
+        const language=info?.language||"",year=info?.publishedDate?.slice(0,4)||"";
+        const recency=Number(year)>=2015?3:Number(year)>=2000?1:0;
+        const matchedPublisher=publisher&&normalize(info?.publisher||"").includes(normalize(publisher));
+        found.push({
+          option:{url:cover.replace(/^http:\/\//,"https://"),source:"Google Books",title:info?.title||title,
+            language,publisher:info?.publisher,year},
+          rank:match+(language==="pt"?9:0)+(matchedPublisher?12:0)+recency+
+            (author?score((info?.authors||[]).join(" "),author)*.4:0)
+        });
       }
-    }catch{/* outras buscas continuam */}
+    }catch{/* continua usando os demais catálogos */}
   }));
-  all.sort((a,b)=>b.rank-a.rank);
-  const unique=all.filter((x,i)=>all.findIndex(y=>y.option.url===x.option.url)===i).slice(0,12).map(x=>x.option);
-  return {coverUrl:unique[0]?.url||null,source:unique[0]?.source||null,options:unique};
+  const options=uniqueOptions(found);
+  return {coverUrl:options[0]?.url||null,source:options[0]?.source||null,options};
 }
 export async function GET(request: Request) {
   const session = await auth();
@@ -146,20 +155,15 @@ export async function GET(request: Request) {
     }
   }
   // Consulta as fontes em paralelo para evitar ultrapassar o tempo da função.
-  const [open, google] = await Promise.allSettled([openLibrary(title, author), googleBooks(title, author, publisher)]);
+  const [open, google] = await Promise.allSettled([openLibrary(title, author, publisher), googleBooks(title, author, publisher)]);
   const first: Result = open.status === "fulfilled" ? open.value : { coverUrl: null, source: null };
   const second: Result = google.status === "fulfilled" ? google.value : { coverUrl: null, source: null };
-  const curated = (brazilianEditions[normalize(title)] || []).filter(
-    item=>!publisher || normalize(item.publisher || "").includes(normalize(publisher))
-  );
-  const allOptions = [...curated, ...(second.options || []), ...(first.options || [])]
-    .filter((item, i, array) => array.findIndex(x => x.url === item.url) === i);
-  // Reserva espaço para edições em português e evita que 12 capas antigas as ocultem.
-  const preferred = publisher ? allOptions.filter(x=>normalize(x.publisher||"").includes(normalize(publisher))) : [];
-  const portuguese = allOptions.filter(x => x.language === "pt" && !preferred.includes(x));
-  const others = allOptions.filter(x => x.language !== "pt" && !preferred.includes(x));
-  const options = [...preferred, ...portuguese, ...others]
-    .filter((x,i,arr)=>arr.findIndex(y=>y.url===x.url)===i).slice(0,12);
+  const allOptions=[...(second.options||[]),...(first.options||[])];
+  const matchingPublisher=publisher?allOptions.filter(x=>normalize(x.publisher||"").includes(normalize(publisher))):[];
+  const portuguese=allOptions.filter(x=>x.language==="pt"&&!matchingPublisher.includes(x));
+  const others=allOptions.filter(x=>x.language!=="pt"&&!matchingPublisher.includes(x));
+  const options=[...matchingPublisher,...portuguese,...others]
+    .filter((item,i,array)=>array.findIndex(x=>x.url===item.url)===i).slice(0,30);
   if (options.length) return Response.json({coverUrl: options[0].url, source: options[0].source, options});
   if (first.coverUrl) return Response.json(first);
   if (second.coverUrl) return Response.json(second);
