@@ -54,6 +54,7 @@ async function openLibrary(title: string, author: string): Promise<Result> {
     const params=new URLSearchParams({
       q: term+(author?" "+author:""), limit:"35",
       fields:"title,author_name,cover_i",
+      lang:"pt",
     });
     try {
       const data=await jsonFrom("https://openlibrary.org/search.json?"+params) as {docs?:OpenDoc[]};
@@ -81,7 +82,7 @@ async function googleBooks(title:string,author:string): Promise<Result> {
   ]).slice(0,8);
   await Promise.all(queries.map(async ({term,lang,query},index)=>{
     const params=new URLSearchParams({q:query,maxResults:"30",printType:"books"});
-    if(lang)params.set("langRestrict",lang);
+    if(lang){params.set("langRestrict",lang);params.set("orderBy","newest");}
     try{
       const data=await jsonFrom("https://www.googleapis.com/books/v1/volumes?"+params) as {items?:GoogleVolume[]};
       for(const book of data.items||[]){
@@ -94,7 +95,9 @@ async function googleBooks(title:string,author:string): Promise<Result> {
         const option={url:cover.replace(/^http:\/\//,"https://"),source:"Google Books",
           title:info?.title||title,language};
         const authorScore=author?score((info?.authors||[]).join(" "),author)*0.25:0;
-        all.push({option,rank:match+authorScore+(language==="pt"?4:0)+(lang==="pt"?2:0)+(index===0?0.5:0)});
+        const publishedYear=Number((info?.publishedDate||"").slice(0,4));
+        const recent=Number.isFinite(publishedYear)&&publishedYear>=2000?Math.min(2,(publishedYear-2000)/13):0;
+        all.push({option,rank:match+authorScore+(language==="pt"?5:0)+(lang==="pt"?2:0)+(index===0?0.5:0)+recent});
       }
     }catch{/* outras buscas continuam */}
   }));
@@ -135,9 +138,12 @@ export async function GET(request: Request) {
   const [open, google] = await Promise.allSettled([openLibrary(title, author), googleBooks(title, author)]);
   const first: Result = open.status === "fulfilled" ? open.value : { coverUrl: null, source: null };
   const second: Result = google.status === "fulfilled" ? google.value : { coverUrl: null, source: null };
-  const options = [...(second.options || []), ...(first.options || [])]
-    .filter((item, i, array) => array.findIndex(x => x.url === item.url) === i)
-    .slice(0, 12);
+  const allOptions = [...(second.options || []), ...(first.options || [])]
+    .filter((item, i, array) => array.findIndex(x => x.url === item.url) === i);
+  // Reserva espaço para edições em português e evita que 12 capas antigas as ocultem.
+  const portuguese = allOptions.filter(x => x.language === "pt").slice(0, 8);
+  const others = allOptions.filter(x => x.language !== "pt").slice(0, 12 - portuguese.length);
+  const options = [...portuguese, ...others];
   if (options.length) return Response.json({coverUrl: options[0].url, source: options[0].source, options});
   if (first.coverUrl) return Response.json(first);
   if (second.coverUrl) return Response.json(second);
