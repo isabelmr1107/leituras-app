@@ -4,6 +4,7 @@ import { z } from "zod";
 const paramsSchema = z.object({
   title: z.string().trim().min(1).max(160),
   author: z.string().trim().max(160).optional(),
+  isbn: z.string().regex(/^[0-9Xx -]{10,22}$/).optional(),
 });
 type Result = { coverUrl: string | null; source: string | null };
 type OpenDoc = { title?: string; author_name?: string[]; cover_i?: number };
@@ -77,9 +78,31 @@ export async function GET(request: Request) {
   const session = await auth();
   if (!session?.user?.id) return Response.json({ error: "Não autorizado" }, { status: 401 });
   const url = new URL(request.url);
-  const parsed = paramsSchema.safeParse({ title: url.searchParams.get("title") || "", author: url.searchParams.get("author") || "" });
+  const parsed = paramsSchema.safeParse({ title: url.searchParams.get("title") || "", author: url.searchParams.get("author") || "", isbn: url.searchParams.get("isbn") || undefined });
   if (!parsed.success) return Response.json({ error: "Informe um título válido." }, { status: 400 });
-  const { title, author = "" } = parsed.data;
+  const { title, author = "", isbn } = parsed.data;
+  if (isbn) {
+    const cleaned = isbn.replace(/[-\s]/g, "").toUpperCase();
+    if (/^(?:[0-9]{13}|[0-9]{9}[0-9X])$/.test(cleaned)) {
+      try {
+        const data = await jsonFrom("https://www.googleapis.com/books/v1/volumes?" +
+          new URLSearchParams({ q: "isbn:" + cleaned, maxResults: "5" }).toString()) as { items?: GoogleVolume[] };
+        const match = (data.items || []).find(item =>
+          item.volumeInfo?.imageLinks?.thumbnail && score(item.volumeInfo.title || "", title) >= 4.5);
+        if (match?.volumeInfo?.imageLinks?.thumbnail) return Response.json({
+          coverUrl: match.volumeInfo.imageLinks.thumbnail.replace(/^http:\/\//, "https://"),
+          source: "Google Books (ISBN)"
+        });
+      } catch { /* mantém buscas por título e autor */ }
+      try {
+        const edition = await jsonFrom("https://openlibrary.org/isbn/" + cleaned + ".json") as { covers?: number[] };
+        if (edition.covers?.length) return Response.json({
+          coverUrl: "https://covers.openlibrary.org/b/id/" + edition.covers[0] + "-L.jpg",
+          source: "Open Library (ISBN)"
+        });
+      } catch { /* mantém buscas por título e autor */ }
+    }
+  }
   const first = await openLibrary(title, author);
   if (first.coverUrl) return Response.json(first);
   const second = await googleBooks(title, author);
