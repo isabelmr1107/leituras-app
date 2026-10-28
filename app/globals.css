@@ -23,3 +23,17 @@ label{display:block;font-size:12px;font-weight:700;margin:15px 0}input,select{wi
 @media(max-width:900px){.sidebar{display:none}.content{padding:25px 18px 50px}.stats{grid-template-columns:repeat(2,1fr)}.books{grid-template-columns:1fr}.calendar{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:560px){.topbar,.section-head{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:1fr 1fr}.calendar{grid-template-columns:repeat(2,1fr)}}
 .auth-page{min-height:100vh;display:grid;place-items:center;padding:24px}.auth-card{width:min(430px,100%);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:0 12px 40px rgba(0,0,0,.06)}.auth-card h1{font-size:28px;margin:8px 0}.auth-muted{color:var(--muted);font-size:13px;line-height:1.5}.auth-card a{color:var(--accent);font-weight:700}.error{background:#f8e7e5;color:#8b3a32;border-radius:9px;padding:10px;font-size:12px}
+/* Componentes da nova biblioteca, preservando o tema original */
+@import "tailwindcss";
+.mobile-nav{display:none;gap:8px;overflow-x:auto;padding-bottom:12px}
+.book-actions{display:flex;gap:10px;margin-top:12px}
+.book-actions button{border:0;background:transparent;text-decoration:underline;color:var(--accent);padding:2px 0;font-size:12px}
+textarea{width:100%;min-height:105px;margin-top:7px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:white;font:inherit;resize:vertical}
+.entries{display:grid;gap:12px;margin-top:20px}
+.entries .goal-card{max-width:100%;padding:17px}
+.entries h3{margin:12px 0 8px}
+.entries p{white-space:pre-wrap;overflow-wrap:anywhere}
+.modal{max-height:90vh;display:flex;flex-direction:column}
+.modal-scroll{overflow-y:auto;padding-right:4px}
+button:disabled{opacity:.6;cursor:not-allowed}
+@media(max-width:900px){.mobile-nav{display:flex}.sidebar{display:none}}
