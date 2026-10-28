@@ -23,7 +23,7 @@ export default function Dashboard({name}:{name:string}){
   const [coverMessage,setCoverMessage]=useState("");
   const [coverIsbn,setCoverIsbn]=useState("");
   const [booksGoal,setBooksGoal]=useState(20);
-  const [draftGoal,setDraftGoal]=useState(20);
+  const [draftGoal,setDraftGoal]=useState("20");
   const [goalBusy,setGoalBusy]=useState(false);
   const [goalMessage,setGoalMessage]=useState("");
   const [coverOptions,setCoverOptions]=useState<{url:string;source:string;title:string;language?:string}[]>([]);
@@ -39,7 +39,7 @@ export default function Dashboard({name}:{name:string}){
     let active=true;
     fetch("/api/goals",{cache:"no-store"})
       .then(async response=>{if(!response.ok)throw new Error("Metas indisponíveis");return response.json()})
-      .then(data=>{if(active){setBooksGoal(data.booksGoal);setDraftGoal(data.booksGoal)}})
+      .then(data=>{if(active){setBooksGoal(data.booksGoal);setDraftGoal(String(data.booksGoal))}})
       .catch(()=>{if(active)setGoalMessage("Não foi possível carregar a meta.")});
     return ()=>{active=false};
   },[]);
@@ -74,10 +74,11 @@ export default function Dashboard({name}:{name:string}){
   async function saveGoal(e:React.FormEvent){
     e.preventDefault();setGoalBusy(true);setGoalMessage("");
     try{
-      const response=await fetch("/api/goals",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({booksGoal:draftGoal})});
+      const response=await fetch("/api/goals",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({booksGoal:Number(draftGoal)})});
       if(!response.ok)throw new Error("Não foi possível salvar a meta.");
       const result=await response.json();
       setBooksGoal(result.booksGoal);
+      setDraftGoal(String(result.booksGoal));
       setGoalMessage("Meta salva com sucesso!");
     }catch(e){setGoalMessage(e instanceof Error?e.message:"Não foi possível salvar.");}
     finally{setGoalBusy(false);}
@@ -124,11 +125,11 @@ export default function Dashboard({name}:{name:string}){
     <section className="section"><h2>Histórico mensal</h2><p className="auth-muted">Páginas registradas em sessões do diário.</p><div className="month-chart" aria-label="Gráfico de páginas lidas por mês">{monthlyPages.map((value,i)=><div className="chart-month" key={months[i]}><strong>{value}</strong><div className="chart-track"><span style={{height:(value?Math.max(8,value/maxMonthly*100):3)+"%"}}/></div><small>{months[i]}</small></div>)}</div><div className="calendar">{months.map((m,i)=><div className="month" key={m}><span>{m}</span><strong>{entries.filter(e=>e.kind==="Sessão"&&new Date(e.createdAt).getFullYear()===year&&new Date(e.createdAt).getMonth()===i).reduce((n,e)=>n+e.pagesRead,0)}</strong><small>páginas</small></div>)}</div></section></>}
     {view==="Minha biblioteca"&&<section className="section"><div className="section-head"><div><h2>Todos os meus livros</h2><p>Edite, organize e acompanhe seu progresso.</p></div><div className="filters">{(["Todos","Quero ler","Lendo","Lido","Abandonado"] as const).map(s=><button key={s} className={filter===s?"filter active":"filter"} onClick={()=>setFilter(s)}>{s}</button>)}</div></div><label>Pesquisar livros<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Título, autor ou categoria"/></label>{bookCards(filtered)}</section>}
     {view==="Diário"&&<section className="section"><h2>Meu diário de leitura</h2>{books.length?<form className="goal-card" onSubmit={addEntry}><label>Livro<select required value={entryForm.bookId} onChange={e=>setEntryForm({...entryForm,bookId:e.target.value})}><option value="">Selecione um livro</option>{books.map(b=><option value={b.id} key={b.id}>{b.title}</option>)}</select></label><label>Tipo<select value={entryForm.kind} onChange={e=>setEntryForm({...entryForm,kind:e.target.value})}>{["Nota","Resenha","Citação","Sessão"].map(x=><option key={x}>{x}</option>)}</select></label>{entryForm.kind==="Sessão"?<label>Páginas lidas nesta sessão<input type="number" min={1} required value={entryForm.pagesRead||""} onChange={e=>setEntryForm({...entryForm,pagesRead:Number(e.target.value)})}/></label>:<label>Texto<textarea required maxLength={5000} value={entryForm.content} onChange={e=>setEntryForm({...entryForm,content:e.target.value})} placeholder="Escreva sobre sua leitura…"/></label>}<button className="primary" disabled={busy}>Salvar registro</button></form>:<p>Cadastre um livro para começar seu diário.</p>}<div className="entries">{entries.map(e=><article className="goal-card" key={e.id}><span className="badge">{e.kind}</span><h3>{e.book.title}</h3><p>{e.kind==="Sessão"?e.pagesRead+" páginas lidas":e.content}</p><small>{new Date(e.createdAt).toLocaleDateString("pt-BR")}</small></article>)}</div></section>}
-    {view==="Metas"&&<section className="section"><div className="goal-card"><p className="eyebrow">META DE {year}</p><h2>Ler {booksGoal} livros</h2><strong className="goal-number">{thisYear.length}/{booksGoal}</strong><div className="progress"><span style={{width:Math.min(100,thisYear.length/booksGoal*100)+"%"}}/></div><p>{Math.max(0,booksGoal-thisYear.length)} livros restantes para a meta inicial.</p><form onSubmit={saveGoal} className="goal-form">
+    {view==="Metas"&&<section className="section"><div className="goal-card"><p className="eyebrow">META DE {year}</p><h2>Ler {booksGoal} livros</h2><strong className="goal-number">{thisYear.length}/{booksGoal}</strong><div className="progress"><span style={{width:Math.min(100,thisYear.length/booksGoal*100)+"%"}}/></div><p>{Math.max(0,booksGoal-thisYear.length)} livros restantes para sua meta.</p><form onSubmit={saveGoal} className="goal-form">
       <label>Minha meta anual de livros
-        <input type="number" min={1} max={1000} required value={draftGoal} onChange={e=>setDraftGoal(Number(e.target.value))}/>
+        <input type="text" inputMode="numeric" pattern="[0-9]*" maxLength={4} required value={draftGoal} onChange={e=>setDraftGoal(e.target.value.replace(/\D/g,"").replace(/^0+(?=\d)/,""))}/>
       </label>
-      <button className="primary" disabled={goalBusy||draftGoal<1||draftGoal>1000}>{goalBusy?"Salvando…":"Salvar meta"}</button>
+      <button className="primary" disabled={goalBusy||Number(draftGoal)<1||Number(draftGoal)>1000}>{goalBusy?"Salvando…":"Salvar meta"}</button>
       {goalMessage&&<p role="status" className="auth-muted">{goalMessage}</p>}
     </form></div></section>}
     {view==="Perfil"&&<section className="section"><div className="profile-card"><div className="avatar">{name.charAt(0).toUpperCase()}</div><h2>{name}</h2><p>Seu espaço pessoal de leituras.</p><button className="primary" onClick={()=>signOut({callbackUrl:"/login"})}>Sair da conta</button></div></section>}
