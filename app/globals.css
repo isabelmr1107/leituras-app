@@ -90,3 +90,14 @@ h2{font-size:22px;letter-spacing:-.4px}
 .secondary-button:hover{background:#eee1eb}
 @media(max-width:900px){.content{padding:24px 20px 55px}.shelf-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.month-chart{gap:4px;padding:12px 8px}.chart-month small{font-size:9px}}
 @media(max-width:550px){.shelf-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.shelf-book{padding:9px}.cover-wrap{height:170px}.shelf-book h3{font-size:15px}.cover-fallback{width:100px;height:145px}.cover-fallback strong{font-size:12px}.book-actions{gap:4px}.month-chart{grid-template-columns:repeat(6,1fr);row-gap:14px}.chart-track{height:65px}.reading-summary span{font-size:11px}}
+
+/* Seleção visual de capas */
+.cover-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.cover-option{display:flex;flex-direction:column;align-items:center;gap:7px;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:8px;min-width:0;color:var(--muted)}
+.cover-option:hover,.cover-option.selected{border-color:var(--accent);background:#f4eef4}
+.cover-option img{height:105px;width:100%;object-fit:contain}
+.cover-option small{text-align:center;font-size:10px}
+.goal-form{padding-top:18px;margin-top:24px;border-top:1px solid var(--line)}
+.goal-form label{max-width:240px}
+.goal-form .auth-muted{margin-top:12px}
+@media(max-width:460px){.cover-picker{grid-template-columns:repeat(2,minmax(0,1fr))}}
