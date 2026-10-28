@@ -72,9 +72,9 @@ export default function Dashboard({name}:{name:string}){
       const response=await fetch("/api/book-lookup?"+params.toString(),{cache:"no-store"});
       const data=await response.json();
       if(!response.ok)throw new Error(data.error||"Não foi possível consultar os livros.");
-      const items:BookSuggestion[]=Array.isArray(data.suggestions)?data.suggestions.slice(0,12):[];
+      const items:BookSuggestion[]=Array.isArray(data.suggestions)?data.suggestions.slice(0,30):[];
       setSuggestions(items);
-      setLookupMessage(items.length? "Escolha a edição para preencher autor e páginas. Confira os dados antes de salvar.":
+      setLookupMessage(items.length? "Escolha a edição. As edições em português aparecem primeiro quando estão disponíveis nos catálogos; confira editora, capa e páginas.":
         "Não encontramos informações suficientes. Você pode preencher os campos manualmente.");
     }catch(e){setLookupMessage(e instanceof Error?e.message:"Erro ao pesquisar livro.");}
     finally{setLookupBusy(false);}
