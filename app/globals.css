@@ -1,3 +1,4 @@
+@import "tailwindcss";
 *{box-sizing:border-box}
 :root{--bg:#f7f5f1;--card:#fffdf9;--ink:#292622;--muted:#7c766e;--line:#e7e1d8;--accent:#6f5a43}
 html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
@@ -24,7 +25,6 @@ label{display:block;font-size:12px;font-weight:700;margin:15px 0}input,select{wi
 @media(max-width:560px){.topbar,.section-head{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:1fr 1fr}.calendar{grid-template-columns:repeat(2,1fr)}}
 .auth-page{min-height:100vh;display:grid;place-items:center;padding:24px}.auth-card{width:min(430px,100%);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:0 12px 40px rgba(0,0,0,.06)}.auth-card h1{font-size:28px;margin:8px 0}.auth-muted{color:var(--muted);font-size:13px;line-height:1.5}.auth-card a{color:var(--accent);font-weight:700}.error{background:#f8e7e5;color:#8b3a32;border-radius:9px;padding:10px;font-size:12px}
 /* Componentes da nova biblioteca, preservando o tema original */
-@import "tailwindcss";
 .mobile-nav{display:none;gap:8px;overflow-x:auto;padding-bottom:12px}
 .book-actions{display:flex;gap:10px;margin-top:12px}
 .book-actions button{border:0;background:transparent;text-decoration:underline;color:var(--accent);padding:2px 0;font-size:12px}
