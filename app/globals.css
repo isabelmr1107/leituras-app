@@ -350,3 +350,34 @@ select option{background:#1d2030;color:#fff}
 .mobile-nav .filter.active{background:#ffcc29!important;color:#26212c!important}
 @media(max-width:600px){.welcome-illustration{opacity:.36}.welcome-banner{background:linear-gradient(125deg,#2a253f,#3f2d68)!important}.hero-book{animation:none}}
 @media(prefers-reduced-motion:reduce){.hero-book{animation:none!important}}
+
+
+/* Estante por coleções — faixas de vidro e capas sobrepostas */
+.collection-shelves{display:flex;flex-direction:column;gap:38px;margin:18px 0 40px}
+.collection-section{--shelf-a:#ef79b0;--shelf-b:#ffc46a;min-width:0}
+.collection-theme-1{--shelf-a:#ae7bf1;--shelf-b:#69c8f4}
+.collection-theme-2{--shelf-a:#80d7bf;--shelf-b:#a6a4f2}
+.collection-theme-3{--shelf-a:#f4a67b;--shelf-b:#e39fb3}
+.collection-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:0 8px 16px}
+.collection-heading h3{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:21px;font-weight:750;letter-spacing:-.5px;margin:0 0 4px}
+.collection-heading p{font-size:13px;color:var(--muted);margin:0}
+.collection-add{height:38px;width:38px;border:1px solid #ffffff48;border-radius:50%;background:#ffffff15;color:var(--ink);font-size:25px;line-height:1}
+.collection-stage{height:270px;position:relative;isolation:isolate;border-radius:32px;background:linear-gradient(112deg,color-mix(in srgb,var(--shelf-a) 22%,transparent),color-mix(in srgb,var(--shelf-b) 20%,transparent));overflow:hidden}
+.collection-covers{position:absolute;inset:7px 100px 40px 22px;display:flex;align-items:flex-end;overflow-x:auto;overflow-y:hidden;padding:8px 4px 12px;scrollbar-width:thin;scrollbar-color:#ffffff75 transparent;z-index:2}
+.collection-book{position:relative;flex:0 0 143px;width:143px;height:204px;padding:0;border:0;border-radius:10px;background:#292636;box-shadow:0 12px 26px #05030c65,3px 0 5px #00000020;transform:rotate(-2deg);transition:transform .2s ease,translate .2s ease;text-align:left;overflow:hidden}
+.collection-book+.collection-book{margin-left:-24px}
+.collection-book:nth-child(3n+2){transform:rotate(2deg);translate:0 -7px}
+.collection-book:nth-child(3n){transform:rotate(-1deg);translate:0 3px}
+.collection-book:hover,.collection-book:focus-visible{transform:rotate(0) scale(1.045);translate:0 -9px;outline:2px solid #ffffffc0;outline-offset:2px}
+.collection-book img{width:100%;height:100%;object-fit:cover;display:block}
+.collection-cover-fallback{width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;text-align:center;padding:13px;background:linear-gradient(150deg,#7e5fa8,#28264e);color:#fff}
+.collection-cover-fallback strong{font-size:14px;line-height:1.25;overflow-wrap:anywhere}
+.collection-cover-fallback small{font-size:10px;opacity:.8}
+.collection-glass{position:absolute;z-index:4;bottom:0;left:0;right:0;height:100px;pointer-events:none;border-top:1px solid #ffffff4c;background:linear-gradient(100deg,color-mix(in srgb,var(--shelf-a) 55%,transparent),color-mix(in srgb,var(--shelf-b) 50%,transparent));backdrop-filter:blur(12px) saturate(145%);-webkit-backdrop-filter:blur(12px) saturate(145%);box-shadow:inset 0 1px #ffffff55}
+.collection-stage-actions{position:absolute;right:17px;top:50%;translate:0 -50%;z-index:6;display:flex;flex-direction:column;gap:12px}
+.collection-stage-actions button{width:49px;height:49px;border:1px solid #ffffff70;border-radius:50%;background:#ffffffdd;color:#252333;font-size:29px;line-height:1;box-shadow:0 6px 18px #10101b26}
+.collection-stage-actions button:hover{background:#fff;transform:scale(1.05)}
+.collection-stage-actions button:last-child{font-size:27px;letter-spacing:2px;padding-bottom:13px}
+@media(min-width:900px){.collection-stage{height:300px}.collection-book{flex-basis:160px;width:160px;height:228px}.collection-covers{inset:6px 120px 42px 30px}.collection-glass{height:108px}}
+@media(max-width:600px){.collection-shelves{gap:27px}.collection-heading h3{font-size:19px}.collection-heading p{font-size:12px}.collection-stage{height:240px;border-radius:25px}.collection-book{flex-basis:125px;width:125px;height:179px}.collection-book+.collection-book{margin-left:-18px}.collection-covers{inset:6px 75px 33px 14px}.collection-stage-actions{right:10px;gap:9px}.collection-stage-actions button{width:42px;height:42px}.collection-glass{height:87px}}
+@media(prefers-reduced-motion:reduce){.collection-book{transition:none}}
