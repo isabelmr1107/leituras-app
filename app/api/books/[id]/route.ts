@@ -1,6 +1,6 @@
 import { auth } from "../../../../auth";
 import { prisma } from "../../../../lib/prisma";
-import { bookSchema } from "../route";
+import { bookSchema } from "../../../../lib/book-schema";
 type Context = { params: Promise<{ id: string }> };
 export async function PATCH(request: Request, context: Context) {
   const session = await auth();
