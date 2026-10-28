@@ -1,23 +1,87 @@
 import { auth } from "../../../auth";
 import { z } from "zod";
-const paramsSchema=z.object({title:z.string().trim().min(1).max(160),author:z.string().trim().max(160).optional()});
-export async function GET(request:Request){
-  const session=await auth();
-  if(!session?.user?.id)return Response.json({error:"Não autorizado"},{status:401});
-  const url=new URL(request.url);
-  const parsed=paramsSchema.safeParse({title:url.searchParams.get("title")||"",author:url.searchParams.get("author")||""});
-  if(!parsed.success)return Response.json({error:"Informe um título válido."},{status:400});
-  const search=new URLSearchParams({title:parsed.data.title,limit:"5",fields:"title,author_name,cover_i"});
-  if(parsed.data.author)search.set("author",parsed.data.author);
-  try{
-    const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),6000);
-    let response:Response;
-    try{response=await fetch("https://openlibrary.org/search.json?"+search.toString(),{signal:controller.signal,next:{revalidate:86400}})}
-    finally{clearTimeout(timeout)}
-    if(!response.ok)throw new Error("Serviço de capas indisponível");
-    const data=await response.json() as {docs?:Array<{cover_i?:number;title?:string}>};
-    const book=data.docs?.find(b=>Number.isSafeInteger(b.cover_i)&&Number(b.cover_i)>0);
-    return Response.json({coverUrl:book?"https://covers.openlibrary.org/b/id/"+book.cover_i+"-L.jpg":null,source:"Open Library"});
-  }catch{return Response.json({error:"A busca de capas está indisponível no momento."},{status:503})}
+
+const paramsSchema = z.object({
+  title: z.string().trim().min(1).max(160),
+  author: z.string().trim().max(160).optional(),
+});
+type Result = { coverUrl: string | null; source: string | null };
+type OpenDoc = { title?: string; author_name?: string[]; cover_i?: number };
+type GoogleVolume = { volumeInfo?: { title?: string; authors?: string[]; imageLinks?: { thumbnail?: string; smallThumbnail?: string } } };
+
+function normalize(value: string) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+function score(candidate: string, expected: string) {
+  const a = normalize(candidate), b = normalize(expected);
+  if (!a || !b) return 0;
+  if (a === b) return 10;
+  if (a.startsWith(b + " ") || b.startsWith(a + " ")) return 8;
+  const aa = new Set(a.split(" ").filter(x => x.length > 2));
+  const bb = [...new Set(b.split(" ").filter(x => x.length > 2))];
+  return bb.length ? 7 * bb.filter(x => aa.has(x)).length / bb.length : 0;
+}
+async function jsonFrom(url: string): Promise<unknown> {
+  const response = await fetch(url, {
+    headers: { "Accept": "application/json", "User-Agent": "MinhaEstante/1.0 (book-cover-search)" },
+    signal: AbortSignal.timeout(6500),
+    cache: "no-store",
+  });
+  if (!response.ok) throw new Error("Catálogo indisponível");
+  return response.json();
+}
+async function openLibrary(title: string, author: string): Promise<Result> {
+  const searches = [
+    new URLSearchParams({ title, ...(author ? { author } : {}), limit: "20", fields: "title,author_name,cover_i" }),
+    new URLSearchParams({ title, limit: "20", fields: "title,author_name,cover_i" }),
+    new URLSearchParams({ q: title, limit: "20", fields: "title,author_name,cover_i" }),
+  ];
+  for (const params of searches) {
+    try {
+      const data = await jsonFrom("https://openlibrary.org/search.json?" + params.toString()) as { docs?: OpenDoc[] };
+      const candidates = (data.docs ?? []).filter(x => Number.isSafeInteger(x.cover_i) && Number(x.cover_i) > 0)
+        .map(x => ({
+          id: x.cover_i!,
+          rank: score(x.title || "", title) + (author ? score((x.author_name || []).join(" "), author) * 0.25 : 0),
+          titleMatch: score(x.title || "", title),
+        })).filter(x => x.titleMatch >= 4.5).sort((a,b) => b.rank-a.rank);
+      if (candidates.length) return { coverUrl: "https://covers.openlibrary.org/b/id/" + candidates[0].id + "-L.jpg", source: "Open Library" };
+    } catch { /* tenta próxima busca ou outro catálogo */ }
+  }
+  return { coverUrl: null, source: null };
+}
+async function googleBooks(title: string, author: string): Promise<Result> {
+  const searches = [
+    "intitle:" + title + (author ? " inauthor:" + author : ""),
+    title + (author ? " " + author : ""),
+    title,
+  ];
+  for (const query of searches) {
+    try {
+      const params = new URLSearchParams({ q: query, maxResults: "20", printType: "books" });
+      const data = await jsonFrom("https://www.googleapis.com/books/v1/volumes?" + params.toString()) as { items?: GoogleVolume[] };
+      const matches = (data.items ?? []).map(x => ({
+        url: x.volumeInfo?.imageLinks?.thumbnail || x.volumeInfo?.imageLinks?.smallThumbnail,
+        titleMatch: score(x.volumeInfo?.title || "", title),
+        rank: score(x.volumeInfo?.title || "", title) + (author ? score((x.volumeInfo?.authors || []).join(" "), author) * 0.25 : 0),
+      })).filter(x => x.url && x.titleMatch >= 4.5).sort((a,b) => b.rank-a.rank);
+      if (matches.length) {
+        const url = matches[0].url!.replace(/^http:\/\//, "https://");
+        return { coverUrl: url, source: "Google Books" };
+      }
+    } catch { /* fallback final */ }
+  }
+  return { coverUrl: null, source: null };
+}
+export async function GET(request: Request) {
+  const session = await auth();
+  if (!session?.user?.id) return Response.json({ error: "Não autorizado" }, { status: 401 });
+  const url = new URL(request.url);
+  const parsed = paramsSchema.safeParse({ title: url.searchParams.get("title") || "", author: url.searchParams.get("author") || "" });
+  if (!parsed.success) return Response.json({ error: "Informe um título válido." }, { status: 400 });
+  const { title, author = "" } = parsed.data;
+  const first = await openLibrary(title, author);
+  if (first.coverUrl) return Response.json(first);
+  const second = await googleBooks(title, author);
+  return Response.json(second);
 }
