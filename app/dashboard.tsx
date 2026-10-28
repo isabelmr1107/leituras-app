@@ -14,6 +14,8 @@ export default function Dashboard({name}:{name:string}){
   const [view,setView]=useState<View>("Dashboard");
   const [filter,setFilter]=useState("Todos");
   const [query,setQuery]=useState("");
+  const [sortBy,setSortBy]=useState<"recentes"|"titulo"|"autor"|"progresso">("recentes");
+  const [shelfMode,setShelfMode]=useState<"grid"|"list">("grid");
   const [editing,setEditing]=useState<string|null>(null);
   const [open,setOpen]=useState(false);
   const [form,setForm]=useState(blank);
@@ -48,13 +50,14 @@ export default function Dashboard({name}:{name:string}){
       .catch(()=>{if(active)setGoalMessage("Não foi possível carregar a meta.")});
     return ()=>{active=false};
   },[]);
-  const filtered=useMemo(()=>books.filter(b=>(filter==="Todos"||b.status===filter)&&(`${b.title} ${b.author} ${b.category||""}`).toLowerCase().includes(query.toLowerCase())),[books,filter,query]);
+  const filtered=useMemo(()=>books.filter(b=>(filter==="Todos"||b.status===filter)&&(`${b.title} ${b.author} ${b.category||""}`).toLowerCase().includes(query.toLowerCase())).sort((a,b)=>{if(sortBy==="titulo")return a.title.localeCompare(b.title,"pt-BR");if(sortBy==="autor")return a.author.localeCompare(b.author,"pt-BR");if(sortBy==="progresso")return (b.totalPages?b.currentPage/b.totalPages:0)-(a.totalPages?a.currentPage/a.totalPages:0);return new Date(b.createdAt).getTime()-new Date(a.createdAt).getTime();}),[books,filter,query,sortBy]);
   const read=books.filter(b=>b.status==="Lido");
   const year=new Date().getFullYear();
   const thisYear=read.filter(b=>b.finishedAt && new Date(b.finishedAt).getFullYear()===year);
   const pages=entries.filter(e=>e.kind==="Sessão").reduce((n,e)=>n+e.pagesRead,0);
   const trackedPages=books.reduce((n,b)=>n+b.currentPage,0);
   const reading=books.filter(b=>b.status==="Lendo");
+  const featuredBook=reading[0]||books.find(b=>b.status==="Quero ler")||books[0];
   const wishlisted=books.filter(b=>b.status==="Quero ler");
   const monthlyPages=months.map((_,i)=>entries.filter(e=>e.kind==="Sessão"&&new Date(e.createdAt).getFullYear()===year&&new Date(e.createdAt).getMonth()===i).reduce((n,e)=>n+e.pagesRead,0));
   const maxMonthly=Math.max(1,...monthlyPages);
@@ -140,17 +143,18 @@ export default function Dashboard({name}:{name:string}){
       setEntryForm({bookId:"",kind:"Nota",content:"",pagesRead:0});await refresh();
     }catch(e){setError(e instanceof Error?e.message:"Erro");}finally{setBusy(false);}
   }
-  function bookCards(items:Book[]){return <div className="books shelf-grid">{items.length===0?<div className="empty-shelf"><span aria-hidden="true">📚</span><h3>Sua estante está esperando histórias!</h3><p>Adicione seu primeiro livro ou tente outro filtro.</p><button className="primary" onClick={()=>edit()}>Adicionar livro</button></div>:items.map(b=><article className="book shelf-book" key={b.id}>
-    <div className="cover-wrap">{b.coverUrl&&!brokenCovers.includes(b.id)?<img className="book-cover-img" src={b.coverUrl} alt={"Capa de "+b.title} loading="lazy" onError={()=>setBrokenCovers(prev=>[...prev,b.id])}/>:<div className="cover cover-fallback" aria-label={"Capa não disponível para "+b.title}><span>✦</span><strong>{b.title}</strong><small>{b.author}</small></div>}</div>
+  function bookCards(items:Book[]){return <div className={"books shelf-grid "+(shelfMode==="list"?"shelf-list":"")}>{items.length===0?<div className="empty-shelf"><span aria-hidden="true">📚</span><h3>Sua estante está esperando histórias!</h3><p>Adicione seu primeiro livro ou tente outro filtro.</p><button className="primary" onClick={()=>edit()}>Adicionar livro</button></div>:items.map(b=><article className="book shelf-book" key={b.id}>
+    <div className="cover-wrap"><span className="cover-decor" aria-hidden="true">✧</span>{b.coverUrl&&!brokenCovers.includes(b.id)?<img className="book-cover-img" src={b.coverUrl} alt={"Capa de "+b.title} loading="lazy" onError={()=>setBrokenCovers(prev=>[...prev,b.id])}/>:<div className="cover cover-fallback" aria-label={"Capa não disponível para "+b.title}><span>✦</span><strong>{b.title}</strong><small>{b.author}</small></div>}</div>
     <div className="book-info"><span className={"badge status-"+b.status.toLowerCase().replaceAll(" ","-")}>{b.status}</span><h3>{b.title}</h3><p>{b.author}</p>
       <div className="book-meta">{b.category||"Sem categoria"}</div>
       {b.totalPages>0&&<div className="book-reading-progress"><div className="progress small-progress"><span style={{width:Math.min(100,b.currentPage/b.totalPages*100)+"%"}}/></div><small>{b.currentPage} de {b.totalPages} páginas · {Math.round(b.currentPage/b.totalPages*100)}%</small></div>}
       <div className="stars" aria-label={b.rating+" de 5 estrelas"}>{"★".repeat(b.rating)+"☆".repeat(5-b.rating)}</div>
       <div className="book-actions"><button onClick={()=>edit(b)}>Editar</button><button onClick={()=>removeBook(b.id)}>Excluir</button></div>
     </div></article>)}</div>}
-  return <main className="shell"><aside className="sidebar"><div className="brand">📚 <span>Minha Estante</span></div><nav>{(["Dashboard","Minha biblioteca","Diário","Metas","Perfil"] as View[]).map(item=><button key={item} className={view===item?"nav-button active":"nav-button"} onClick={()=>setView(item)}>{item}</button>)}</nav><div className="side-note">Um cantinho para suas histórias.</div></aside>
-    <section className="content"><header className="topbar"><div><p className="eyebrow">{year} · Olá, {name}!</p><h1>{view==="Dashboard"?"Seu ano de leituras":view}</h1></div><button className="primary" onClick={()=>edit()}>＋ Adicionar livro</button></header>
-    <div className="mobile-nav">{(["Dashboard","Minha biblioteca","Diário","Metas","Perfil"] as View[]).map(item=><button key={item} className={view===item?"filter active":"filter"} onClick={()=>setView(item)}>{item}</button>)}</div>
+  const navItems:{name:View;icon:string}[]=[{name:"Dashboard",icon:"✦"},{name:"Minha biblioteca",icon:"▦"},{name:"Diário",icon:"✎"},{name:"Metas",icon:"◎"},{name:"Perfil",icon:"◉"}];
+  return <main className="shell"><aside className="sidebar"><div className="brand"><span className="brand-icon">✷</span><span>Minha <em>Estante</em></span></div><p className="sidebar-label">SEU ESPAÇO LITERÁRIO</p><nav aria-label="Navegação principal">{navItems.map(item=><button key={item.name} className={view===item.name?"nav-button active":"nav-button"} onClick={()=>setView(item.name)}><span className="nav-icon" aria-hidden="true">{item.icon}</span>{item.name}</button>)}</nav><div className="side-note"><div className="side-note-art">❝</div><strong>Uma história de cada vez.</strong><p>Seu universo de livros, metas e descobertas.</p><button type="button" onClick={()=>edit()}>＋ Novo livro</button></div></aside>
+    <section className="content"><header className="topbar"><div><p className="eyebrow">✳ {year} · Seu universo de histórias</p><h1>{view==="Dashboard"?"Olá, "+name.split(" ")[0]+" ✦":view}</h1><p className="header-subtitle">{view==="Dashboard"?"Cada página conta. Descubra o próximo capítulo da sua estante.":view==="Minha biblioteca"?"Todos os seus mundos favoritos, bem aqui.":view==="Diário"?"Guarde suas impressões e os melhores trechos.":view==="Metas"?"Pequenos passos, grandes histórias.":"Seu cantinho de leitura."}</p></div><button className="primary add-book-button" onClick={()=>edit()}>＋ Adicionar livro</button></header>
+    <div className="mobile-nav" aria-label="Navegação">{navItems.map(item=><button key={item.name} className={view===item.name?"filter active":"filter"} onClick={()=>setView(item.name)}><span aria-hidden="true">{item.icon}</span> {item.name}</button>)}</div>
     {error&&!open&&<p className="error" role="alert">{error}</p>}{loading&&<p>Carregando sua estante…</p>}
     {view==="Dashboard"&&<><section className="stats enhanced-stats">
       <button className="stat stat-button" onClick={()=>setView("Minha biblioteca")}><span>Livros lidos neste ano</span><strong>{thisYear.length}</strong><small>Ver biblioteca</small></button>
