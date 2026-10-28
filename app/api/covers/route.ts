@@ -25,7 +25,7 @@ function score(candidate: string, expected: string) {
 async function jsonFrom(url: string): Promise<unknown> {
   const response = await fetch(url, {
     headers: { "Accept": "application/json", "User-Agent": "MinhaEstante/1.0 (book-cover-search)" },
-    signal: AbortSignal.timeout(6500),
+    signal: AbortSignal.timeout(3800),
     cache: "no-store",
   });
   if (!response.ok) throw new Error("Catálogo indisponível");
@@ -34,7 +34,6 @@ async function jsonFrom(url: string): Promise<unknown> {
 async function openLibrary(title: string, author: string): Promise<Result> {
   const searches = [
     new URLSearchParams({ title, ...(author ? { author } : {}), limit: "20", fields: "title,author_name,cover_i" }),
-    new URLSearchParams({ title, limit: "20", fields: "title,author_name,cover_i" }),
     new URLSearchParams({ q: title, limit: "20", fields: "title,author_name,cover_i" }),
   ];
   for (const params of searches) {
@@ -45,7 +44,7 @@ async function openLibrary(title: string, author: string): Promise<Result> {
           id: x.cover_i!,
           rank: score(x.title || "", title) + (author ? score((x.author_name || []).join(" "), author) * 0.25 : 0),
           titleMatch: score(x.title || "", title),
-        })).filter(x => x.titleMatch >= 4.5).sort((a,b) => b.rank-a.rank);
+        })).filter(x => x.titleMatch >= 3.5).sort((a,b) => b.rank-a.rank);
       if (candidates.length) return { coverUrl: "https://covers.openlibrary.org/b/id/" + candidates[0].id + "-L.jpg", source: "Open Library" };
     } catch { /* tenta próxima busca ou outro catálogo */ }
   }
@@ -103,8 +102,11 @@ export async function GET(request: Request) {
       } catch { /* mantém buscas por título e autor */ }
     }
   }
-  const first = await openLibrary(title, author);
+  // Consulta as fontes em paralelo para evitar ultrapassar o tempo da função.
+  const [open, google] = await Promise.allSettled([openLibrary(title, author), googleBooks(title, author)]);
+  const first = open.status === "fulfilled" ? open.value : { coverUrl: null, source: null };
+  const second = google.status === "fulfilled" ? google.value : { coverUrl: null, source: null };
   if (first.coverUrl) return Response.json(first);
-  const second = await googleBooks(title, author);
-  return Response.json(second);
+  if (second.coverUrl) return Response.json(second);
+  return Response.json({ coverUrl: null, source: null, message: "Nenhuma capa correspondente encontrada nos catálogos. Você pode informar a URL de uma capa manualmente." });
 }
