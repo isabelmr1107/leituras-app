@@ -32,12 +32,20 @@ export async function GET(request:Request){
   if(!parsed.success)return Response.json({error:"Informe o título do livro."},{status:400});
   const {title,isbn}=parsed.data;
   const cleanIsbn=(isbn||"").replace(/[^0-9X]/gi,"");
-  const queries=[...(cleanIsbn?[{q:"isbn:"+cleanIsbn,lang:""}]:[]),{q:"intitle:"+title,lang:"pt"},{q:title,lang:"pt"},{q:title,lang:""}];
+  const queries=[
+    ...(cleanIsbn?[{q:"isbn:"+cleanIsbn,lang:"pt",start:0},{q:"isbn:"+cleanIsbn,lang:"",start:0}]:[]),
+    {q:"intitle:"+title,lang:"pt",start:0},
+    {q:title,lang:"pt",start:0},
+    {q:"intitle:"+title,lang:"pt",start:40},
+    {q:title,lang:"pt",start:40},
+    {q:"intitle:"+title,lang:"",start:0},
+    {q:title,lang:"",start:0}
+  ];
   const results: {data:Suggestion;score:number}[]=[];
   await Promise.all([
-    ...queries.map(async ({q,lang})=>{
+    ...queries.map(async ({q,lang,start})=>{
       try{
-        const params=new URLSearchParams({q,maxResults:"30",printType:"books"});
+        const params=new URLSearchParams({q,maxResults:"40",startIndex:String(start),printType:"books"});
         if(lang)params.set("langRestrict",lang);
         const response=await fetchJson("https://www.googleapis.com/books/v1/volumes?"+params) as {items?:GoogleBook[]};
         for(const item of response.items||[]){
@@ -50,13 +58,13 @@ export async function GET(request:Request){
             category:(b.categories||[])[0]||"",coverUrl:cover?cover.replace(/^http:\/\//,"https://"):null,
             publisher:b.publisher||"",source:"Google Books",
             isbn:b.industryIdentifiers?.find(i=>i.type==="ISBN_13")?.identifier
-          },score:score+(b.language==="pt"?6:0)+(validPages(b.pageCount)?4:0)+(cleanIsbn?3:0)});
+          },score:score+(b.language?.startsWith("pt")?20:0)+(validPages(b.pageCount)?3:0)+(b.publisher?2:0)+(cover?1:0)+(cleanIsbn&&b.industryIdentifiers?.some(i=>i.identifier.replace(/[^0-9X]/gi,"")===cleanIsbn)?30:0)});
         }
       }catch{/* tenta outros registros */}
     }),
     (async()=>{
       try{
-        const params=new URLSearchParams({title,limit:"35",fields:"title,author_name,number_of_pages_median,cover_i,language,publisher,isbn"});
+        const params=new URLSearchParams({title,limit:"100",fields:"title,author_name,number_of_pages_median,cover_i,language,publisher,isbn"});
         const response=await fetchJson("https://openlibrary.org/search.json?"+params) as {docs?:OpenBook[]};
         for(const b of response.docs||[]){
           if(!b.title||!b.author_name?.length)continue;
@@ -65,13 +73,13 @@ export async function GET(request:Request){
             title:b.title,author:b.author_name.join(", "),totalPages:validPages(b.number_of_pages_median),
             category:"",coverUrl:b.cover_i?"https://covers.openlibrary.org/b/id/"+b.cover_i+"-M.jpg":null,
             publisher:b.publisher?.[0]||"",source:"Open Library",isbn:b.isbn?.[0]
-          },score:score+(b.language?.includes("por")?4:0)+(validPages(b.number_of_pages_median)?2:0)});
+          },score:score+(b.language?.includes("por")?14:0)+(validPages(b.number_of_pages_median)?2:0)});
         }
       }catch{/* Google Books pode fornecer os dados */}
     })()
   ]);
   results.sort((a,b)=>b.score-a.score);
   const unique=results.filter(({data},i,arr)=>arr.findIndex(x=>normalized(x.data.title)===normalized(data.title)&&normalized(x.data.author)===normalized(data.author)&&x.data.totalPages===data.totalPages&&normalized(x.data.publisher)===normalized(data.publisher))===i)
-    .slice(0,12).map(x=>x.data);
+    .slice(0,30).map(x=>x.data);
   return Response.json({suggestions:unique});
 }
