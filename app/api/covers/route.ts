@@ -6,7 +6,8 @@ const paramsSchema = z.object({
   author: z.string().trim().max(160).optional(),
   isbn: z.string().regex(/^[0-9Xx -]{10,22}$/).optional(),
 });
-type Result = { coverUrl: string | null; source: string | null };
+type CoverOption = { url: string; source: string; title: string }; 
+type Result = { coverUrl: string | null; source: string | null; options?: CoverOption[] };
 type OpenDoc = { title?: string; author_name?: string[]; cover_i?: number };
 type GoogleVolume = { volumeInfo?: { title?: string; authors?: string[]; imageLinks?: { thumbnail?: string; smallThumbnail?: string } } };
 
@@ -41,11 +42,11 @@ async function openLibrary(title: string, author: string): Promise<Result> {
       const data = await jsonFrom("https://openlibrary.org/search.json?" + params.toString()) as { docs?: OpenDoc[] };
       const candidates = (data.docs ?? []).filter(x => Number.isSafeInteger(x.cover_i) && Number(x.cover_i) > 0)
         .map(x => ({
-          id: x.cover_i!,
+          id: x.cover_i!, title: x.title || title,
           rank: score(x.title || "", title) + (author ? score((x.author_name || []).join(" "), author) * 0.25 : 0),
           titleMatch: score(x.title || "", title),
         })).filter(x => x.titleMatch >= 3.5).sort((a,b) => b.rank-a.rank);
-      if (candidates.length) return { coverUrl: "https://covers.openlibrary.org/b/id/" + candidates[0].id + "-L.jpg", source: "Open Library" };
+      if (candidates.length) return { coverUrl: "https://covers.openlibrary.org/b/id/" + candidates[0].id + "-L.jpg", source: "Open Library", options: candidates.slice(0, 8).map(x => ({url: "https://covers.openlibrary.org/b/id/" + x.id + "-L.jpg", source: "Open Library", title: x.title})) };
     } catch { /* tenta próxima busca ou outro catálogo */ }
   }
   return { coverUrl: null, source: null };
@@ -62,12 +63,13 @@ async function googleBooks(title: string, author: string): Promise<Result> {
       const data = await jsonFrom("https://www.googleapis.com/books/v1/volumes?" + params.toString()) as { items?: GoogleVolume[] };
       const matches = (data.items ?? []).map(x => ({
         url: x.volumeInfo?.imageLinks?.thumbnail || x.volumeInfo?.imageLinks?.smallThumbnail,
+        title: x.volumeInfo?.title || title,
         titleMatch: score(x.volumeInfo?.title || "", title),
         rank: score(x.volumeInfo?.title || "", title) + (author ? score((x.volumeInfo?.authors || []).join(" "), author) * 0.25 : 0),
       })).filter(x => x.url && x.titleMatch >= 4.5).sort((a,b) => b.rank-a.rank);
       if (matches.length) {
         const url = matches[0].url!.replace(/^http:\/\//, "https://");
-        return { coverUrl: url, source: "Google Books" };
+        return { coverUrl: url, source: "Google Books", options: matches.slice(0, 8).map(x => ({url: x.url!.replace(/^http:\/\//, "https://"), source: "Google Books", title: x.title})) };
       }
     } catch { /* fallback final */ }
   }
@@ -106,6 +108,10 @@ export async function GET(request: Request) {
   const [open, google] = await Promise.allSettled([openLibrary(title, author), googleBooks(title, author)]);
   const first = open.status === "fulfilled" ? open.value : { coverUrl: null, source: null };
   const second = google.status === "fulfilled" ? google.value : { coverUrl: null, source: null };
+  const options = [...(first.options || []), ...(second.options || [])]
+    .filter((item, i, array) => array.findIndex(x => x.url === item.url) === i)
+    .slice(0, 12);
+  if (options.length) return Response.json({coverUrl: options[0].url, source: options[0].source, options});
   if (first.coverUrl) return Response.json(first);
   if (second.coverUrl) return Response.json(second);
   return Response.json({ coverUrl: null, source: null, message: "Nenhuma capa correspondente encontrada nos catálogos. Você pode informar a URL de uma capa manualmente." });
