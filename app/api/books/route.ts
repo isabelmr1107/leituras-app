@@ -1,23 +1,26 @@
-import { neon } from "@neondatabase/serverless";
-import { auth } from "@/lib/auth/server";
-
-const sql = neon(process.env.DATABASE_URL!);
-
+import { auth } from "../../../auth";
+import { prisma } from "../../../lib/prisma";
+import { z } from "zod";
+export const bookSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  author: z.string().trim().min(1).max(200),
+  category: z.string().trim().max(80).optional().nullable(),
+  coverUrl: z.union([z.literal(""),z.string().url().max(1500)]).optional().nullable(),
+  status: z.enum(["Quero ler","Lendo","Lido","Abandonado"]).default("Quero ler"),
+  rating: z.number().int().min(0).max(5).default(0),
+  totalPages: z.number().int().min(0).max(100000).default(0),
+  currentPage: z.number().int().min(0).max(100000).default(0)
+}).refine(x=>!x.totalPages || x.currentPage<=x.totalPages,{message:"Página atual maior que o total."});
 export async function GET(){
-  const {data:session}=await auth.getSession();
-  if(!session?.user) return Response.json({error:"Unauthorized"},{status:401});
-  const rows=await sql`SELECT id,title,author,status,rating,month,pages FROM books WHERE user_id=${session.user.id} ORDER BY created_at DESC`;
-  return Response.json(rows);
+  const session=await auth();
+  if(!session?.user?.id)return Response.json({error:"Não autorizado"},{status:401});
+  return Response.json(await prisma.book.findMany({where:{userId:session.user.id},orderBy:{updatedAt:"desc"}}));
 }
-
 export async function POST(request:Request){
-  const {data:session}=await auth.getSession();
-  if(!session?.user) return Response.json({error:"Unauthorized"},{status:401});
-  const body=await request.json();
-  const title=String(body.title||"").trim();
-  const author=String(body.author||"").trim();
-  const month=String(body.month||"Janeiro");
-  if(!title||!author) return Response.json({error:"Título e autor são obrigatórios."},{status:400});
-  const rows=await sql`INSERT INTO books (user_id,title,author,status,rating,month,pages) VALUES (${session.user.id},${title},${author},'Quero ler',0,${month},0) RETURNING id,title,author,status,rating,month,pages`;
-  return Response.json(rows[0],{status:201});
+  const session=await auth();
+  if(!session?.user?.id)return Response.json({error:"Não autorizado"},{status:401});
+  const parsed=bookSchema.safeParse(await request.json().catch(()=>null));
+  if(!parsed.success)return Response.json({error:"Livro inválido",details:parsed.error.flatten()},{status:400});
+  const book=await prisma.book.create({data:{...parsed.data,coverUrl:parsed.data.coverUrl||null,userId:session.user.id,finishedAt:parsed.data.status==="Lido"?new Date():null}});
+  return Response.json(book,{status:201});
 }
