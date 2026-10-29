@@ -11,6 +11,9 @@ export async function POST(request:Request){
   if(!session?.user?.id)return Response.json({error:"Não autorizado"},{status:401});
   const parsed=bookSchema.safeParse(await request.json().catch(()=>null));
   if(!parsed.success)return Response.json({error:"Livro inválido",details:parsed.error.flatten()},{status:400});
-  const book=await prisma.book.create({data:{...parsed.data,coverUrl:parsed.data.coverUrl||null,userId:session.user.id,finishedAt:parsed.data.status==="Lido"?new Date():null}});
+  const {startedAt,finishedAt,...data}=parsed.data;
+  const date=(value?:string|null)=>value?new Date(value+"T12:00:00.000Z"):null;
+  const book=await prisma.book.create({data:{...data,coverUrl:data.coverUrl||null,userId:session.user.id,
+    startedAt:date(startedAt),finishedAt:data.status==="Lido"?(date(finishedAt)||new Date()):null}});
   return Response.json(book,{status:201});
 }
