@@ -1,17 +1,17 @@
 import { neon } from "@neondatabase/serverless";
-import { auth } from "@/lib/auth/server";
+import { getAuth } from "@/lib/auth/server";
 
 const sql = neon(process.env.DATABASE_URL!);
 
 export async function GET(){
-  const {data:session}=await auth.getSession();
+  const {data:session}=await getAuth().getSession();
   if(!session?.user) return Response.json({error:"Unauthorized"},{status:401});
   const rows=await sql`SELECT id,title,author,status,rating,month,pages FROM books WHERE user_id=${session.user.id} ORDER BY created_at DESC`;
   return Response.json(rows);
 }
 
 export async function POST(request:Request){
-  const {data:session}=await auth.getSession();
+  const {data:session}=await getAuth().getSession();
   if(!session?.user) return Response.json({error:"Unauthorized"},{status:401});
   const body=await request.json();
   const title=String(body.title||"").trim();
