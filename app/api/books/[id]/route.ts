@@ -10,10 +10,12 @@ export async function PATCH(request: Request, context: Context) {
   if (!parsed.success) return Response.json({ error: "Dados inválidos." }, { status: 400 });
   const exists = await prisma.book.findFirst({ where: { id, userId: session.user.id } });
   if (!exists) return Response.json({ error: "Livro não encontrado." }, { status: 404 });
+  const {startedAt,finishedAt,...data}=parsed.data;
+  const date=(value:string|null|undefined,previous:Date|null)=>value===undefined?previous:value?new Date(value+"T12:00:00.000Z"):null;
   const book = await prisma.book.update({ where: { id }, data: {
-    ...parsed.data, coverUrl: parsed.data.coverUrl || null,
-    startedAt: parsed.data.status === "Lendo" ? (exists.startedAt || new Date()) : exists.startedAt,
-    finishedAt: parsed.data.status === "Lido" ? (exists.finishedAt || new Date()) : null
+    ...data, coverUrl: data.coverUrl || null,
+    startedAt: data.status==="Lendo" ? (date(startedAt,exists.startedAt)||new Date()) : date(startedAt,exists.startedAt),
+    finishedAt: data.status==="Lido" ? (date(finishedAt,exists.finishedAt)||new Date()) : null
   } });
   return Response.json(book);
 }
