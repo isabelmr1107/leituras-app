@@ -101,7 +101,7 @@ async function googleBooks(title:string,author:string,publisher:string):Promise<
     ...terms.slice(1,3).map(term=>({query:term,lang:"",sort:"relevance"})),
   ].slice(0,10);
   await Promise.all(searches.map(async ({query,lang,sort})=>{
-    const params=new URLSearchParams({q:query,maxResults:"40",printType:"books",orderBy:sort});
+    const params=new URLSearchParams({q:query,maxResults:"40",printType:"books",orderBy:sort,hl:"pt-BR",country:"BR"});
     if(lang)params.set("langRestrict",lang);
     try{
       const data=await jsonFrom("https://www.googleapis.com/books/v1/volumes?"+params) as {items?:GoogleVolume[]};
@@ -137,7 +137,7 @@ export async function GET(request: Request) {
     if (/^(?:[0-9]{13}|[0-9]{9}[0-9X])$/.test(cleaned)) {
       try {
         const data = await jsonFrom("https://www.googleapis.com/books/v1/volumes?" +
-          new URLSearchParams({ q: "isbn:" + cleaned, maxResults: "5" }).toString()) as { items?: GoogleVolume[] };
+          new URLSearchParams({ q: "isbn:" + cleaned, maxResults: "5", hl:"pt-BR",country:"BR" }).toString()) as { items?: GoogleVolume[] };
         const match = (data.items || []).find(item =>
           item.volumeInfo?.imageLinks?.thumbnail && score(item.volumeInfo.title || "", title) >= 4.5);
         if (match?.volumeInfo?.imageLinks?.thumbnail) return Response.json({
