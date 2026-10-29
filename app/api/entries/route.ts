@@ -29,3 +29,18 @@ export async function POST(request: Request) {
   });
   return Response.json(entry, { status: 201 });
 }
+export async function DELETE(request: Request) {
+  const session = await auth();
+  if (!session?.user?.id) return Response.json({error:"Não autorizado"},{status:401});
+  const url = new URL(request.url);
+  const parsed = z.string().min(1).max(100).safeParse(url.searchParams.get("id"));
+  if (!parsed.success) return Response.json({error:"Registro inválido."},{status:400});
+  const entry = await prisma.readingEntry.findFirst({
+    where:{id:parsed.data,book:{userId:session.user.id}},
+    select:{id:true}
+  });
+  if (!entry) return Response.json({error:"Registro não encontrado."},{status:404});
+  await prisma.readingEntry.delete({where:{id:entry.id}});
+  // A exclusão de sessões não altera automaticamente a página atual: ela também pode ter sido editada manualmente.
+  return Response.json({ok:true});
+}

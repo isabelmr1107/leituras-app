@@ -13,6 +13,8 @@ model User {
   createdAt    DateTime @default(now())
   books        Book[]
   goals        ReadingGoal[]
+  shelves      Shelf[]
+  passwordResetTokens PasswordResetToken[]
 }
 model Book {
   id          String @id @default(cuid())
@@ -23,14 +25,16 @@ model Book {
   category    String?
   coverUrl    String?
   status      String @default("Quero ler")
-  rating      Int @default(0)
+  rating      Float @default(0)
   totalPages  Int @default(0)
   currentPage Int @default(0)
+  sortOrder   Int @default(0)
   startedAt   DateTime?
   finishedAt  DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   entries     ReadingEntry[]
+  shelves     ShelfBook[]
   @@index([userId, status])
 }
 model ReadingEntry {
@@ -50,4 +54,34 @@ model ReadingGoal {
   year      Int
   booksGoal Int @default(20)
   @@unique([userId, year])
+}
+model Shelf {
+  id        String @id @default(cuid())
+  userId    String
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime @default(now())
+  books     ShelfBook[]
+  @@unique([userId, name])
+  @@index([userId, createdAt])
+}
+model ShelfBook {
+  shelfId String
+  bookId  String
+  shelf   Shelf @relation(fields: [shelfId], references: [id], onDelete: Cascade)
+  book    Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  @@id([shelfId, bookId])
+  @@index([bookId])
+}
+
+model PasswordResetToken {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String @unique
+  expiresAt DateTime
+  usedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([userId, createdAt])
+  @@index([expiresAt])
 }
