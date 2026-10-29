@@ -27,6 +27,7 @@ model Book {
   rating      Int @default(0)
   totalPages  Int @default(0)
   currentPage Int @default(0)
+  sortOrder   Int @default(0)
   startedAt   DateTime?
   finishedAt  DateTime?
   createdAt   DateTime @default(now())
