@@ -621,3 +621,13 @@ html[data-theme="light"] .detail-writing{border-color:#d8cde8}
 html[data-theme="light"] .collection-order-tools>span{color:#2d2447;text-shadow:0 1px 6px #ffffffbd}
 html[data-theme="light"] .collection-order-item{background:#4f3d75e0}
 @media(max-width:600px){.collection-order-tools{left:10px;right:55px;bottom:4px}.collection-order-tools>span{font-size:9px}.collection-order-item>span{max-width:52px}}
+
+/* Avaliações de meia estrela */
+.fractional-stars{position:relative;display:inline-block;white-space:nowrap;font-size:21px;line-height:1.15;letter-spacing:2px;width:max-content}
+.fractional-stars-back{display:block;color:#827c96}
+.fractional-stars-fill{display:block;position:absolute;top:0;left:0;overflow:hidden;color:#ffcf69;white-space:nowrap}
+.fractional-stars small{position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);color:var(--muted);font-size:12px;letter-spacing:0;white-space:nowrap}
+.fractional-stars-large{font-size:38px;letter-spacing:2px}
+.half-star-rating{display:flex;align-items:center;flex-wrap:wrap;gap:10px 18px;margin:8px 0 15px}
+.half-star-rating input[type=range]{width:100%;max-width:280px;accent-color:#f2bc5f;cursor:pointer}
+.half-star-rating .rating-value{font-size:14px;color:inherit;font-weight:700}
