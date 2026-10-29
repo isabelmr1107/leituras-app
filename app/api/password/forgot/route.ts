@@ -45,7 +45,8 @@ export async function POST(request: Request) {
   } catch {
     await prisma.passwordResetToken.deleteMany({where:{id:created.id}});
     // No reset token should remain active if delivery failed.
-    return Response.json({error:"Não foi possível enviar o e-mail agora. Tente novamente mais tarde."},{status:503});
+    // Identical public response for registered and unknown accounts avoids account enumeration.
+    return Response.json({message:publicMessage});
   }
   return Response.json({message:publicMessage});
 }
