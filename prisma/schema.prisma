@@ -14,6 +14,7 @@ model User {
   books        Book[]
   goals        ReadingGoal[]
   shelves      Shelf[]
+  passwordResetTokens PasswordResetToken[]
 }
 model Book {
   id          String @id @default(cuid())
@@ -71,4 +72,16 @@ model ShelfBook {
   book    Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
   @@id([shelfId, bookId])
   @@index([bookId])
+}
+
+model PasswordResetToken {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String @unique
+  expiresAt DateTime
+  usedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([userId, createdAt])
+  @@index([expiresAt])
 }
