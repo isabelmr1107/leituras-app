@@ -606,3 +606,18 @@ html[data-theme="light"] .book-detail-metadata span,html[data-theme="light"] .de
 html[data-theme="light"] .detail-writing{border-color:#d8cde8}
 @media(max-width:720px){.journal-columns{grid-template-columns:1fr}.journal-hero{padding:24px}.journal-hero-art{font-size:85px}.book-detail-intro{grid-template-columns:110px 1fr;gap:14px}.book-detail-modal{padding:18px}.insights-bars{gap:4px}.insights-track{height:150px}.insights-column{height:198px}.insights-month{font-size:10px}.shelf-simple-head{flex-wrap:wrap}}
 @media(max-width:420px){.book-detail-intro{grid-template-columns:1fr}.book-detail-cover img{max-height:190px;max-width:125px}.journal-timeline-head{flex-wrap:wrap}.journal-timeline-head input{max-width:100%}.journal-hero-art{display:none}.insights-bars{gap:3px}.insights-value{font-size:10px}}
+
+/* Ordenação personalizada, sem alterar as capas da prateleira */
+.collection-order-tools{position:absolute;z-index:7;left:16px;right:76px;bottom:6px;display:flex;flex-direction:column;gap:4px;pointer-events:auto;color:#fff}
+.collection-order-tools>span{font-size:10px;text-shadow:0 2px 5px #1a1328;font-weight:650}
+.collection-order-list{display:flex;align-items:center;gap:7px;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#ffffff80 transparent;max-width:100%;padding-bottom:3px}
+.collection-order-item{display:flex;align-items:center;gap:3px;flex:0 0 auto;max-width:195px;background:#231a3c9e;border:1px solid #ffffff45;border-radius:10px;padding:3px 4px 3px 7px;backdrop-filter:blur(7px)}
+.collection-order-item>span{min-width:0;max-width:86px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;font-weight:600;color:#fff}
+.collection-order-item button{display:grid;place-items:center;flex:0 0 25px;width:25px;height:26px;padding:0;border:1px solid #ffffff4b;border-radius:7px;color:#fff;background:#ffffff26;font-size:15px;cursor:pointer}
+.collection-order-item button:hover:not(:disabled){background:#ffffff4f}
+.collection-order-item button:disabled{opacity:.3;cursor:not-allowed}
+.collection-book[draggable=true]{cursor:grab}
+.collection-book[draggable=true]:active{cursor:grabbing}
+html[data-theme="light"] .collection-order-tools>span{color:#2d2447;text-shadow:0 1px 6px #ffffffbd}
+html[data-theme="light"] .collection-order-item{background:#4f3d75e0}
+@media(max-width:600px){.collection-order-tools{left:10px;right:55px;bottom:4px}.collection-order-tools>span{font-size:9px}.collection-order-item>span{max-width:52px}}
