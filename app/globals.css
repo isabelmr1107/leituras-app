@@ -631,3 +631,19 @@ html[data-theme="light"] .collection-order-item{background:#4f3d75e0}
 .half-star-rating{display:flex;align-items:center;flex-wrap:wrap;gap:10px 18px;margin:8px 0 15px}
 .half-star-rating input[type=range]{width:100%;max-width:280px;accent-color:#f2bc5f;cursor:pointer}
 .half-star-rating .rating-value{font-size:14px;color:inherit;font-weight:700}
+
+/* Organização abaixo da prateleira: nenhum texto atrás das capas */
+.collection-stage{overflow:hidden;isolation:isolate}
+.collection-order-tools{position:relative!important;inset:auto!important;left:auto!important;right:auto!important;bottom:auto!important;z-index:1!important;margin:10px 2px 0;display:flex;gap:8px;flex-direction:column;color:var(--text);pointer-events:auto}
+.collection-order-tools>span{font-size:12px!important;color:var(--muted)!important;text-shadow:none!important}
+.collection-order-list{display:flex;max-width:100%;overflow-x:auto;overflow-y:hidden;gap:8px;padding:3px 0 7px}
+.collection-order-item{background:#51416da8;border:1px solid #ffffff3b;max-width:215px}
+.collection-order-item>span{max-width:110px}
+.collection-order-item button{background:#ffffff23}
+.book-date-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.book-date-fields label{display:flex;flex-direction:column;gap:7px}
+.book-date-fields input{width:100%;min-width:0;max-width:100%;color:inherit}
+.book-date-tip{font-size:12px;line-height:1.55;color:var(--muted);margin:1px 0 15px}
+html[data-theme="light"] .collection-order-tools>span{color:#625574!important}
+@media(max-width:600px){.collection-order-tools{margin:9px 0 0}.collection-order-item>span{max-width:70px}}
+@media(max-width:480px){.book-date-fields{grid-template-columns:1fr}}
