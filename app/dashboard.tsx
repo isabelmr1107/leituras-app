@@ -239,14 +239,14 @@ export default function Dashboard({name}:{name:string}){
     if(title.length<2){setLookupMessage("Digite o nome do livro primeiro.");return;}
     setLookupBusy(true);setLookupMessage("");setSuggestions([]);
     try{
-      const params=new URLSearchParams({title,...(coverIsbn.trim()?{isbn:coverIsbn.trim()}: {})});
+      const params=new URLSearchParams({title,...(form.author.trim()?{author:form.author.trim()}:{}),...(coverIsbn.trim()?{isbn:coverIsbn.trim()}: {})});
       const response=await fetch("/api/book-lookup?"+params.toString(),{cache:"no-store"});
       const data=await response.json();
       if(!response.ok)throw new Error(data.error||"Não foi possível consultar os livros.");
       const items:BookSuggestion[]=Array.isArray(data.suggestions)?data.suggestions.slice(0,30):[];
       setSuggestions(items);
       setLookupMessage(items.length? "Escolha a edição. As edições em português aparecem primeiro quando estão disponíveis nos catálogos; confira editora, capa e páginas.":
-        "Não encontramos informações suficientes. Você pode preencher os campos manualmente.");
+        "Nenhum título correspondente foi encontrado nos catálogos disponíveis. Experimente pesquisar apenas parte do título, sem subtítulo, ou preencher os dados manualmente.");
     }catch(e){setLookupMessage(e instanceof Error?e.message:"Erro ao pesquisar livro.");}
     finally{setLookupBusy(false);}
   }
