@@ -296,7 +296,7 @@ export default function Dashboard({name}:{name:string}){
   async function saveBook(e:React.FormEvent){
     e.preventDefault();setBusy(true);setError("");
     try{
-      const res=await fetch(editing?`/api/books/${editing}`:"/api/books",{method:editing?"PATCH":"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(form)});
+      const res=await fetch(editing?`/api/books/${editing}`:"/api/books",{method:editing?"PATCH":"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...form,publisher:coverPublisher,isbn:coverIsbn})});
       if(!res.ok){const data=await res.json();throw new Error(data.error||"Erro ao salvar.");}
       await refresh();setOpen(false);setView("Minha biblioteca");
     }catch(e){setError(e instanceof Error?e.message:"Erro inesperado");}finally{setBusy(false);}
