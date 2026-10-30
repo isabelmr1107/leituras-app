@@ -22,6 +22,12 @@ export default function Dashboard({name}:{name:string}){
   const [draggedBookId,setDraggedBookId]=useState<string|null>(null);
   const touchDrag=useRef<{id:string;x:number;y:number;active:boolean;timer:ReturnType<typeof setTimeout>|null}|null>(null);
   const ignoreBookClick=useRef(false);
+  const ratingDisplayed=useRef(new Map<string,number>());
+  const ratingTimers=useRef(new Map<string,ReturnType<typeof setTimeout>>());
+  const ratingQueue=useRef(new Map<string,Promise<void>>());
+  const ratingVersion=useRef(new Map<string,number>());
+  useEffect(()=>()=>{ratingTimers.current.forEach(t=>clearTimeout(t));ratingTimers.current.clear()},[]);
+
   const [orderBusy,setOrderBusy]=useState(false);
   const [shelfMode,setShelfMode]=useState<"grid"|"list">("grid");
   const [themeChoice,setThemeChoice]=useState<LioThemeChoice>("dark");
@@ -187,14 +193,36 @@ export default function Dashboard({name}:{name:string}){
   const maxFinishedPages=Math.max(1,...monthlyFinishedPages);
   const average=read.filter(b=>b.rating).length?(read.filter(b=>b.rating).reduce((n,b)=>n+b.rating,0)/read.filter(b=>b.rating).length).toFixed(1):"—";
   function openDetail(book:Book){setDetailId(book.id);setDetailText("");setDetailKind("Resenha");setError("");}
-  async function rateBook(book:Book,rating:number){
-    setBusy(true);setError("");
-    try{
-      const body={title:book.title,author:book.author,category:book.category||"",coverUrl:book.coverUrl||"",status:book.status,rating,totalPages:book.totalPages,currentPage:book.currentPage,startedAt:book.startedAt?.slice(0,10)||"",finishedAt:book.finishedAt?.slice(0,10)||""};
-      const response=await fetch("/api/books/"+book.id,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-      if(!response.ok)throw new Error("Não foi possível salvar a avaliação.");
-      await refresh();
-    }catch(e){setError(e instanceof Error?e.message:"Erro ao avaliar.");}finally{setBusy(false);}
+  function rateBook(book:Book,star:number){
+    // Primeiro toque na estrela = inteira. Segundo toque na mesma = meia.
+    // A área clicável inteira elimina a necessidade de acertar metade da estrela.
+    const previous=ratingDisplayed.current.get(book.id)??book.rating;
+    const next=previous===star?star-.5:star;
+    ratingDisplayed.current.set(book.id,next);
+    setBooks(all=>all.map(b=>b.id===book.id?{...b,rating:next}:b));
+    setError("");
+    const version=(ratingVersion.current.get(book.id)||0)+1;
+    ratingVersion.current.set(book.id,version);
+    const oldTimer=ratingTimers.current.get(book.id);
+    if(oldTimer)clearTimeout(oldTimer);
+    ratingTimers.current.set(book.id,setTimeout(()=>{
+      ratingTimers.current.delete(book.id);
+      // Serialized per book so a slower older save never overwrites the newest note.
+      const prior=ratingQueue.current.get(book.id)||Promise.resolve();
+      const write=prior.catch(()=>{}).then(async()=>{
+        const body={title:book.title,author:book.author,category:book.category||"",coverUrl:book.coverUrl||"",status:book.status,rating:next,totalPages:book.totalPages,currentPage:book.currentPage,startedAt:book.startedAt?.slice(0,10)||"",finishedAt:book.finishedAt?.slice(0,10)||""};
+        const response=await fetch("/api/books/"+book.id,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+        if(!response.ok)throw new Error("Não foi possível salvar a avaliação.");
+      });
+      ratingQueue.current.set(book.id,write);
+      void write.catch(err=>{
+        if(ratingVersion.current.get(book.id)===version){
+          ratingDisplayed.current.delete(book.id);
+          setBooks(all=>all.map(b=>b.id===book.id?{...b,rating:previous}:b));
+          setError(err instanceof Error?err.message:"Erro ao salvar a avaliação.");
+        }
+      });
+    },230));
   }
   async function saveDetailEntry(event:React.FormEvent){
     event.preventDefault();if(!detailBook||!detailText.trim())return;
@@ -300,8 +328,7 @@ export default function Dashboard({name}:{name:string}){
     {[1,2,3,4,5].map(n=><span className="lio-rating-star" key={n}>
       <span className="lio-rating-star-back" aria-hidden="true">★</span>
       <span className="lio-rating-star-front" style={{width:b.rating>=n?"100%":b.rating>=n-.5?"50%":"0%"}} aria-hidden="true">★</span>
-      <button type="button" className="lio-rate-half" disabled={busy} aria-label={n-.5+" estrelas"} title={n-.5+" estrelas"} onClick={e=>{e.stopPropagation();rateBook(b,n-.5)}}/>
-      <button type="button" className="lio-rate-half" disabled={busy} aria-label={n+" estrelas"} title={n+" estrelas"} onClick={e=>{e.stopPropagation();rateBook(b,n)}}/>
+      <button type="button" className="lio-rate-full" aria-label={"Avaliar "+n+" estrelas; toque novamente para "+(n-.5)+" estrelas"} aria-pressed={b.rating===n||b.rating===n-.5} title={n+" estrelas · toque novamente para meia estrela"} onClick={e=>{e.stopPropagation();rateBook(b,n)}}/>
     </span>)}
     <small>{b.rating.toLocaleString("pt-BR")}/5</small>
   </div>}
