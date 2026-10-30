@@ -1245,3 +1245,45 @@ html[data-theme] .text-link:focus-visible{
   text-underline-offset:3px;
 }
 .drawer-sidebar .nav-icon svg{stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+
+
+/* LIO: whole-star hit target, with second press selecting a half star. */
+.lio-rating-star{position:relative}
+.lio-rating .lio-rate-full{
+  position:absolute!important;z-index:3;inset:0!important;
+  width:100%!important;height:100%!important;
+  display:block!important;opacity:0!important;
+  background:transparent!important;border:0!important;
+  cursor:pointer!important;margin:0!important;padding:0!important;
+  -webkit-tap-highlight-color:transparent;
+}
+.lio-rating .lio-rate-full:focus-visible{
+  opacity:1!important;outline:2px solid var(--lio-color-b);
+  outline-offset:3px;border-radius:4px;
+}
+.lio-rating-star-front{color:var(--lio-color-b)!important}
+/* Modal is a translucent glass surface tinted by the selected palette. */
+html[data-theme="dark"] .book-detail-modal{
+  background:linear-gradient(140deg,
+    color-mix(in srgb,var(--lio-color-a) 24%,#1b1b2b),
+    color-mix(in srgb,var(--lio-color-b) 17%,#171a2b) 58%,
+    color-mix(in srgb,var(--lio-color-c) 13%,#181825))!important;
+  border:1px solid color-mix(in srgb,var(--lio-color-b) 29%,rgba(255,255,255,.18))!important;
+  box-shadow:0 22px 90px rgba(0,0,0,.48),inset 0 1px rgba(255,255,255,.08)!important;
+  backdrop-filter:blur(26px) saturate(125%);
+}
+html[data-theme="light"] .book-detail-modal{
+  background:linear-gradient(140deg,
+    color-mix(in srgb,var(--lio-color-a) 14%,rgba(255,255,255,.94)),
+    color-mix(in srgb,var(--lio-color-b) 10%,rgba(255,255,255,.92)) 58%,
+    color-mix(in srgb,var(--lio-color-c) 10%,rgba(255,255,255,.94)))!important;
+  border:1px solid color-mix(in srgb,var(--lio-color-b) 26%,#d4d4e6)!important;
+  box-shadow:0 22px 75px rgba(42,36,84,.19),inset 0 1px rgba(255,255,255,.48)!important;
+  backdrop-filter:blur(24px) saturate(120%);
+}
+html[data-theme] .book-detail-modal .section-kicker{color:var(--lio-color-b)!important}
+html[data-theme="light"] .book-detail-modal .section-kicker{color:var(--lio-color-a)!important}
+html[data-theme] .book-detail-modal .book-detail-metadata span{
+  border-color:color-mix(in srgb,var(--lio-color-b) 24%,transparent)!important;
+  background:color-mix(in srgb,var(--lio-color-a) 9%,var(--card))!important;
+}
