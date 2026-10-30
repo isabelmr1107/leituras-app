@@ -323,7 +323,7 @@ export default function Dashboard({name}:{name:string}){
     const attrs={viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.85,strokeLinecap:"round" as const,strokeLinejoin:"round" as const,"aria-hidden":true};
     switch(icon){
       case "home":return <svg {...attrs}><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10Z"/><path d="M9 21v-7h6v7"/></svg>;
-      case "shelf":return <svg {...attrs}><path d="M3 21h18M4 3v18M20 3v18M4 17h16"/><rect x="6" y="5" width="3" height="12" rx=".5"/><rect x="10.5" y="7" width="3" height="10" rx=".5"/><path d="m15 6 2.5 11"/></svg>;
+      case "shelf":return <svg {...attrs}><path d="M3 3v18M21 3v18M3 20h18M3 12h18"/><rect x="5.5" y="5" width="3.5" height="7" rx=".5"/><rect x="10.5" y="4" width="3.5" height="8" rx=".5"/><path d="m16.5 5 2.5 7M6 14.5v5M10 15v5M13.5 14.5v5M17 15v5"/></svg>;
       case "diary":return <svg {...attrs}><path d="m15 5 4 4M4 20l4.5-1 11-11a2 2 0 0 0-4-4l-11 11L4 20Z"/><path d="m14 6 4 4"/></svg>;
       case "target":return <svg {...attrs}><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>;
       case "user":return <svg {...attrs}><circle cx="12" cy="8" r="4"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg>;
