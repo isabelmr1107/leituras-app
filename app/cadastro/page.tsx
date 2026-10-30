@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import LioAuthLayout from "../components/lio-auth-layout";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -18,5 +19,5 @@ export default function Cadastro(){
       router.push("/");router.refresh();
     }catch{setError("Não foi possível criar a conta.");}finally{setBusy(false);}
   }
-  return <main className="auth-page"><form className="auth-card" onSubmit={submit}><p className="eyebrow">📚 MINHA ESTANTE</p><h1>Crie sua conta</h1><p className="auth-muted">Suas leituras em um só lugar.</p>{error&&<p role="alert" className="error">{error}</p>}<label>Nome<input required minLength={2} maxLength={80} value={name} onChange={e=>setName(e.target.value)}/></label><label>E-mail<input type="email" required autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)}/></label><label>Senha (mínimo 8 caracteres)<input type="password" required minLength={8} autoComplete="new-password" value={password} onChange={e=>setPassword(e.target.value)}/></label><button className="primary full" disabled={busy}>{busy?"Cadastrando…":"Criar conta"}</button><p className="auth-muted">Já tem conta? <Link href="/login">Entrar</Link></p></form></main>;
+  return <LioAuthLayout><div className="lio-auth-form"><p className="lio-auth-eyebrow">SUA BIBLIOTECA PESSOAL</p><h1>Comece sua história.</h1><p className="lio-auth-muted">Crie sua conta para guardar suas leituras em um só lugar.</p><form onSubmit={submit} className="lio-auth-fields">{error&&<p role="alert" className="error">{error}</p>}<label>Nome<input required minLength={2} maxLength={80} autoComplete="name" placeholder="Seu nome" value={name} onChange={e=>setName(e.target.value)}/></label><label>E-mail<input type="email" required autoComplete="email" placeholder="seu@email.com" value={email} onChange={e=>setEmail(e.target.value)}/></label><label>Senha (mínimo 8 caracteres)<input type="password" required minLength={8} autoComplete="new-password" placeholder="Crie sua senha" value={password} onChange={e=>setPassword(e.target.value)}/></label><button className="lio-auth-submit" disabled={busy}>{busy?"Cadastrando…":"Criar conta →"}</button></form><p className="lio-auth-footer">Já tem uma conta? <Link href="/login">Entrar</Link></p></div></LioAuthLayout>;
 }
