@@ -734,3 +734,48 @@ html[data-theme] .collection-book:focus-visible{outline-color:#78f3d3}
 html[data-theme] .lio-rating-star-front{color:#ffb96e}
 html[data-theme="light"] .lio-clickable-book{border-color:rgba(113,151,217,.19)!important}
 html[data-theme="light"] .lio-clickable-book:hover{box-shadow:0 18px 42px rgba(104,133,197,.16)!important}
+
+
+/* LIO refinements: cohesive violet / cyan / mint accents, no mustard-yellow UI */
+html[data-theme] .eyebrow,
+html[data-theme] .section-kicker,
+html[data-theme] .welcome-kicker,
+html[data-theme] .featured-eyebrow,
+html[data-theme] .insights-total,
+html[data-theme] .chart-month strong{color:#a695ff!important}
+html[data-theme="light"] .eyebrow,
+html[data-theme="light"] .section-kicker,
+html[data-theme="light"] .welcome-kicker,
+html[data-theme="light"] .featured-eyebrow{color:#6b4db4!important}
+html[data-theme] .welcome-button{background:linear-gradient(100deg,#865de8,#58b7e9)!important;color:#fff!important}
+html[data-theme] .welcome-button:hover{background:linear-gradient(100deg,#9b76ef,#62c5e9)!important}
+html[data-theme] .filter.active,
+html[data-theme] .mobile-nav .filter.active,
+html[data-theme] .view-switch button.active{background:linear-gradient(115deg,#7a54d8,#4fafe3)!important;color:#fff!important;border-color:#947ef0!important}
+html[data-theme] .status-quero-ler{background:rgba(136,108,230,.17)!important;color:#b7a4ff!important}
+html[data-theme="light"] .status-quero-ler{background:rgba(119,92,216,.14)!important;color:#6442a6!important}
+html[data-theme] .custom-shelf-check input{accent-color:#865bd7}
+html[data-theme] .chart-track span{background:linear-gradient(180deg,#6adaca,#785de5)!important}
+html[data-theme] .progress span{background:linear-gradient(90deg,#8a58df,#55a8e5,#67dfcb)!important}
+.lio-sidebar-logo{height:56px;width:95px;max-width:100%;margin:0;opacity:.86}
+.drawer-sidebar .brand{justify-content:space-between;align-items:center;min-height:60px}
+.lio-goals-page{display:grid;gap:26px}
+.lio-year-summary{margin:0!important;padding:26px clamp(16px,3vw,32px)}
+.lio-reading-totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:24px 0}
+.lio-reading-totals>div{display:flex;flex-direction:column;gap:6px;border:1px solid rgba(159,165,230,.22);border-radius:18px;padding:18px;background:rgba(255,255,255,.06)}
+.lio-reading-totals small{font-size:12px;color:var(--muted)}
+.lio-reading-totals strong{font-size:clamp(24px,3vw,34px);color:var(--ink);font-weight:750;line-height:1.1}
+.lio-monthly-charts{display:grid;grid-template-columns:1fr;gap:22px}
+.lio-monthly-panel{border:1px solid rgba(155,155,220,.18);border-radius:19px;padding:22px 18px;background:rgba(255,255,255,.035);min-width:0}
+.lio-monthly-panel h3{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:19px;letter-spacing:-.3px;margin:0 0 7px;color:var(--ink)}
+.lio-monthly-panel>p{font-size:12px;color:var(--muted);margin:0 0 18px}
+.lio-monthly-panel .insights-bars{margin:0;gap:clamp(3px,1vw,13px)}
+.lio-monthly-panel .insights-track{width:100%;max-width:65px;margin-inline:auto;height:160px;background:rgba(146,146,205,.12);border:1px solid rgba(156,161,210,.15)}
+.lio-monthly-panel .insights-track>div{background:linear-gradient(0deg,#6d58d9,#62c5ec)!important;min-height:0}
+.lio-monthly-panel .lio-pages-bars .insights-track>div{background:linear-gradient(0deg,#4aa5e7,#6bdec9)!important}
+.lio-monthly-panel .insights-column{min-width:0}
+.lio-monthly-panel .insights-value{font-size:clamp(9px,1vw,13px);font-weight:750;word-break:break-word;color:var(--ink)!important}
+.lio-reading-note{font-size:12px;color:var(--muted);line-height:1.6;margin:17px 0 0}
+html[data-theme="light"] .lio-reading-totals>div,html[data-theme="light"] .lio-monthly-panel{background:rgba(255,255,255,.65);border-color:#dcd6ef}
+html[data-theme="light"] .lio-monthly-panel .insights-track{background:#ebe8f5}
+@media(max-width:650px){.lio-reading-totals{grid-template-columns:1fr;gap:8px}.lio-monthly-panel{padding:16px 9px}.lio-monthly-panel .insights-track{height:128px}.lio-monthly-panel .insights-bars{gap:3px}}
