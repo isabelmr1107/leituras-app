@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
 import LioLogo from "./components/lio-logo";
+import {palettes,applyLioPreferences,getSavedPreferences,saveLioPreferences,systemTheme,type LioPaletteId,type LioThemeChoice} from "./components/lio-preferences";
 type Status="Quero ler"|"Lendo"|"Lido"|"Abandonado";
 type Book={id:string;title:string;author:string;category:string|null;coverUrl:string|null;status:Status;rating:number;totalPages:number;currentPage:number;sortOrder:number;createdAt:string;startedAt:string|null;finishedAt:string|null};
 type Entry={id:string;bookId:string;kind:string;content:string;pagesRead:number;createdAt:string;book:{id?:string;title:string}};
@@ -23,7 +24,9 @@ export default function Dashboard({name}:{name:string}){
   const ignoreBookClick=useRef(false);
   const [orderBusy,setOrderBusy]=useState(false);
   const [shelfMode,setShelfMode]=useState<"grid"|"list">("grid");
-  const [theme,setTheme]=useState<"dark"|"light">("dark");
+  const [themeChoice,setThemeChoice]=useState<LioThemeChoice>("dark");
+  const [palette,setPalette]=useState<LioPaletteId>("aurora");
+  const [preferencesLoaded,setPreferencesLoaded]=useState(false);
   const [shelves,setShelves]=useState<Shelf[]>([]);
   const [activeShelf,setActiveShelf]=useState<string>("all");
   const [newShelfName,setNewShelfName]=useState("");
@@ -61,12 +64,20 @@ export default function Dashboard({name}:{name:string}){
     setBooks(await a.json());setEntries(await b.json());
   },[]);
   useEffect(()=>{
-    try{const saved=window.localStorage.getItem("minha-estante-theme");if(saved==="light"||saved==="dark")setTheme(saved)}catch{}
+    const saved=getSavedPreferences();
+    setThemeChoice(saved.theme);setPalette(saved.palette);applyLioPreferences(saved.theme,saved.palette);setPreferencesLoaded(true);
   },[]);
   useEffect(()=>{
-    document.documentElement.dataset.theme=theme;
-    try{window.localStorage.setItem("minha-estante-theme",theme)}catch{}
-  },[theme]);
+    if(!preferencesLoaded)return;
+    saveLioPreferences(themeChoice,palette);
+  },[themeChoice,palette,preferencesLoaded]);
+  useEffect(()=>{
+    if(themeChoice!=="auto")return;
+    const media=window.matchMedia("(prefers-color-scheme: dark)");
+    const sync=()=>applyLioPreferences("auto",palette);
+    media.addEventListener("change",sync);
+    return ()=>media.removeEventListener("change",sync);
+  },[themeChoice,palette]);
   const loadShelves=useCallback(async()=>{
     const response=await fetch("/api/shelves",{cache:"no-store"});
     if(!response.ok)throw new Error("Não foi possível carregar suas estantes.");
@@ -303,7 +314,7 @@ export default function Dashboard({name}:{name:string}){
     </div></article>)}</div>}
   const navItems:{name:View;icon:string}[]=[{name:"Dashboard",icon:"✦"},{name:"Minha biblioteca",icon:"▦"},{name:"Diário",icon:"✎"},{name:"Metas",icon:"◎"},{name:"Perfil",icon:"◉"}];
   return <main className="shell"><button type="button" className="menu-toggle" aria-label={menuOpen?"Fechar menu":"Abrir menu"} aria-expanded={menuOpen} aria-controls="main-sidebar" onClick={()=>setMenuOpen(x=>!x)}><span className="hamburger-bars" aria-hidden="true"><i/><i/><i/></span></button>{menuOpen&&<button type="button" className="menu-backdrop" onClick={()=>setMenuOpen(false)} aria-label="Fechar menu"/>}<aside id="main-sidebar" className={"sidebar drawer-sidebar"+(menuOpen?" is-open":"")} aria-hidden={!menuOpen}><div className="brand"><LioLogo className="lio-sidebar-logo"/><button type="button" className="sidebar-close" onClick={()=>setMenuOpen(false)} aria-label="Fechar menu">×</button></div><p className="sidebar-label">SEU ESPAÇO LITERÁRIO</p><nav aria-label="Navegação principal">{navItems.map(item=><button key={item.name} className={view===item.name?"nav-button active":"nav-button"} onClick={()=>{setView(item.name);setMenuOpen(false);}}><span className="nav-icon" aria-hidden="true">{item.icon}</span>{item.name}</button>)}</nav><div className="side-note"><div className="side-note-art">❝</div><strong>Uma história de cada vez.</strong><p>Seu universo de livros, metas e descobertas.</p><button type="button" onClick={()=>{edit();setMenuOpen(false);}}>＋ Novo livro</button></div></aside>
-    <section className="content"><header className="topbar"><div><p className="eyebrow">✳ {year} · Seu universo de histórias</p><h1>{view==="Dashboard"?"Olá, "+name.split(" ")[0]+"!":view}</h1><p className="header-subtitle">{view==="Dashboard"?"Cada página conta. Descubra o próximo capítulo da sua estante.":view==="Minha biblioteca"?"Todos os seus mundos favoritos, bem aqui.":view==="Diário"?"Guarde suas impressões e os melhores trechos.":view==="Metas"?"Pequenos passos, grandes histórias.":"Seu cantinho de leitura."}</p></div><div className="topbar-actions"><button type="button" className="theme-toggle" onClick={()=>setTheme(t=>t==="dark"?"light":"dark")} aria-label={theme==="dark"?"Ativar tema claro":"Ativar tema escuro"} title={theme==="dark"?"Ativar tema claro":"Ativar tema escuro"}>{theme==="dark"?"☀ Modo claro":"☾ Modo escuro"}</button><button className="primary add-book-button" onClick={()=>edit()}>＋ Adicionar livro</button></div></header>
+    <section className="content"><header className="topbar"><div><p className="eyebrow">✳ {year} · Seu universo de histórias</p><h1>{view==="Dashboard"?"Olá, "+name.split(" ")[0]+"!":view}</h1><p className="header-subtitle">{view==="Dashboard"?"Cada página conta. Descubra o próximo capítulo da sua estante.":view==="Minha biblioteca"?"Todos os seus mundos favoritos, bem aqui.":view==="Diário"?"Guarde suas impressões e os melhores trechos.":view==="Metas"?"Pequenos passos, grandes histórias.":"Seu cantinho de leitura."}</p></div><div className="topbar-actions"><button className="primary add-book-button" onClick={()=>edit()}>＋ Adicionar livro</button></div></header>
     <div className="mobile-nav" aria-label="Navegação alternativa">{navItems.map(item=><button key={item.name} className={view===item.name?"filter active":"filter"} onClick={()=>setView(item.name)}><span aria-hidden="true">{item.icon}</span> {item.name}</button>)}</div>
     {error&&!open&&<p className="error" role="alert">{error}</p>}{loading&&<p>Carregando sua estante…</p>}
     {view==="Dashboard"&&<>
@@ -363,7 +374,22 @@ export default function Dashboard({name}:{name:string}){
         <p className="lio-reading-note">As páginas concluídas usam o total de páginas informado em cada livro marcado como lido e com data de conclusão. As sessões de leitura são contabilizadas separadamente para não duplicar os totais.</p>
       </section>
     </section>}
-    {view==="Perfil"&&<section className="section"><div className="profile-card"><div className="avatar">{name.charAt(0).toUpperCase()}</div><h2>{name}</h2><p>Seu espaço pessoal de leituras.</p><button className="primary" onClick={()=>signOut({callbackUrl:"/login"})}>Sair da conta</button></div></section>}
+    {view==="Perfil"&&<section className="section lio-profile-page">
+      <div className="profile-card lio-profile-overview"><div className="avatar">{name.charAt(0).toUpperCase()}</div><div><h2>{name}</h2><p>Seu espaço pessoal de leituras.</p></div></div>
+      <section className="lio-personalization" aria-labelledby="lio-personalization-heading">
+        <div className="lio-personalization-header"><span className="lio-personalization-icon" aria-hidden="true">✦</span><div><h2 id="lio-personalization-heading">Personalização</h2><p>Deixe o LIO com a sua cara. Suas escolhas ficam salvas neste dispositivo.</p></div></div>
+        <div className="lio-personalization-part"><h3>Aparência</h3><div className="lio-appearance-choices" role="group" aria-label="Escolher aparência">
+          {([["light","☀ Claro"],["dark","☾ Escuro"],["auto","◐ Automático"]] as const).map(([value,label])=><button type="button" key={value} className={"lio-appearance-option"+(themeChoice===value?" selected":"")} onClick={()=>setThemeChoice(value)} aria-pressed={themeChoice===value}>{label}</button>)}
+        </div><p className="lio-preferences-description">No modo automático, a aparência acompanha o tema do seu dispositivo.</p></div>
+        <div className="lio-personalization-part"><h3>Paleta de cores</h3><p className="lio-preferences-description">As cores mudam os destaques e detalhes translúcidos, mantendo o vidro e a legibilidade nos dois temas.</p>
+        <div className="lio-palette-grid" role="group" aria-label="Escolher paleta de cores">{palettes.map(item=><button type="button" key={item.id} className={"lio-palette-choice"+(palette===item.id?" selected":"")} onClick={()=>setPalette(item.id)} aria-pressed={palette===item.id} aria-label={"Paleta "+item.name}>
+          <span className="lio-palette-swatch" aria-hidden="true">{item.colors.map((color,index)=><span key={index} style={{backgroundColor:color}}/>)}</span>
+          <span className="lio-palette-name">{item.name}{palette===item.id&&<span aria-hidden="true" className="lio-palette-selected-mark">✓</span>}</span>
+        </button>)}</div></div>
+        <div className="lio-personalization-footer"><span>As alterações são aplicadas e salvas automaticamente.</span><button type="button" className="lio-reset-appearance" onClick={()=>{setPalette("aurora");setThemeChoice("dark")}}>Restaurar aparência padrão</button></div>
+      </section>
+      <button className="secondary-button lio-logout" onClick={()=>signOut({callbackUrl:"/login"})}>Sair da conta</button>
+    </section>}
     </section>
     {detailBook&&<div className="overlay book-detail-overlay" onMouseDown={()=>setDetailId(null)}><section className="book-detail-modal" role="dialog" aria-modal="true" aria-label={"Detalhes de "+detailBook.title} onMouseDown={e=>e.stopPropagation()}><div className="book-detail-top"><span className="section-kicker">✦ MINHA FICHA DE LEITURA</span><button className="close" type="button" onClick={()=>setDetailId(null)} aria-label="Fechar detalhes">×</button></div><div className="book-detail-intro"><div className="book-detail-cover">{detailBook.coverUrl?<img src={detailBook.coverUrl} alt={"Capa de "+detailBook.title}/>:<div className="cover-fallback">{detailBook.title}</div>}</div><div className="book-detail-summary"><span className="badge">{detailBook.status}</span><h2>{detailBook.title}</h2><p>{detailBook.author}</p><div className="book-detail-metadata"><span>{detailBook.category||"Sem categoria"}</span><span>{detailBook.totalPages?detailBook.totalPages+" páginas":"Páginas não informadas"}</span><span>{detailBook.totalPages?Math.round(detailBook.currentPage/detailBook.totalPages*100)+"% lido":"Progresso não informado"}</span>{detailBook.finishedAt&&<span>Concluído em {new Date(detailBook.finishedAt).toLocaleDateString("pt-BR",{timeZone:"UTC"})}</span>}</div><h3>Minha avaliação</h3><div className="half-star-rating">{ratingStars(detailBook)}</div><div className="detail-actions"><button type="button" className="secondary-button" onClick={()=>{setDetailId(null);edit(detailBook);}}><span aria-hidden="true">✎ </span>Editar</button><button type="button" className="secondary-button" onClick={()=>{setDetailId(null);setEntryForm({...entryForm,bookId:detailBook.id});setView("Diário");}}>Abrir diário</button></div></div></div><div className="detail-writing"><h3>Escreva sobre este livro</h3><form onSubmit={saveDetailEntry}><select value={detailKind} onChange={e=>setDetailKind(e.target.value as "Nota"|"Resenha"|"Citação")}>{["Resenha","Nota","Citação"].map(k=><option key={k}>{k}</option>)}</select><textarea rows={4} maxLength={5000} required placeholder="Guarde sua opinião, seus pensamentos ou uma frase marcante…" value={detailText} onChange={e=>setDetailText(e.target.value)}/><button className="primary" type="submit" disabled={busy||!detailText.trim()}>Salvar texto</button></form></div><div className="detail-memories"><h3>Minhas anotações ({detailEntries.length})</h3>{detailEntries.length?detailEntries.map(e=><article key={e.id}><span className="journal-entry-tag">{e.kind}</span><p>{e.kind==="Sessão"?e.pagesRead+" páginas acompanhadas":e.content}</p><small>{new Date(e.createdAt).toLocaleDateString("pt-BR")}</small><button type="button" className="secondary-button" disabled={busy} onClick={()=>removeEntry(e.id)}>Excluir</button></article>):<p className="auth-muted">Nenhuma anotação ainda. Comece escrevendo acima.</p>}</div>{error&&<p className="error" role="alert">{error}</p>}</section></div>}
     {open&&<div className="overlay" onMouseDown={()=>setOpen(false)}><form className="modal" onSubmit={saveBook} onMouseDown={e=>e.stopPropagation()}><div className="modal-head"><div><h2>{editing?"Editar livro":"Adicionar livro"}</h2><p>Preencha os dados da sua estante.</p></div><button type="button" className="close" onClick={()=>setOpen(false)}>×</button></div>
