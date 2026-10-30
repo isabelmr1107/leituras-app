@@ -936,3 +936,77 @@ html[data-theme="light"] .lio-auth-logo,
 @media(prefers-reduced-motion:reduce){
  .lio-book-turning-page{animation:none!important;transform:scaleX(.8)}
 }
+
+
+/* LIO: logo clara em vidro leitoso luminoso e realmente translúcido. */
+html[data-theme="light"] .lio-auth-logo,
+.lio-auth-light .lio-auth-logo{
+  color:rgba(255,255,255,1)!important;
+  --lio-logo-cut:rgba(206,203,250,.62)!important;
+  opacity:1!important;
+  filter:drop-shadow(0 2px 6px rgba(126,134,201,.13))!important;
+}
+/* Icon is unbacked transparent SVG; only its shapes carry alpha. */
+html[data-theme="light"] .lio-auth-logo > g[fill="none"]{stroke:rgba(255,255,255,.52)}
+/* Três livros fechados: flutuação apenas por translação, sem deformar as capas. */
+.welcome-illustration.lio-floating-books{
+  position:relative!important;display:block!important;
+  min-height:205px!important;height:230px!important;
+  width:100%!important;perspective:none!important;
+  transform:none!important;overflow:visible!important;
+}
+.lio-float-book{
+  position:absolute;
+  width:30%;height:80%;top:8%;
+  border-radius:12px 16px 14px 10px;
+  border:2px solid rgba(255,255,255,.42);
+  box-shadow:inset 4px 0 6px rgba(255,255,255,.32),inset -6px 0 14px rgba(43,48,107,.16),8px 16px 25px rgba(9,9,29,.23);
+  overflow:hidden;
+  display:grid;place-items:center;
+  transform-origin:center center;
+  animation:lio-float-gently 5.8s ease-in-out infinite;
+  will-change:translate;
+}
+.lio-float-book:after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.36) 0%,rgba(255,255,255,0) 37%,rgba(219,241,255,.16) 73%,rgba(255,255,255,.13) 100%);
+}
+.lio-float-book-a{
+  left:4%;top:15%;rotate:-16deg;
+  background:linear-gradient(145deg,#ffad49,#fa8f5b 58%,#ed798c);
+  animation-delay:-1.4s;
+}
+.lio-float-book-b{
+  left:35%;top:6%;rotate:3deg;
+  background:linear-gradient(155deg,#a587f5,#7668db 55%,#588de0);
+  animation-delay:-.5s;
+}
+.lio-float-book-c{
+  left:67%;top:12%;rotate:15deg;
+  background:linear-gradient(150deg,#50b7ef,#629ce5 52%,#bd80d3);
+  animation-delay:-2.8s;
+}
+.lio-float-spine{
+  position:absolute;top:0;bottom:0;left:0;width:10%;
+  background:linear-gradient(90deg,rgba(32,39,102,.3),rgba(255,255,255,.22));
+  border-right:1px solid rgba(255,255,255,.4);
+}
+.lio-float-mark{
+  color:rgba(255,255,255,.87);font-size:34px;
+  text-shadow:0 0 15px rgba(255,255,255,.38);
+  font-family:Georgia,serif;
+}
+@keyframes lio-float-gently{
+  0%,100%{translate:0 0}
+  50%{translate:0 -14px}
+}
+@media(max-width:600px){
+ .welcome-illustration.lio-floating-books{
+   position:absolute!important;right:-27px!important;bottom:-20px!important;
+   width:195px!important;height:145px!important;min-height:0!important;
+   opacity:.47!important;transform:none!important;pointer-events:none
+ }
+ .lio-float-book{border-radius:7px 9px 8px 6px}
+ .lio-float-mark{font-size:20px}
+}
+@media(prefers-reduced-motion:reduce){.lio-float-book{animation:none!important;translate:0 0!important;will-change:auto}}
