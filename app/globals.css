@@ -647,3 +647,75 @@ html[data-theme="light"] .collection-order-item{background:#4f3d75e0}
 html[data-theme="light"] .collection-order-tools>span{color:#625574!important}
 @media(max-width:600px){.collection-order-tools{margin:9px 0 0}.collection-order-item>span{max-width:70px}}
 @media(max-width:480px){.book-date-fields{grid-template-columns:1fr}}
+
+
+/* LIO design system — pastel glass, light/dark and accessible interactions */
+.lio-logo{display:block;width:100%;height:auto;color:inherit;filter:drop-shadow(0 3px 12px rgba(125,148,250,.18))}
+.brand{min-height:66px;justify-content:space-between}
+.lio-sidebar-logo{width:94px;height:66px;color:var(--ink);opacity:.78;filter:drop-shadow(0 0 8px rgba(114,179,225,.24))}
+html[data-theme="light"] .lio-sidebar-logo{color:#28233b}
+.lio-clickable-book{cursor:pointer}
+.lio-clickable-book:focus-visible{outline:3px solid #49bde3;outline-offset:3px}
+.lio-book-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
+.lio-trash{width:34px;height:34px;display:grid;place-items:center;flex-shrink:0;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer}
+.lio-trash svg{width:19px;height:19px}
+.lio-trash:hover,.lio-trash:focus-visible{background:rgba(249,141,156,.12);color:#ec6a82;border-color:rgba(249,141,156,.38)}
+.lio-rating{display:inline-flex;align-items:center;gap:1px;min-height:35px}
+.lio-rating-star{position:relative;display:inline-block;font-size:24px;line-height:1;color:#7b7a91;width:23px;height:27px}
+.lio-rating-star-back,.lio-rating-star-front{position:absolute;left:0;top:0;white-space:nowrap;overflow:hidden;pointer-events:none}
+.lio-rating-star-front{color:#ffbc59}
+.lio-rate-half{position:relative;z-index:2;display:inline-block;width:50%;height:100%;opacity:0;cursor:pointer;margin:0;padding:0;border:0;vertical-align:top}
+.lio-rate-half:focus-visible{opacity:1;background:rgba(111,130,250,.2);outline:2px solid #55c6df;outline-offset:1px}
+.lio-rating small{font-size:12px;color:var(--muted);margin-left:7px;white-space:nowrap}
+.half-star-rating .lio-rating-star{font-size:32px;width:31px;height:37px}
+.half-star-rating .lio-rating{margin:4px 0 14px}
+.collection-stage{overflow:hidden}
+.collection-covers{inset:0 78px 22px 14px!important;padding:31px 19px 13px!important;scroll-padding-inline:19px;box-sizing:border-box;overflow-x:auto;overflow-y:hidden;align-items:flex-end}
+.collection-book{overflow:hidden;touch-action:pan-x;cursor:grab}
+.collection-book:active{cursor:grabbing}
+.collection-book.is-dragging{opacity:.7;filter:drop-shadow(0 12px 12px #463c6480);transform:scale(1.045)}
+.collection-book:first-child{margin-left:0}
+.collection-book:last-child{margin-right:2px}
+.collection-glass{pointer-events:none}
+@media(min-width:900px){.collection-covers{inset:0 110px 25px 22px!important;padding:33px 22px 13px!important}}
+@media(max-width:600px){.collection-covers{inset:0 58px 16px 8px!important;padding:30px 17px 10px!important}.lio-rating-star{font-size:19px;width:19px;height:24px}.lio-rating small{font-size:11px;margin-left:3px}.lio-trash{width:30px;height:30px}}
+/* Glass login and registration share same theme saved in the library */
+.lio-auth{--lio-text:#152036;--lio-muted:#68768f;--lio-field:rgba(255,255,255,.55);--lio-border:rgba(154,172,200,.27);display:grid;min-height:100vh;place-items:center;padding:0!important;background:linear-gradient(130deg,#f9faff,#eff5ff);color:var(--lio-text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.lio-auth-shell{display:grid;grid-template-columns:1fr 1fr;width:100%;min-height:100vh}
+.lio-auth-visual{position:relative;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse at 6% 24%,#d9b8ff 0%,transparent 43%),radial-gradient(ellipse at 80% 15%,#a3f7e7 0%,transparent 39%),radial-gradient(ellipse at 20% 85%,#a0c9fa 0%,transparent 47%),radial-gradient(ellipse at 90% 78%,#ffd1b2 0%,transparent 42%),#edf0ff}
+.lio-auth-art{position:absolute;border:2px solid rgba(255,255,255,.7);background:linear-gradient(130deg,rgba(255,255,255,.2),rgba(255,255,255,.04));box-shadow:inset 0 0 30px rgba(255,255,255,.18),0 18px 60px rgba(121,115,196,.12);backdrop-filter:blur(10px);border-radius:42px;pointer-events:none}
+.lio-auth-art-one{width:85%;height:65%;top:-22%;right:-25%;transform:rotate(34deg)}
+.lio-auth-art-two{width:66%;height:64%;bottom:-37%;left:-25%;transform:rotate(-24deg)}
+.lio-auth-art-three{width:45%;height:40%;bottom:9%;right:-24%;border-radius:48%;transform:rotate(25deg)}
+.lio-auth-visual-content{position:relative;z-index:2;display:flex;align-items:center;flex-direction:column;gap:18px;max-width:360px;padding:25px;text-align:center}
+.lio-auth-logo{color:#1d2334;width:min(320px,45vw);height:auto;opacity:.83;filter:drop-shadow(0 8px 12px rgba(255,255,255,.5))}
+.lio-auth-visual-content p{font-size:clamp(21px,2vw,30px);font-weight:500;line-height:1.3;letter-spacing:-.6px;margin:0;color:#1d2d48}
+.lio-auth-sparkles{display:flex;gap:9px;margin-top:10px}
+.lio-auth-sparkles i{width:36px;height:5px;background:#ac86ff;border-radius:20px;display:block}
+.lio-auth-sparkles i:nth-child(2){background:#57c0f8}.lio-auth-sparkles i:nth-child(3){background:#79f2cc}.lio-auth-sparkles i:nth-child(4){background:#ffcd8e}
+.lio-auth-tagline{position:absolute;bottom:6%;left:8%;color:#515c7e;font-size:15px;font-weight:500;line-height:1.25;z-index:3}
+.lio-auth-content{position:relative;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:90px clamp(22px,6vw,100px);background:rgba(255,255,255,.72)}
+.lio-auth-theme{position:absolute;top:28px;right:36px;background:rgba(255,255,255,.54);border:1px solid var(--lio-border);border-radius:999px;color:var(--lio-muted);font-size:12px;padding:10px 14px}
+.lio-auth-form{width:100%;max-width:520px}
+.lio-auth-eyebrow{font-size:11px;letter-spacing:3px;color:#7884db!important;text-transform:uppercase;font-weight:750;margin-bottom:16px}
+.lio-auth-form h1{font-size:clamp(28px,3vw,42px);letter-spacing:-1.2px;color:var(--lio-text)!important;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:780;line-height:1.12;margin:0 0 14px}
+.lio-auth-muted{color:var(--lio-muted);font-size:17px;line-height:1.6;margin-bottom:30px}
+.lio-auth-fields{display:flex;flex-direction:column;gap:18px;margin:0;background:rgba(255,255,255,.26);padding:26px;border:1px solid var(--lio-border);border-radius:23px;box-shadow:0 22px 60px rgba(87,109,157,.06);backdrop-filter:blur(25px)}
+.lio-auth-fields label{font-size:13px;font-weight:700;color:var(--lio-text)!important;display:flex;flex-direction:column;gap:9px}
+.lio-auth-fields input{border:1px solid var(--lio-border)!important;background:var(--lio-field)!important;border-radius:15px!important;height:53px;padding:0 17px!important;color:var(--lio-text)!important;box-shadow:none!important;margin:0!important}
+.lio-auth-fields input::placeholder{color:var(--lio-muted)}
+.lio-auth-link{text-align:right;margin:0!important}
+.lio-auth-link a,.lio-auth-footer a{color:#8754eb!important;font-weight:700;text-decoration:none}
+.lio-auth-submit{min-height:56px;background:linear-gradient(100deg,#964af1,#5a82f4,#43b9ef)!important;color:#fff!important;font-size:17px;font-weight:700;border:0;border-radius:14px;box-shadow:0 12px 26px rgba(90,130,244,.18);cursor:pointer}
+.lio-auth-submit:hover{filter:brightness(1.06)}
+.lio-auth-footer{text-align:center;font-size:14px;color:var(--lio-muted);margin-top:26px}
+html[data-theme="dark"] .lio-auth{--lio-text:#f4f4ff;--lio-muted:#b8bdd0;--lio-field:rgba(18,20,41,.50);--lio-border:rgba(201,209,255,.18);background:#10111d}
+html[data-theme="dark"] .lio-auth-visual{background:radial-gradient(ellipse at 14% 15%,#6943ba 0%,transparent 49%),radial-gradient(ellipse at 86% 30%,#206f9e 0%,transparent 47%),radial-gradient(ellipse at 34% 90%,#3e5ca3 0%,transparent 45%),radial-gradient(ellipse at 90% 84%,#8b5d78 0%,transparent 38%),#22233c}
+html[data-theme="dark"] .lio-auth-logo{color:#f5f3ff;opacity:.81}
+html[data-theme="dark"] .lio-auth-visual-content p,html[data-theme="dark"] .lio-auth-tagline{color:#f2edff}
+html[data-theme="dark"] .lio-auth-content{background:rgba(15,16,31,.95)}
+html[data-theme="dark"] .lio-auth-fields{background:rgba(255,255,255,.035)}
+html[data-theme="dark"] .lio-auth-theme{background:#ffffff10;color:#e7e2fa}
+html[data-theme="dark"] .lio-auth-link a,html[data-theme="dark"] .lio-auth-footer a{color:#b6a1ff!important}
+@media(max-width:780px){.lio-auth-shell{grid-template-columns:1fr}.lio-auth-visual{min-height:230px;max-height:260px}.lio-auth-logo{width:125px}.lio-auth-visual-content{flex-direction:row;gap:20px}.lio-auth-visual-content p{text-align:left;font-size:20px}.lio-auth-sparkles,.lio-auth-tagline{display:none}.lio-auth-content{min-height:calc(100vh - 230px);padding:65px 20px}.lio-auth-theme{top:15px;right:20px}.lio-auth-fields{padding:18px}}
+@media(prefers-reduced-motion:reduce){.lio-auth-submit,.lio-rating-star{transition:none!important}}
