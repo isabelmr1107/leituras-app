@@ -1228,3 +1228,20 @@ html[data-theme] .lio-clickable-book .cover-fallback{
 .drawer-sidebar .nav-icon svg,
 .mobile-nav-icon svg{width:21px;height:21px;display:block;flex-shrink:0}
 .mobile-nav-icon{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-right:5px}
+
+
+/* LIO: link "Ver todos os livros" inherits the selected palette, never legacy yellow */
+html[data-theme="dark"] .section-head .text-link,
+html[data-theme="dark"] .text-link{
+  color:var(--lio-color-b)!important;
+}
+html[data-theme="light"] .section-head .text-link,
+html[data-theme="light"] .text-link{
+  color:var(--lio-color-a)!important;
+}
+html[data-theme] .text-link:hover,
+html[data-theme] .text-link:focus-visible{
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+.drawer-sidebar .nav-icon svg{stroke-linecap:round;stroke-linejoin:round;overflow:visible}
