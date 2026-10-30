@@ -1,5 +1,6 @@
 import { auth } from "../../../auth";
 import { z } from "zod";
+import { prisma } from "../../../lib/prisma";
 
 const schema=z.object({
   title:z.string().trim().min(2).max(160),
@@ -49,6 +50,25 @@ export async function GET(request:Request){
   const isbnValue=cleanedIsbn(isbn);
   const results:{data:Suggestion;score:number}[]=[];
   let sourceSucceeded=false;
+  // Search the app's anonymous shared edition catalog first. It contains
+  // bibliographic details only, never account IDs or private reading fields.
+  const catalogMatches=await prisma.catalogBook.findMany({
+    where:{OR:[
+      {title:{contains:title,mode:"insensitive"}},
+      {author:{contains:title,mode:"insensitive"}},
+      ...(isbnValue?[{isbn:isbnValue}]:[])
+    ]},
+    take:60,orderBy:{createdAt:"desc"}
+  }).catch(error=>{console.error("Catálogo local indisponível",error);return []});
+  for(const book of catalogMatches){
+    results.push({
+      data:{title:book.title,author:book.author,totalPages:book.totalPages,
+        category:book.category||"",coverUrl:book.coverUrl,publisher:book.publisher||"",
+        source:"Catálogo LIO",isbn:book.isbn||undefined},
+      score:100+titleScore(book.title,title)+(isbnValue&&book.isbn===isbnValue?45:0)
+    });
+  }
+
 
   function add(data:Suggestion,score:number){
     if(!data.title.trim()||!data.author.trim())return;
@@ -111,6 +131,6 @@ export async function GET(request:Request){
     seen.add(key);return true;
   }).slice(0,30).map(({data})=>data);
 
-  if(!sourceSucceeded)return Response.json({error:"Os catálogos de livros estão temporariamente indisponíveis. Tente novamente em instantes."},{status:503});
+  if(!sourceSucceeded&&!unique.length)return Response.json({error:"Os catálogos de livros estão temporariamente indisponíveis. Tente novamente em instantes."},{status:503});
   return Response.json({suggestions:unique});
 }
