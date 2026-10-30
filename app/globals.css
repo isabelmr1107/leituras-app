@@ -789,3 +789,25 @@ html[data-theme="light"] .drawer-sidebar .lio-sidebar-logo{color:#494256;opacity
 .lio-auth-logo{width:min(305px,47vw);aspect-ratio:272/217;opacity:.88;--lio-logo-cut:#e9eafa;color:#1e2332;filter:drop-shadow(0 6px 12px rgba(100,107,159,.11))}
 html[data-theme="dark"] .lio-auth-logo{color:#f6f3ff;--lio-logo-cut:#24233c;opacity:.86}
 @media(max-width:780px){.lio-auth-logo{width:130px}}
+
+
+/* LIO official logo: genuinely translucent SVG only, no backing rectangle or image texture */
+.lio-logo,
+.drawer-sidebar .lio-sidebar-logo,
+.lio-auth-logo{
+  background:none!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  border:none!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  mix-blend-mode:normal;
+  filter:none!important;
+  isolation:auto!important;
+  opacity:1!important;
+}
+.drawer-sidebar .lio-sidebar-logo{color:rgba(235,234,253,.78)!important;--lio-logo-cut:rgba(16,17,28,.75)}
+html[data-theme="light"] .drawer-sidebar .lio-sidebar-logo{color:rgba(56,53,78,.76)!important;--lio-logo-cut:rgba(247,247,255,.85)}
+.lio-auth-logo{color:rgba(31,42,64,.72)!important;--lio-logo-cut:rgba(232,236,252,.72)}
+html[data-theme="dark"] .lio-auth-logo{color:rgba(238,239,255,.77)!important;--lio-logo-cut:rgba(36,37,60,.78)}
