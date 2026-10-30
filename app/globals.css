@@ -719,3 +719,18 @@ html[data-theme="dark"] .lio-auth-theme{background:#ffffff10;color:#e7e2fa}
 html[data-theme="dark"] .lio-auth-link a,html[data-theme="dark"] .lio-auth-footer a{color:#b6a1ff!important}
 @media(max-width:780px){.lio-auth-shell{grid-template-columns:1fr}.lio-auth-visual{min-height:230px;max-height:260px}.lio-auth-logo{width:125px}.lio-auth-visual-content{flex-direction:row;gap:20px}.lio-auth-visual-content p{text-align:left;font-size:20px}.lio-auth-sparkles,.lio-auth-tagline{display:none}.lio-auth-content{min-height:calc(100vh - 230px);padding:65px 20px}.lio-auth-theme{top:15px;right:20px}.lio-auth-fields{padding:18px}}
 @media(prefers-reduced-motion:reduce){.lio-auth-submit,.lio-rating-star{transition:none!important}}
+
+
+/* LIO: unified translucent violet / blue / mint palette with small orange accents */
+html[data-theme="dark"]{--accent:#a38bff}
+html[data-theme="light"]{--accent:#7359c9}
+html[data-theme] .primary:not(.lio-auth-submit),html[data-theme] .primary.add-book-button{background:linear-gradient(108deg,#8350dc 0%,#5398ec 55%,#4ccac6 100%)!important;color:#fff!important;border-color:rgba(255,255,255,.16)!important;box-shadow:0 9px 26px rgba(91,113,225,.19)!important}
+html[data-theme] .primary:hover:not(:disabled){filter:brightness(1.07)}
+html[data-theme] .nav-button.active{background:linear-gradient(110deg,rgba(131,80,220,.22),rgba(76,202,198,.14))!important;border-color:rgba(117,156,237,.25)!important;box-shadow:inset 3px 0 #78b8f7!important}
+html[data-theme] .custom-shelf-tabs button.active{background:linear-gradient(110deg,#8154dc,#4b9cec)!important;border-color:rgba(255,255,255,.3)!important;color:#fff!important}
+html[data-theme] .collection-add:hover,html[data-theme] .collection-stage-actions button:hover{box-shadow:0 5px 18px rgba(113,175,232,.28)!important}
+html[data-theme] .progress span{background:linear-gradient(90deg,#8153dd,#4aa9df,#72efcc)!important}
+html[data-theme] .collection-book:focus-visible{outline-color:#78f3d3}
+html[data-theme] .lio-rating-star-front{color:#ffb96e}
+html[data-theme="light"] .lio-clickable-book{border-color:rgba(113,151,217,.19)!important}
+html[data-theme="light"] .lio-clickable-book:hover{box-shadow:0 18px 42px rgba(104,133,197,.16)!important}
