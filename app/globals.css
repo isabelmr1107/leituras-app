@@ -811,3 +811,14 @@ html[data-theme="dark"] .lio-auth-logo{color:#f6f3ff;--lio-logo-cut:#24233c;opac
 html[data-theme="light"] .drawer-sidebar .lio-sidebar-logo{color:rgba(56,53,78,.76)!important;--lio-logo-cut:rgba(247,247,255,.85)}
 .lio-auth-logo{color:rgba(31,42,64,.72)!important;--lio-logo-cut:rgba(232,236,252,.72)}
 html[data-theme="dark"] .lio-auth-logo{color:rgba(238,239,255,.77)!important;--lio-logo-cut:rgba(36,37,60,.78)}
+
+
+/* LIO — o símbolo no tema claro é vidro branco leitoso, não cinza escuro.
+   Somente as formas SVG recebem cor; o fundo permanece 100% transparente. */
+html[data-theme="light"] .lio-auth-logo,
+.lio-auth-light .lio-auth-logo{
+  color:rgba(255,255,255,.96)!important;
+  --lio-logo-cut:rgba(108,124,174,.58);
+  opacity:1!important;
+  filter:drop-shadow(0 2px 5px rgba(99,125,178,.13))!important;
+}
