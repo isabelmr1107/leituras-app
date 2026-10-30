@@ -85,3 +85,21 @@ model PasswordResetToken {
   @@index([userId, createdAt])
   @@index([expiresAt])
 }
+
+/** Catálogo bibliográfico global. Não relaciona registros a usuários, progresso ou diário. */
+model CatalogBook {
+  id          String   @id @default(cuid())
+  fingerprint String   @unique
+  isbn        String?  @unique
+  title       String
+  author      String
+  publisher   String?
+  category    String?
+  coverUrl    String?
+  totalPages  Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([title])
+  @@index([author])
+}
