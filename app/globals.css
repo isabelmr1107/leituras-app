@@ -896,3 +896,43 @@ html[data-theme="light"] .lio-book-page{background:linear-gradient(125deg,#fff,#
 @media(prefers-reduced-motion:reduce){
  .lio-book-flip{animation:none!important;transform:rotateY(-145deg)!important}
 }
+
+
+/* Refinements: balanced translucent smoky-lilac logo on pastel background. */
+html[data-theme="light"] .lio-auth-logo,
+.lio-auth-light .lio-auth-logo{
+  color:rgba(93,106,146,.88)!important;
+  --lio-logo-cut:rgba(112,124,161,.66)!important;
+  opacity:1!important;
+  filter:none!important;
+}
+/* Bookshelf and circular O strokes use the same soft shade; the backdrop stays empty. */
+.lio-auth-logo path,.lio-auth-logo rect,.lio-auth-logo circle{vector-effect:non-scaling-stroke}
+/* Replace 3D rotating sheets with a correctly proportioned, flat open-book illustration. */
+.welcome-illustration.lio-book-scene{
+  perspective:none!important;
+  min-height:215px!important;
+  overflow:visible!important;
+}
+.lio-open-book-svg{
+  display:block;width:min(100%,420px);height:auto;max-height:265px;
+  overflow:visible;
+  transform:rotate(-4deg);
+  filter:drop-shadow(0 18px 18px rgba(18,16,43,.17));
+}
+.lio-book-turning-page{
+  transform-box:fill-box;
+  transform-origin:0% 50%;
+  animation:lio-natural-page 7s ease-in-out infinite;
+}
+@keyframes lio-natural-page{
+  0%,13%,90%,100%{transform:scaleX(1)}
+  40%,60%{transform:scaleX(.06)}
+  72%{transform:scaleX(.68)}
+}
+@media(max-width:600px){
+ .lio-open-book-svg{width:215px;max-height:148px;transform:rotate(-4deg)}
+}
+@media(prefers-reduced-motion:reduce){
+ .lio-book-turning-page{animation:none!important;transform:scaleX(.8)}
+}
