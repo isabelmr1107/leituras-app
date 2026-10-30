@@ -779,3 +779,13 @@ html[data-theme] .progress span{background:linear-gradient(90deg,#8a58df,#55a8e5
 html[data-theme="light"] .lio-reading-totals>div,html[data-theme="light"] .lio-monthly-panel{background:rgba(255,255,255,.65);border-color:#dcd6ef}
 html[data-theme="light"] .lio-monthly-panel .insights-track{background:#ebe8f5}
 @media(max-width:650px){.lio-reading-totals{grid-template-columns:1fr;gap:8px}.lio-monthly-panel{padding:16px 9px}.lio-monthly-panel .insights-track{height:128px}.lio-monthly-panel .insights-bars{gap:3px}}
+
+
+/* Official LIO symbol: faithful close-set book spines and O, translucent in both themes. */
+.lio-logo{overflow:visible;shape-rendering:geometricPrecision}
+.drawer-sidebar .brand{min-height:80px!important;align-items:center!important;gap:12px!important}
+.drawer-sidebar .lio-sidebar-logo{display:block;width:112px!important;height:79px!important;flex:0 0 112px;color:#f6f3ff;opacity:.87;--lio-logo-cut:#11111a;filter:drop-shadow(0 2px 8px rgba(105,181,225,.12))}
+html[data-theme="light"] .drawer-sidebar .lio-sidebar-logo{color:#494256;opacity:.86;--lio-logo-cut:#faf8ff}
+.lio-auth-logo{width:min(305px,47vw);aspect-ratio:272/217;opacity:.88;--lio-logo-cut:#e9eafa;color:#1e2332;filter:drop-shadow(0 6px 12px rgba(100,107,159,.11))}
+html[data-theme="dark"] .lio-auth-logo{color:#f6f3ff;--lio-logo-cut:#24233c;opacity:.86}
+@media(max-width:780px){.lio-auth-logo{width:130px}}
