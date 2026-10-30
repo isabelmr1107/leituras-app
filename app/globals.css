@@ -1150,3 +1150,75 @@ html[data-theme="light"] .enhanced-stats .stat{
   border-color:color-mix(in srgb,var(--lio-stat-accent) 22%,#d5d5e5)!important;
   box-shadow:0 9px 27px rgba(91,86,145,.09),inset 0 1px rgba(255,255,255,.6)!important;
 }
+
+
+/* LIO palette synchronization patch: navigation, profile side card, book covers and stats.
+   Strong selectors override fixed legacy light/dark rules instead of their cascade. */
+html[data-theme] .drawer-sidebar .nav-button .nav-icon{
+  color:var(--lio-color-b)!important;
+}
+html[data-theme] .drawer-sidebar .nav-button.active{
+  background:linear-gradient(112deg,
+    color-mix(in srgb,var(--lio-color-a) 32%,transparent),
+    color-mix(in srgb,var(--lio-color-c) 14%,transparent))!important;
+  border:1px solid color-mix(in srgb,var(--lio-color-b) 32%,transparent)!important;
+  box-shadow:inset 3px 0 var(--lio-color-b)!important;
+}
+html[data-theme="light"] .drawer-sidebar .nav-button.active{color:#242239!important}
+html[data-theme="dark"] .drawer-sidebar .nav-button.active{color:#f8f7ff!important}
+html[data-theme] .drawer-sidebar .nav-button.active .nav-icon{
+  color:var(--lio-color-a)!important;
+}
+html[data-theme] .drawer-sidebar .nav-button:hover:not(.active){
+  background:color-mix(in srgb,var(--lio-color-b) 12%,transparent)!important;
+}
+html[data-theme] .drawer-sidebar .side-note{
+  background:linear-gradient(135deg,
+    color-mix(in srgb,var(--lio-color-a) 22%,var(--card)),
+    color-mix(in srgb,var(--lio-color-c) 15%,var(--card)))!important;
+  border:1px solid color-mix(in srgb,var(--lio-color-a) 23%,var(--line))!important;
+  backdrop-filter:blur(25px)!important;
+}
+html[data-theme] .drawer-sidebar .side-note-art{color:var(--lio-color-b)!important}
+html[data-theme] .drawer-sidebar .side-note button{
+  background:linear-gradient(105deg,var(--lio-color-a),var(--lio-color-b))!important;
+  color:#fff!important;border:1px solid transparent!important;
+}
+html[data-theme="light"] .drawer-sidebar .side-note strong{color:#30263d!important}
+html[data-theme="light"] .drawer-sidebar .side-note p{color:#686078!important}
+html[data-theme="dark"] .drawer-sidebar .side-note strong{color:#fff!important}
+html[data-theme="dark"] .drawer-sidebar .side-note p{color:#d7d3e9!important}
+/* Light cards previously had nth-child backgrounds with higher specificity. */
+html[data-theme="light"] .enhanced-stats .stat:nth-child(1),
+html[data-theme="light"] .enhanced-stats .stat:nth-child(2),
+html[data-theme="light"] .enhanced-stats .stat:nth-child(3),
+html[data-theme="light"] .enhanced-stats .stat:nth-child(4){
+  background:linear-gradient(135deg,
+    color-mix(in srgb,var(--lio-stat-accent) 22%,rgba(255,255,255,.87)),
+    color-mix(in srgb,var(--lio-stat-accent) 7%,rgba(255,255,255,.8)))!important;
+  border-color:color-mix(in srgb,var(--lio-stat-accent) 22%,#d7d9e8)!important;
+}
+/* Covers: use same palette in both modes; preserve colorful real book artwork. */
+html[data-theme] .shelf-book .cover-wrap,
+html[data-theme] .lio-clickable-book .cover-wrap{
+  background:linear-gradient(135deg,
+    color-mix(in srgb,var(--lio-color-a) 31%,#171a2b),
+    color-mix(in srgb,var(--lio-color-b) 27%,#19192b) 55%,
+    color-mix(in srgb,var(--lio-color-c) 30%,#1a1b2a))!important;
+  border-color:color-mix(in srgb,var(--lio-color-b) 30%,transparent)!important;
+}
+html[data-theme="light"] .shelf-book .cover-wrap,
+html[data-theme="light"] .lio-clickable-book .cover-wrap{
+  background:linear-gradient(135deg,
+    color-mix(in srgb,var(--lio-color-a) 24%,#fafaff),
+    color-mix(in srgb,var(--lio-color-b) 18%,#f9f9fd) 55%,
+    color-mix(in srgb,var(--lio-color-c) 22%,#fafaff))!important;
+}
+html[data-theme] .shelf-book .cover-decor,
+html[data-theme] .lio-clickable-book .cover-decor{
+  color:var(--lio-color-d)!important;
+}
+html[data-theme] .shelf-book .cover-fallback,
+html[data-theme] .lio-clickable-book .cover-fallback{
+  background:linear-gradient(145deg,var(--lio-color-a),var(--lio-color-b),var(--lio-color-c))!important;
+}
