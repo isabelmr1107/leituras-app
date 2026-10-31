@@ -15,8 +15,8 @@ const schema=z.object({
 async function isAdmin(){
  const session=await auth();
  if(!session?.user?.id)return false;
- const user=await prisma.user.findUnique({where:{id:session.user.id},select:{role:true}});
- return user?.role==="ADMIN";
+ const user=await prisma.user.findUnique({where:{id:session.user.id},select:{email:true}});
+ return Boolean(process.env.LIO_ADMIN_EMAIL && user?.email.toLowerCase()===process.env.LIO_ADMIN_EMAIL.trim().toLowerCase());
 }
 export async function GET(request:Request){
  if(!await isAdmin())return Response.json({error:"Acesso restrito."},{status:403});
