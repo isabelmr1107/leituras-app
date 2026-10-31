@@ -1378,3 +1378,41 @@ html[data-theme="light"] .goal-number{color:var(--lio-color-a)!important}
 .lio-custom-collections { margin-top: 26px; }
 .lio-custom-collections .collection-heading .secondary-button { min-height: 38px; padding: 8px 15px; }
 .lio-empty-custom-shelf { padding: 18px 22px; opacity: .75; max-width: 330px; }
+
+/* LIO Admin — dedicated responsive workspace */
+.lio-admin-page{min-height:100vh;background:radial-gradient(ellipse at 85% 0%,#e3dcff 0%,transparent 45%),radial-gradient(ellipse at 0% 90%,#e9fcf6 0%,transparent 43%),#f8f7fc;color:#2b2643;padding:0 24px 54px;font-family:Arial,Helvetica,sans-serif}
+.lio-admin-shell{max-width:1240px;margin:auto}
+.lio-admin-header{height:96px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.lio-admin-brand{display:flex;gap:13px;align-items:center}.lio-admin-monogram{display:grid;place-items:center;width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,#8d4cf1,#47c8da);color:white;font-size:28px;font-weight:800;box-shadow:0 12px 25px #9176e13b}
+.lio-admin-brand strong{display:block;font-size:23px;letter-spacing:-.7px}.lio-admin-brand strong span{color:#8450df}.lio-admin-brand small{display:block;color:#817998;font-size:12px;margin-top:3px}
+.lio-admin-signout{border:1px solid #dcd7ea;background:white;color:#514769;border-radius:14px;padding:12px 20px;font-weight:700}
+.lio-admin-hero{border:1px solid #dbd0f5;border-radius:32px;padding:52px 56px;display:flex;justify-content:space-between;align-items:center;gap:25px;background:linear-gradient(120deg,#eee5ff,#e1f6fa);overflow:hidden;box-shadow:0 20px 60px #4a2f8810}
+.lio-admin-eyebrow{display:block;letter-spacing:2px;font-size:11px;font-weight:900;color:#8a4fea;margin-bottom:12px}
+.lio-admin-hero h1{font-family:Georgia,serif;font-size:clamp(36px,4vw,59px);line-height:1.08;letter-spacing:-2px;margin:0 0 22px;max-width:650px}.lio-admin-hero h1 em{color:#8657df;font-weight:400}
+.lio-admin-hero p{line-height:1.7;color:#676078;max-width:600px;margin:0}
+.lio-admin-art{display:flex;align-items:center;justify-content:center;min-width:260px;min-height:165px;position:relative}
+.lio-admin-art span{display:grid;place-items:center;width:98px;height:145px;border-radius:15px;background:linear-gradient(155deg,#8d50ed,#70b5e8);color:white;font-size:34px;box-shadow:10px 14px 22px #51447a35;border:2px solid #ffffff5c;transform:rotate(-12deg)}
+.lio-admin-art span:nth-child(2){background:linear-gradient(155deg,#a78ced,#6b51db);transform:rotate(5deg);z-index:2;margin-left:-37px}
+.lio-admin-art span:nth-child(3){background:linear-gradient(155deg,#76d9d0,#449fe6);transform:rotate(17deg);margin-left:-30px}
+.lio-admin-layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:24px;margin-top:28px;align-items:start}
+.lio-admin-panel{background:#ffffffdf;border:1px solid #e4dff0;border-radius:26px;padding:30px;box-shadow:0 13px 38px #382a7410}
+.lio-admin-panel-title{display:flex;gap:15px;align-items:flex-start;margin-bottom:30px}.lio-admin-icon{display:grid;place-items:center;flex-shrink:0;width:50px;height:50px;border-radius:16px;background:#f0e7ff;color:#8a4ee9;font-size:25px}
+.lio-admin-panel-title .lio-admin-eyebrow{margin-bottom:6px}.lio-admin-panel-title h2{font-size:25px;letter-spacing:-.8px;margin:0 0 7px}.lio-admin-panel-title p{font-size:13px;color:#80798d;margin:0;line-height:1.55}
+.lio-admin-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 15px}.lio-admin-wide{grid-column:1/-1}
+.lio-admin-form label{display:flex;flex-direction:column;gap:8px;font-size:13px;font-weight:700;color:#4b4360}
+.lio-admin-form input,.lio-admin-search input{min-width:0;width:100%;border:1px solid #ded8e9;border-radius:13px;background:#fbfaff;padding:14px 15px;color:#29213e;outline:none;transition:border-color .2s,box-shadow .2s}
+.lio-admin-form input:focus,.lio-admin-search input:focus{border-color:#9d70e8;box-shadow:0 0 0 3px #9865e521}
+.lio-admin-submit,.lio-admin-search button,.lio-admin-denied button{border:0;border-radius:13px;background:linear-gradient(100deg,#8850eb,#43bdd9);color:white;padding:15px 20px;font-weight:800}
+.lio-admin-submit{width:100%;margin-top:24px}.lio-admin-submit:disabled,.lio-admin-search button:disabled{opacity:.6;cursor:wait}
+.lio-admin-message{padding:13px 16px;border-radius:12px;margin:20px 0 0;font-weight:700;font-size:13px}.lio-admin-message.is-error{background:#fff0f2;color:#ab3552}.lio-admin-message.is-success{background:#e5f9f1;color:#257657}
+.lio-admin-search{display:flex;gap:10px}.lio-admin-search button{white-space:nowrap}
+.lio-admin-result-count{display:flex;justify-content:space-between;gap:12px;margin:24px 0 12px;color:#615775;font-weight:700;font-size:13px}.lio-admin-result-count small{font-weight:400;color:#918aa0}
+.lio-admin-book-list{list-style:none;margin:0;padding:0;max-height:690px;overflow-y:auto}.lio-admin-book-list li{border-top:1px solid #eee9f3;padding:16px 2px;display:flex;gap:12px;align-items:flex-start}
+.lio-admin-book-symbol{width:40px;height:46px;flex-shrink:0;border-radius:10px;background:linear-gradient(135deg,#e9ddff,#d2edf7);display:grid;place-items:center}
+.lio-admin-book-list li>div{flex:1;min-width:0}.lio-admin-book-list strong{display:block;line-height:1.4;color:#352c4d}.lio-admin-book-list li>div>span,.lio-admin-book-list li>div>small{display:block;color:#79718a;font-size:12px;margin-top:4px}
+.lio-admin-book-tag{border-radius:25px;padding:6px 9px;background:#f1eafa;color:#7851b2;font-size:10px;max-width:115px;word-break:break-word}
+.lio-admin-book-list li.lio-admin-empty{color:#847b93;line-height:1.6}
+.lio-admin-footer{text-align:center;color:#968da7;font-size:12px;margin-top:34px}.lio-admin-footer span{color:#9055e5;padding:0 9px}
+.lio-admin-denied{max-width:500px;margin:15vh auto;padding:35px;border-radius:25px;background:white;border:1px solid #e4dff0;text-align:center}.lio-admin-denied h1{font-size:35px;margin:10px 0}.lio-admin-denied p{color:#777085;line-height:1.6}.lio-admin-denied button{margin-top:12px}
+@media(max-width:850px){.lio-admin-layout{grid-template-columns:1fr}.lio-admin-art{min-width:155px}.lio-admin-art span{width:60px;height:95px;font-size:25px}.lio-admin-hero{padding:34px}}
+@media(max-width:600px){.lio-admin-page{padding:0 14px 30px}.lio-admin-header{height:76px}.lio-admin-hero{padding:30px 24px;border-radius:22px}.lio-admin-art{display:none}.lio-admin-panel{padding:22px 18px;border-radius:20px}.lio-admin-form-grid{grid-template-columns:1fr}.lio-admin-wide{grid-column:auto}.lio-admin-signout{padding:10px 12px;font-size:12px}.lio-admin-search{flex-wrap:wrap}.lio-admin-search button{width:100%}.lio-admin-book-tag{display:none}}
