@@ -52,20 +52,24 @@ export async function GET(request:Request){
   let sourceSucceeded=false;
   // Search the app's anonymous shared edition catalog first. It contains
   // bibliographic details only, never account IDs or private reading fields.
+  const searchTitle=normalized(title);
+  const searchAuthor=normalized(author);
   const catalogMatches=await prisma.catalogBook.findMany({
     where:{OR:[
+      // Fingerprints are saved without diacritics: "nós" and "nos" must match.
+      ...(searchTitle?[{fingerprint:{contains:searchTitle}}]:[]),
       {title:{contains:title,mode:"insensitive"}},
       {author:{contains:title,mode:"insensitive"}},
       ...(isbnValue?[{isbn:isbnValue}]:[])
     ]},
-    take:60,orderBy:{createdAt:"desc"}
+    take:80,orderBy:{createdAt:"desc"}
   }).catch(error=>{console.error("Catálogo local indisponível",error);return []});
   for(const book of catalogMatches){
     results.push({
       data:{title:book.title,author:book.author,totalPages:book.totalPages,
         category:book.category||"",coverUrl:book.coverUrl,publisher:book.publisher||"",
         source:"Catálogo LIO",isbn:book.isbn||undefined},
-      score:100+titleScore(book.title,title)+(isbnValue&&book.isbn===isbnValue?45:0)
+      score:100+titleScore(book.title,title)+(searchAuthor&&normalized(book.author).includes(searchAuthor)?12:0)+(isbnValue&&book.isbn===isbnValue?45:0)
     });
   }
 
