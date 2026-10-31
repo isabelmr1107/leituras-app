@@ -1357,3 +1357,14 @@ html[data-theme] .journal-entry-tag{
 html[data-theme] .journal-empty>span{color:var(--lio-color-b)!important}
 html[data-theme] .goal-number{color:var(--lio-color-b)!important}
 html[data-theme="light"] .goal-number{color:var(--lio-color-a)!important}
+
+/* LIO — interactive favorite heart on every book cover. */
+.shelf-book .cover-wrap{position:relative}
+.shelf-book .cover-wrap .lio-favorite{
+ position:absolute;z-index:8;right:13px;top:13px;display:grid;place-items:center;
+ width:39px;height:39px;padding:0;border:1px solid rgba(255,255,255,.32);
+ border-radius:999px;background:rgba(22,21,35,.56);color:#fff;
+ backdrop-filter:blur(8px);font-size:27px;line-height:1;cursor:pointer;
+}
+.shelf-book .cover-wrap .lio-favorite.is-favorite{color:#ff89aa;background:rgba(52,20,44,.75)}
+.shelf-book .cover-wrap .lio-favorite:focus-visible{outline:3px solid var(--lio-color-b);outline-offset:3px}

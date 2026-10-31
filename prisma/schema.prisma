@@ -26,6 +26,7 @@ model Book {
   coverUrl    String?
   status      String @default("Quero ler")
   rating      Float @default(0)
+  favorite    Boolean @default(false)
   totalPages  Int @default(0)
   currentPage Int @default(0)
   sortOrder   Int @default(0)
