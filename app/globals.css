@@ -1368,3 +1368,8 @@ html[data-theme="light"] .goal-number{color:var(--lio-color-a)!important}
 }
 .shelf-book .cover-wrap .lio-favorite.is-favorite{color:#ff89aa;background:rgba(52,20,44,.75)}
 .shelf-book .cover-wrap .lio-favorite:focus-visible{outline:3px solid var(--lio-color-b);outline-offset:3px}
+
+/* LIO: accessible detail favorite and delete controls */
+.lio-detail-favorite.is-favorite{color:#ff91b0!important;border-color:currentColor!important}
+.lio-detail-delete{color:#edb8c6!important}
+.lio-detail-favorite:focus-visible,.lio-detail-delete:focus-visible{outline:3px solid var(--lio-color-b);outline-offset:3px}
