@@ -4,7 +4,7 @@ import { signOut } from "next-auth/react";
 import LioLogo from "./components/lio-logo";
 import {palettes,applyLioPreferences,getSavedPreferences,saveLioPreferences,systemTheme,type LioPaletteId,type LioThemeChoice} from "./components/lio-preferences";
 type Status="Quero ler"|"Lendo"|"Lido"|"Abandonado";
-type Book={id:string;title:string;author:string;category:string|null;coverUrl:string|null;status:Status;rating:number;totalPages:number;currentPage:number;sortOrder:number;createdAt:string;startedAt:string|null;finishedAt:string|null};
+type Book={id:string;title:string;author:string;category:string|null;coverUrl:string|null;status:Status;rating:number;favorite:boolean;totalPages:number;currentPage:number;sortOrder:number;createdAt:string;startedAt:string|null;finishedAt:string|null};
 type Entry={id:string;bookId:string;kind:string;content:string;pagesRead:number;createdAt:string;book:{id?:string;title:string}};
 type Shelf={id:string;name:string;bookIds:string[]};
 type View="Dashboard"|"Minha biblioteca"|"Diário"|"Metas"|"Perfil";
@@ -99,12 +99,12 @@ export default function Dashboard({name}:{name:string}){
       .catch(()=>{if(active)setGoalMessage("Não foi possível carregar a meta.")});
     return ()=>{active=false};
   },[]);
-  const filtered=useMemo(()=>books.filter(b=>(filter==="Todos"||b.status===filter)&&(`${b.title} ${b.author} ${b.category||""}`).toLowerCase().includes(query.toLowerCase())).sort((a,b)=>{if(sortBy==="personalizada")return (a.sortOrder||0)&& (b.sortOrder||0)?a.sortOrder-b.sortOrder:(a.sortOrder||0)?-1:(b.sortOrder||0)?1:new Date(b.createdAt).getTime()-new Date(a.createdAt).getTime();if(sortBy==="titulo")return a.title.localeCompare(b.title,"pt-BR");if(sortBy==="autor")return a.author.localeCompare(b.author,"pt-BR");if(sortBy==="progresso")return (b.totalPages?b.currentPage/b.totalPages:0)-(a.totalPages?a.currentPage/a.totalPages:0);return new Date(b.createdAt).getTime()-new Date(a.createdAt).getTime();}),[books,filter,query,sortBy]);
+  const filtered=useMemo(()=>books.filter(b=>(filter==="Todos"||b.status===filter)&&(`${b.title} ${b.author} ${b.category||""}`).toLowerCase().includes(query.toLowerCase())).sort((a,b)=>{if(sortBy==="personalizada")return (a.sortOrder||0)&& (b.sortOrder||0)?a.sortOrder-b.sortOrder:!(a.sortOrder||0)&&!(b.sortOrder||0)?new Date(b.createdAt).getTime()-new Date(a.createdAt).getTime():!(a.sortOrder||0)?-1:1;if(sortBy==="titulo")return a.title.localeCompare(b.title,"pt-BR");if(sortBy==="autor")return a.author.localeCompare(b.author,"pt-BR");if(sortBy==="progresso")return (b.totalPages?b.currentPage/b.totalPages:0)-(a.totalPages?a.currentPage/a.totalPages:0);return new Date(b.createdAt).getTime()-new Date(a.createdAt).getTime();}),[books,filter,query,sortBy]);
   const selectedShelf=shelves.find(s=>s.id===activeShelf);
   const libraryBooks=selectedShelf?filtered.filter(b=>selectedShelf.bookIds.includes(b.id)):filtered;
   async function moveBook(bookId:string,targetId:string){
     if(bookId===targetId||orderBusy)return;
-    const ordered=[...books].sort((a,b)=>(a.sortOrder||0)&& (b.sortOrder||0)?a.sortOrder-b.sortOrder:(a.sortOrder||0)?-1:(b.sortOrder||0)?1:new Date(b.createdAt).getTime()-new Date(a.createdAt).getTime());
+    const ordered=[...books].sort((a,b)=>(a.sortOrder||0)&& (b.sortOrder||0)?a.sortOrder-b.sortOrder:!(a.sortOrder||0)&&!(b.sortOrder||0)?new Date(b.createdAt).getTime()-new Date(a.createdAt).getTime():!(a.sortOrder||0)?-1:1);
     const source=ordered.findIndex(b=>b.id===bookId),target=ordered.findIndex(b=>b.id===targetId);
     if(source<0||target<0)return;
     const [item]=ordered.splice(source,1);ordered.splice(target,0,item);
@@ -332,8 +332,19 @@ export default function Dashboard({name}:{name:string}){
     </span>)}
     <small>{b.rating.toLocaleString("pt-BR")}/5</small>
   </div>}
+  async function toggleFavorite(book:Book){
+    const next=!book.favorite;
+    setBooks(current=>current.map(item=>item.id===book.id?{...item,favorite:next}:item));
+    try{
+      const response=await fetch("/api/books/"+encodeURIComponent(book.id)+"/favorite",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({favorite:next})});
+      if(!response.ok)throw new Error("Não foi possível atualizar seus favoritos.");
+    }catch(e){
+      await refresh().catch(()=>{});
+      setError(e instanceof Error?e.message:"Erro ao favoritar livro.");
+    }
+  }
   function bookCards(items:Book[]){return <div className={"books shelf-grid "+(shelfMode==="list"?"shelf-list":"")}>{items.length===0?<div className="empty-shelf"><span aria-hidden="true">📚</span><h3>Sua estante está esperando histórias!</h3><p>Adicione seu primeiro livro ou tente outro filtro.</p><button className="primary" onClick={()=>edit()}>Adicionar livro</button></div>:items.map(b=><article className="book shelf-book lio-clickable-book" key={b.id} role="button" tabIndex={0} aria-label={"Abrir detalhes de "+b.title} onClick={()=>openDetail(b)} onKeyDown={e=>{if(e.target===e.currentTarget&&(e.key==="Enter"||e.key===" ")){e.preventDefault();openDetail(b)}}}>
-    <div className="cover-wrap"><span className="cover-decor" aria-hidden="true">✧</span>{b.coverUrl&&!brokenCovers.includes(b.id)?<img className="book-cover-img" src={b.coverUrl} alt={"Capa de "+b.title} loading="lazy" onError={()=>setBrokenCovers(prev=>[...prev,b.id])}/>:<div className="cover cover-fallback" aria-label={"Capa não disponível para "+b.title}><span>✦</span><strong>{b.title}</strong><small>{b.author}</small></div>}</div>
+    <div className="cover-wrap"><button type="button" className={"lio-favorite"+(b.favorite?" is-favorite":"")} aria-label={b.favorite?"Remover "+b.title+" dos favoritos":"Favoritar "+b.title} aria-pressed={!!b.favorite} title={b.favorite?"Remover dos favoritos":"Adicionar aos favoritos"} onClick={e=>{e.stopPropagation();void toggleFavorite(b)}}>{b.favorite?"♥":"♡"}</button>{b.coverUrl&&!brokenCovers.includes(b.id)?<img className="book-cover-img" src={b.coverUrl} alt={"Capa de "+b.title} loading="lazy" onError={()=>setBrokenCovers(prev=>[...prev,b.id])}/>:<div className="cover cover-fallback" aria-label={"Capa não disponível para "+b.title}><span>✦</span><strong>{b.title}</strong><small>{b.author}</small></div>}</div>
     <div className="book-info"><span className={"badge status-"+b.status.toLowerCase().replaceAll(" ","-")}>{b.status}</span><h3>{b.title}</h3><p>{b.author}</p>
       <div className="book-meta">{b.category||"Sem categoria"}</div>
       {b.totalPages>0&&<div className="book-reading-progress"><div className="progress small-progress"><span style={{width:Math.min(100,b.currentPage/b.totalPages*100)+"%"}}/></div><small>{b.currentPage} de {b.totalPages} páginas · {Math.round(b.currentPage/b.totalPages*100)}%</small></div>}
