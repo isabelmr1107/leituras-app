@@ -1,6 +1,7 @@
 import { auth } from "../../../../auth";
 import { prisma } from "../../../../lib/prisma";
 import { bookSchema } from "../../../../lib/book-schema";
+import { addToCatalog } from "../../../../lib/catalog";
 type Context = { params: Promise<{ id: string }> };
 export async function PATCH(request: Request, context: Context) {
   const session = await auth();
@@ -17,6 +18,16 @@ export async function PATCH(request: Request, context: Context) {
     startedAt: data.status==="Lendo" ? (date(startedAt,exists.startedAt)||new Date()) : date(startedAt,exists.startedAt),
     finishedAt: data.status==="Lido" ? (date(finishedAt,exists.finishedAt)||new Date()) : null
   } });
+  // Keep the anonymous bibliographic catalog in sync when an owner edits a book.
+  // Catalog errors must never roll back or block personal reading edits.
+  try {
+    await addToCatalog({
+      title: book.title, author: book.author, category: book.category,
+      coverUrl: book.coverUrl, totalPages: book.totalPages
+    });
+  } catch (error) {
+    console.error("Falha ao indexar livro editado no catálogo", error);
+  }
   return Response.json(book);
 }
 export async function DELETE(_request: Request, context: Context) {

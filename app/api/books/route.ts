@@ -15,8 +15,21 @@ export async function POST(request:Request){
   if(!parsed.success)return Response.json({error:"Livro inválido",details:parsed.error.flatten()},{status:400});
   const {startedAt,finishedAt,...data}=parsed.data;
   const date=(value?:string|null)=>value?new Date(value+"T12:00:00.000Z"):null;
-  const book=await prisma.book.create({data:{...data,coverUrl:data.coverUrl||null,userId:session.user.id,
-    startedAt:date(startedAt),finishedAt:data.status==="Lido"?(date(finishedAt)||new Date()):null}});
-  try{await addToCatalog({...data,publisher:typeof payload?.publisher==="string"?payload.publisher:null,isbn:typeof payload?.isbn==="string"?payload.isbn:null});}catch(error){console.error("Falha ao indexar livro no catálogo",error);}
-  return Response.json(book,{status:201});
+  try {
+    // All newly saved personal books must also exist in the global catalog.
+    // If either write fails, neither is committed (no silent partial saves).
+    const book = await prisma.$transaction(async (tx) => {
+      await addToCatalog({
+        ...data,
+        publisher: typeof payload?.publisher === "string" ? payload.publisher : null,
+        isbn: typeof payload?.isbn === "string" ? payload.isbn : null
+      }, tx);
+      return tx.book.create({data:{...data,coverUrl:data.coverUrl||null,userId:session.user.id,
+        startedAt:date(startedAt),finishedAt:data.status==="Lido"?(date(finishedAt)||new Date()):null}});
+    });
+    return Response.json(book,{status:201});
+  } catch (error) {
+    console.error("Falha ao salvar livro e registrar no catálogo global", error);
+    return Response.json({error:"Não foi possível salvar o livro no catálogo global. Tente novamente."},{status:503});
+  }
 }
