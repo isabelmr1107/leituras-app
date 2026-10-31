@@ -1287,3 +1287,73 @@ html[data-theme] .book-detail-modal .book-detail-metadata span{
   border-color:color-mix(in srgb,var(--lio-color-b) 24%,transparent)!important;
   background:color-mix(in srgb,var(--lio-color-a) 9%,var(--card))!important;
 }
+
+
+/* LIO — Diário e Metas respeitam todas as paletas (claro e escuro). */
+html[data-theme="dark"] .journal-hero{
+  background:linear-gradient(112deg,
+    color-mix(in srgb,var(--lio-color-a) 38%,#1d1b2c),
+    color-mix(in srgb,var(--lio-color-b) 31%,#1e1c2c) 57%,
+    color-mix(in srgb,var(--lio-color-c) 30%,#1b1d2c))!important;
+  border-color:color-mix(in srgb,var(--lio-color-b) 28%,rgba(255,255,255,.17))!important;
+}
+html[data-theme="light"] .journal-hero{
+  background:linear-gradient(112deg,
+    color-mix(in srgb,var(--lio-color-a) 25%,#f9f9ff),
+    color-mix(in srgb,var(--lio-color-b) 19%,#f8f9ff) 57%,
+    color-mix(in srgb,var(--lio-color-c) 22%,#fafaff))!important;
+  border-color:color-mix(in srgb,var(--lio-color-b) 25%,#deddea)!important;
+}
+html[data-theme="light"] .journal-hero h2,
+html[data-theme="light"] .journal-hero p,
+html[data-theme="light"] .journal-stats span,
+html[data-theme="light"] .journal-stats strong{color:#302b40!important}
+html[data-theme="light"] .journal-stats span{
+  background:rgba(255,255,255,.48)!important;
+  border-color:color-mix(in srgb,var(--lio-color-a) 24%,transparent)!important;
+}
+html[data-theme="dark"] .journal-stats span{
+  background:rgba(255,255,255,.10)!important;
+  border-color:color-mix(in srgb,var(--lio-color-b) 25%,rgba(255,255,255,.15))!important;
+}
+html[data-theme] .journal-hero-art{color:color-mix(in srgb,var(--lio-color-c) 30%,transparent)!important}
+html[data-theme] .journal-hero .section-kicker,
+html[data-theme] .journal-timeline .section-kicker{color:var(--lio-color-c)!important}
+html[data-theme="light"] .journal-hero .section-kicker,
+html[data-theme="light"] .journal-timeline .section-kicker{color:var(--lio-color-a)!important}
+html[data-theme="dark"] .journal-composer,
+html[data-theme="dark"] .journal-timeline{
+  background:linear-gradient(140deg,
+    color-mix(in srgb,var(--lio-color-a) 10%,rgba(255,255,255,.055)),
+    color-mix(in srgb,var(--lio-color-b) 8%,rgba(255,255,255,.04)))!important;
+  border-color:color-mix(in srgb,var(--lio-color-b) 18%,rgba(255,255,255,.18))!important;
+}
+html[data-theme="light"] .journal-composer,
+html[data-theme="light"] .journal-timeline{
+  background:linear-gradient(140deg,
+    color-mix(in srgb,var(--lio-color-a) 9%,rgba(255,255,255,.92)),
+    color-mix(in srgb,var(--lio-color-c) 7%,rgba(255,255,255,.89)))!important;
+  border-color:color-mix(in srgb,var(--lio-color-b) 18%,#e0dfea)!important;
+}
+html[data-theme] .journal-filters button.active{
+  background:linear-gradient(105deg,var(--lio-color-a),var(--lio-color-b))!important;
+  border-color:var(--lio-color-b)!important;color:#fff!important;
+}
+html[data-theme] .journal-filters button:not(.active){
+  border-color:color-mix(in srgb,var(--lio-color-a) 20%,var(--line))!important;
+  background:color-mix(in srgb,var(--lio-color-a) 7%,var(--card))!important;
+}
+html[data-theme] .journal-entry{
+  border-left-color:var(--lio-color-a)!important;
+  border-top-color:color-mix(in srgb,var(--lio-color-b) 20%,var(--line))!important;
+}
+html[data-theme] .journal-kind-resenha{border-left-color:var(--lio-color-a)!important}
+html[data-theme] .journal-kind-citacao{border-left-color:var(--lio-color-b)!important}
+html[data-theme] .journal-kind-sessao{border-left-color:var(--lio-color-c)!important}
+html[data-theme] .journal-entry-tag{
+  background:color-mix(in srgb,var(--lio-color-a) 20%,transparent)!important;
+  color:var(--lio-color-b)!important;
+}
+html[data-theme] .journal-empty>span{color:var(--lio-color-b)!important}
+html[data-theme] .goal-number{color:var(--lio-color-b)!important}
+html[data-theme="light"] .goal-number{color:var(--lio-color-a)!important}
