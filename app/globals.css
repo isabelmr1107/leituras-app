@@ -1373,3 +1373,8 @@ html[data-theme="light"] .goal-number{color:var(--lio-color-a)!important}
 .lio-detail-favorite.is-favorite{color:#ff91b0!important;border-color:currentColor!important}
 .lio-detail-delete{color:#edb8c6!important}
 .lio-detail-favorite:focus-visible,.lio-detail-delete:focus-visible{outline:3px solid var(--lio-color-b);outline-offset:3px}
+
+/* As coleções criadas pelo leitor aparecem junto às prateleiras principais. */
+.lio-custom-collections { margin-top: 26px; }
+.lio-custom-collections .collection-heading .secondary-button { min-height: 38px; padding: 8px 15px; }
+.lio-empty-custom-shelf { padding: 18px 22px; opacity: .75; max-width: 330px; }
