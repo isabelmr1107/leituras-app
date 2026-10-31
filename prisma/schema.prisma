@@ -10,7 +10,6 @@ model User {
   name         String
   email        String @unique
   passwordHash String
-  role         String @default("USER")
   createdAt    DateTime @default(now())
   books        Book[]
   goals        ReadingGoal[]
