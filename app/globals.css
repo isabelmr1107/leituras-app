@@ -1444,3 +1444,6 @@ html[data-theme="light"] .goal-number{color:var(--lio-color-a)!important}
 .lio-password-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#a98bf4;font-weight:700;padding:8px;border-radius:8px;font-size:13px}
 .lio-password-toggle:hover{text-decoration:underline}
 .lio-password-toggle:focus-visible{outline:2px solid #a98bf4;outline-offset:2px}
+
+.lio-password-toggle{display:grid;place-items:center;min-width:42px;min-height:42px;right:9px;padding:7px}
+.lio-password-field input{padding-right:58px!important}
