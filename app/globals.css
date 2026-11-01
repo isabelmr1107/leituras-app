@@ -1462,3 +1462,11 @@ html[data-theme="light"] .goal-number{color:var(--lio-color-a)!important}
 /* Compact share action in reading detail */
 .lio-share-trigger{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:42px;padding:9px 12px}
 .lio-share-trigger svg{display:block}
+
+/* Animated share-style selector */
+.lio-share-options{animation:lio-share-enter .24s ease-out;box-shadow:0 12px 34px rgba(44,24,82,.14)}
+.lio-share-formats button{transition:transform .18s ease,background-color .18s ease,box-shadow .18s ease}
+.lio-share-formats button:hover{transform:translateY(-2px)}
+.lio-share-formats button.active{box-shadow:0 4px 15px rgba(125,84,192,.3)}
+@keyframes lio-share-enter{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.lio-share-options{animation:none}.lio-share-formats button{transition:none}}
