@@ -1447,3 +1447,14 @@ html[data-theme="light"] .goal-number{color:var(--lio-color-a)!important}
 
 .lio-password-toggle{display:grid;place-items:center;min-width:42px;min-height:42px;right:9px;padding:7px}
 .lio-password-field input{padding-right:58px!important}
+
+/* Cards de leitura para compartilhar nas redes sociais */
+.lio-share-area{margin-top:14px}
+.lio-share-options{margin-top:12px;padding:18px;border:1px solid var(--line,#ded5ed);border-radius:16px;background:rgba(145,104,204,.08);max-width:470px}
+.lio-share-options strong{display:block;margin-bottom:7px}
+.lio-share-options p{font-size:13px;line-height:1.5;opacity:.8;margin-bottom:14px}
+.lio-share-formats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.lio-share-formats button{border:1px solid #9a84bd;border-radius:11px;background:transparent;color:inherit;padding:9px 13px;font-weight:700}
+.lio-share-formats button.active{background:#8060c0;border-color:#8060c0;color:white}
+.lio-share-options small{display:block;margin-top:12px;opacity:.72}
+.lio-share-options [role="status"]{margin-top:10px}
