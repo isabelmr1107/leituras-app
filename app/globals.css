@@ -1437,3 +1437,10 @@ html[data-theme="light"] .goal-number{color:var(--lio-color-a)!important}
 .lio-admin-dark .lio-admin-brand small,.lio-admin-dark .lio-admin-footer,.lio-admin-dark .lio-admin-result-count small{color:#b7aec8}
 .lio-admin-dark .lio-admin-denied p,.lio-admin-dark .lio-admin-book-list li.lio-admin-empty{color:#beb4cb}
 @media(max-width:600px){.lio-admin-header-actions{gap:6px}.lio-admin-theme-toggle{padding:10px;font-size:12px}}
+
+/* Login: reveal password without submitting form */
+.lio-password-field{position:relative;display:block;width:100%}
+.lio-password-field input{width:100%;padding-right:94px!important}
+.lio-password-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#a98bf4;font-weight:700;padding:8px;border-radius:8px;font-size:13px}
+.lio-password-toggle:hover{text-decoration:underline}
+.lio-password-toggle:focus-visible{outline:2px solid #a98bf4;outline-offset:2px}
