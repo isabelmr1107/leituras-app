@@ -1458,3 +1458,7 @@ html[data-theme="light"] .goal-number{color:var(--lio-color-a)!important}
 .lio-share-formats button.active{background:#8060c0;border-color:#8060c0;color:white}
 .lio-share-options small{display:block;margin-top:12px;opacity:.72}
 .lio-share-options [role="status"]{margin-top:10px}
+
+/* Compact share action in reading detail */
+.lio-share-trigger{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:42px;padding:9px 12px}
+.lio-share-trigger svg{display:block}
