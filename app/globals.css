@@ -1487,3 +1487,9 @@ html[data-theme="light"] .goal-number{color:var(--lio-color-a)!important}
 .lio-ai-picks{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
 .lio-ai-pick{border:1px solid rgba(157,131,192,.3);padding:14px;border-radius:12px;display:flex;flex-direction:column;gap:7px}
 .lio-ai-pick span,.lio-ai-pick small{opacity:.7}
+
+/* Preview-only sign-in guidance for separate testing accounts */
+.lio-test-login-note{border:1px solid #a78bfa;border-radius:13px;background:rgba(139,92,246,.13);padding:14px 16px;margin:14px 0 20px;line-height:1.5}
+.lio-test-login-note strong{display:block;margin-bottom:5px}
+.lio-test-login-note p{font-size:13px;margin:5px 0 10px}
+.lio-test-login-note a{color:#b99cff;font-weight:750;text-decoration:underline}
