@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import type { Prisma } from "@prisma/client";
 
 type CatalogInput={
   title:string;author:string;publisher?:string|null;isbn?:string|null;
@@ -11,9 +12,9 @@ function safeCover(v:string|null|undefined){
   if(!v)return null;
   try{const url=new URL(v);return url.protocol==="https:"&&url.username===""&&url.password===""&&url.hostname!=="localhost"&&url.hostname!=="127.0.0.1"?url.toString().slice(0,1500):null}catch{return null}
 }
-export async function addToCatalog(input:CatalogInput){
+export async function addToCatalog(input:CatalogInput, db: Pick<Prisma.TransactionClient, "catalogBook"> = prisma){
   const title=safeText(input.title,200),author=safeText(input.author,200);
-  if(title.length<2||author.length<2)return;
+  if(!title||!author)throw new Error("Título e autor são obrigatórios para o catálogo.");
   const publisher=safeText(input.publisher,200)||null;
   const isbn=isbnClean(input.isbn);
   const totalPages=Number.isInteger(input.totalPages)&&Number(input.totalPages)>0&&Number(input.totalPages)<=100000?Number(input.totalPages):null;
@@ -22,17 +23,17 @@ export async function addToCatalog(input:CatalogInput){
   // A fingerprint intentionally distinguishes editions by publisher and length.
   const base=[normalizeCatalogText(title),normalizeCatalogText(author),normalizeCatalogText(publisher||""),totalPages||""].join("|");
   const fingerprint=base.slice(0,800);
-  const existing=isbn?await prisma.catalogBook.findUnique({where:{isbn}}):null;
+  const existing=isbn?await db.catalogBook.findUnique({where:{isbn}}):null;
   if(existing)return; // Never let one user's data silently rewrite a shared edition.
   try{
-    await prisma.catalogBook.upsert({
+    await db.catalogBook.upsert({
       where:{fingerprint},
       create:{fingerprint,isbn,title,author,publisher,category,totalPages,coverUrl},
       update:{} // Existing entries are immutable until a moderated correction flow exists.
     });
   }catch(error){
     // Another edition may have been inserted in parallel with the same ISBN.
-    if(isbn&&await prisma.catalogBook.findUnique({where:{isbn}}))return;
+    if(isbn&&await db.catalogBook.findUnique({where:{isbn}}))return;
     throw error;
   }
 }
