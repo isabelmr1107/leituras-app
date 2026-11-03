@@ -1487,3 +1487,85 @@ html[data-theme="light"] .goal-number{color:var(--lio-color-a)!important}
 .lio-ai-picks{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
 .lio-ai-pick{border:1px solid rgba(157,131,192,.3);padding:14px;border-radius:12px;display:flex;flex-direction:column;gap:7px}
 .lio-ai-pick span,.lio-ai-pick small{opacity:.7}
+
+
+/* Cronograma LIO — cards inspirados em um painel de leitura, com identidade visual original */
+.lio-schedule{display:grid;gap:22px;max-width:1290px;margin:0 auto 48px}
+.lio-schedule-heading{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:9px 2px 0}
+.lio-schedule-eyebrow,.lio-schedule-section-title{font-size:11px;font-weight:850;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.lio-schedule-heading h2{font-family:Georgia,'Times New Roman',serif;font-size:clamp(27px,3vw,37px);line-height:1.16;margin:8px 0;color:var(--ink);letter-spacing:-.03em}
+.lio-schedule-heading p{font-size:14px;color:var(--muted);margin:0;line-height:1.6}
+.lio-schedule-heading-icon{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;color:#fff;font-size:32px;background:linear-gradient(140deg,#9360f0,#3ac0d9);box-shadow:0 12px 35px rgba(111,92,228,.19)}
+.lio-schedule-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);align-items:start;gap:20px}
+.lio-schedule-main,.lio-schedule-side{display:grid;gap:19px;min-width:0}
+.lio-schedule-card{min-width:0;border:1px solid var(--line);border-radius:22px;padding:25px;background:var(--card);box-shadow:0 12px 32px rgba(0,0,0,.055)}
+.lio-schedule-section-title{display:flex;align-items:center;gap:9px;margin-bottom:18px}
+.lio-schedule-dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(140deg,#9564f6,#42c0d9);box-shadow:0 0 0 4px rgba(145,104,238,.10);flex-shrink:0}
+.lio-schedule label{font-size:12px;font-weight:750;color:var(--ink);margin:0;display:block}
+.lio-schedule input,.lio-schedule select{display:block;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:11px;padding:12px 13px;margin-top:8px;max-width:100%;min-width:0}
+.lio-schedule input:focus,.lio-schedule select:focus{outline:2px solid rgba(138,106,237,.50);outline-offset:1px}
+.lio-schedule input:disabled,.lio-schedule button:disabled{opacity:.5;cursor:not-allowed}
+.lio-schedule-book-picker{width:100%;font-size:13px;font-weight:600}
+.lio-schedule-picker-label{margin-bottom:18px!important;color:var(--muted)!important}
+.lio-schedule-book-row{display:flex;align-items:center;gap:18px}
+.lio-schedule-cover{flex:0 0 100px;height:144px;border-radius:13px;overflow:hidden;display:grid;place-items:center;color:#fff;font-family:Georgia,serif;font-size:50px;background:linear-gradient(155deg,#6d53a4,#284b76);box-shadow:0 7px 22px rgba(0,0,0,.16)}
+.lio-schedule-cover img{width:100%;height:100%;object-fit:cover}
+.lio-schedule-book-info{flex:1;min-width:0}
+.lio-schedule-book-info h3{font-family:Georgia,'Times New Roman',serif;font-size:clamp(19px,2vw,26px);letter-spacing:-.025em;line-height:1.22;margin:0 0 7px;overflow-wrap:anywhere;color:var(--ink)}
+.lio-schedule-book-info>p{color:var(--muted);font-size:13px;margin:0 0 20px}
+.lio-schedule-progress-line{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:9px;font-size:12px;color:var(--muted)}
+.lio-schedule-progress-line strong{color:var(--ink);font-size:19px}
+.lio-schedule-track{width:100%;height:9px;background:var(--line);border-radius:30px;overflow:hidden}
+.lio-schedule-track>span{display:block;height:100%;border-radius:30px;background:linear-gradient(90deg,#895de3 0%,#4cafe2 62%,#46c6c9 100%);transition:width .3s}
+.lio-schedule-book-foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:11px;margin-top:11px}
+.lio-schedule-daily{background:linear-gradient(155deg,rgba(148,107,242,.085),transparent 58%),var(--card);border-color:var(--line)}
+.lio-schedule-daily-inner{text-align:center;padding:8px 0 24px}
+.lio-schedule-daily-label{display:block;color:var(--ink);font-size:19px;font-weight:750}
+.lio-schedule-daily-number{display:block;font-size:clamp(64px,9vw,86px);line-height:1.15;font-weight:850;letter-spacing:-.08em;background:linear-gradient(125deg,#945af4,#3fc2da);background-clip:text;-webkit-background-clip:text;color:transparent;margin:8px 0 -3px}
+.lio-schedule-daily-unit{font-weight:750;font-size:16px;color:var(--ink)}
+.lio-schedule-time{margin:13px 0 0;font-size:13px;color:var(--muted)}
+.lio-schedule-daily-progress{margin-bottom:20px}
+.lio-schedule-daily-progress>div:first-child{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:13px;margin-bottom:9px}
+.lio-schedule-daily-progress strong{color:var(--ink)}
+.lio-schedule-checkin{display:grid;grid-template-columns:minmax(140px,1fr) auto;align-items:end;gap:12px}
+.lio-schedule-checkin label{min-width:0}
+.lio-schedule-checkin input{width:100%}
+.lio-schedule-main-button,.lio-schedule-secondary-button,.lio-schedule-reset-button{font:inherit;font-weight:750;cursor:pointer;border-radius:12px;min-height:46px;padding:11px 17px;transition:filter .16s,transform .16s}
+.lio-schedule-main-button{background:linear-gradient(110deg,#8c50e9,#41bcdd);color:#fff;border:0;box-shadow:0 6px 18px rgba(110,89,224,.17)}
+.lio-schedule-secondary-button{color:var(--ink);background:var(--bg);border:1px solid var(--line)}
+.lio-schedule-main-button:not(:disabled):hover,.lio-schedule-secondary-button:not(:disabled):hover{filter:brightness(1.08);transform:translateY(-1px)}
+.lio-schedule-reset-button{padding:10px 13px;color:var(--muted);border:1px solid var(--line);background:transparent;font-size:22px}
+.lio-schedule-timer{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:17px;padding:13px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+.lio-schedule-timer-clock{display:flex;gap:8px;align-items:center;margin-right:auto;color:var(--ink)}
+.lio-schedule-timer-clock>span{font-size:25px;color:var(--muted)}
+.lio-schedule-timer-clock strong{font-size:24px;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.lio-schedule-note{font-size:11px;line-height:1.6;color:var(--muted);margin:13px 0 0}
+.lio-schedule-status-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lio-schedule-status-tile{display:flex;align-items:center;gap:12px;padding:16px 12px;border-radius:15px;background:var(--bg);border:1px solid var(--line)}
+.lio-schedule-status-emoji{font-size:28px}
+.lio-schedule-status-tile div{display:grid;gap:4px}
+.lio-schedule-status-tile div>span{font-size:12px;color:var(--muted)}
+.lio-schedule-status-tile strong{font-size:16px;line-height:1.2;color:var(--ink)}
+.lio-schedule-status-tile small{font-size:11px;color:var(--muted);line-height:1.4}
+.lio-schedule-adjust{margin-top:17px;width:100%}
+.lio-schedule-settings h3,.lio-schedule-calculator h3,.lio-schedule-add h3{font-family:Georgia,'Times New Roman',serif;font-size:23px;color:var(--ink);line-height:1.25;margin-bottom:10px}
+.lio-schedule-settings p,.lio-schedule-calculator>p,.lio-schedule-add>p{color:var(--muted);font-size:13px;line-height:1.6}
+.lio-schedule-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+.lio-schedule-fields input{width:100%}
+.lio-schedule-settings[hidden]{display:none!important}
+.lio-schedule-calc-fields{display:grid;gap:15px;margin:20px 0}
+.lio-schedule-calc-fields input{width:100%}
+.lio-schedule-calc-result{display:grid;justify-items:center;text-align:center;gap:4px;padding:22px 16px;border:1px solid var(--line);border-radius:17px;background:linear-gradient(160deg,rgba(151,105,240,.12),rgba(63,185,218,.07))}
+.lio-schedule-calc-result>span{color:var(--muted);font-size:12px}
+.lio-schedule-calc-result>strong{font-size:60px;line-height:1.1;letter-spacing:-.06em;color:var(--ink);font-variant-numeric:tabular-nums}
+.lio-schedule-calc-result>b{font-size:16px;color:var(--ink)}
+.lio-schedule-calc-result>small{font-size:12px;color:var(--muted);line-height:1.5;margin-top:6px}
+.lio-schedule-add .lio-schedule-secondary-button{width:100%}
+.lio-schedule-add-form{display:grid;gap:16px;margin-top:18px}
+.lio-schedule-add-form input{width:100%}
+.lio-schedule-disclaimer{font-size:12px;color:var(--muted);line-height:1.6;padding:0 8px}
+.lio-schedule-empty{padding:20px;border-radius:13px;background:var(--bg);color:var(--muted);line-height:1.6}
+.lio-schedule-success{padding:14px 18px;border:1px solid var(--line);border-radius:14px;color:var(--ink);background:var(--card)}
+@media(max-width:1100px){.lio-schedule-grid{grid-template-columns:minmax(0,1.3fr) minmax(275px,1fr)}.lio-schedule-card{padding:20px}}
+@media(max-width:850px){.lio-schedule-grid{grid-template-columns:1fr}.lio-schedule-side{grid-template-columns:1fr 1fr;align-items:start}.lio-schedule-disclaimer{grid-column:1/-1}.lio-schedule-heading-icon{width:45px;height:45px}}
+@media(max-width:600px){.lio-schedule-heading h2{font-size:28px}.lio-schedule-side{grid-template-columns:1fr}.lio-schedule-card{padding:19px;border-radius:18px}.lio-schedule-book-row{align-items:flex-start;gap:13px}.lio-schedule-cover{flex-basis:72px;height:108px}.lio-schedule-book-info h3{font-size:19px}.lio-schedule-book-info>p{margin-bottom:12px}.lio-schedule-checkin{grid-template-columns:1fr}.lio-schedule-status-grid{grid-template-columns:1fr}.lio-schedule-fields{grid-template-columns:1fr}.lio-schedule-heading-icon{display:none}.lio-schedule-daily-number{font-size:66px}}
