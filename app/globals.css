@@ -1703,7 +1703,7 @@ html[data-palette="floresta"] .lio-schedule-main-button{
    Decoração isolada à página inicial. As cores acompanham a paleta LIO. */
 .shell.lio-home-shell{position:relative;isolation:isolate}
 .shell.lio-home-shell::before{
-  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
     radial-gradient(ellipse 61% 62% at 10% 16%,color-mix(in srgb,var(--lio-color-a) 25%,transparent),transparent 78%),
     radial-gradient(ellipse 60% 57% at 90% 8%,color-mix(in srgb,var(--lio-color-d) 54%,transparent),transparent 77%),
@@ -1712,7 +1712,7 @@ html[data-palette="floresta"] .lio-schedule-main-button{
     var(--bg);
 }
 .shell.lio-home-shell::after{
-  content:"";position:fixed;z-index:-1;pointer-events:none;
+  content:"";position:fixed;z-index:0;pointer-events:none;
   width:65vw;height:54vh;min-width:600px;min-height:420px;
   top:-19vh;right:-23vw;transform:rotate(37deg);
   border:2px solid rgba(255,255,255,.66);border-radius:95px;
