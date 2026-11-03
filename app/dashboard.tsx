@@ -2,13 +2,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
 import LioLogo from "./components/lio-logo";
+import ReadingPlanner from "./components/reading-planner";
 import ShareReading from "./components/share-reading";
 import {palettes,applyLioPreferences,getSavedPreferences,saveLioPreferences,systemTheme,type LioPaletteId,type LioThemeChoice} from "./components/lio-preferences";
 type Status="Quero ler"|"Lendo"|"Lido"|"Abandonado";
 type Book={id:string;title:string;author:string;category:string|null;coverUrl:string|null;status:Status;rating:number;favorite:boolean;totalPages:number;currentPage:number;sortOrder:number;createdAt:string;startedAt:string|null;finishedAt:string|null};
 type Entry={id:string;bookId:string;kind:string;content:string;pagesRead:number;createdAt:string;book:{id?:string;title:string}};
 type Shelf={id:string;name:string;bookIds:string[]};
-type View="Dashboard"|"Minha biblioteca"|"Diário"|"Metas"|"Perfil";
+type View="Dashboard"|"Minha biblioteca"|"Diário"|"Metas"|"Cronograma"|"Perfil";
 type BookSuggestion={title:string;author:string;totalPages:number|null;category:string;coverUrl:string|null;publisher:string;source:string;isbn?:string};
 const months=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
 const blank={title:"",author:"",category:"",coverUrl:"",status:"Quero ler" as Status,rating:0,totalPages:0,currentPage:0,startedAt:"",finishedAt:""};
@@ -351,11 +352,12 @@ export default function Dashboard({name}:{name:string}){
       {b.totalPages>0&&<div className="book-reading-progress"><div className="progress small-progress"><span style={{width:Math.min(100,b.currentPage/b.totalPages*100)+"%"}}/></div><small>{b.currentPage} de {b.totalPages} páginas · {Math.round(b.currentPage/b.totalPages*100)}%</small></div>}
       <div className="lio-book-bottom">{ratingStars(b)}<button className="lio-trash" type="button" aria-label={"Excluir "+b.title} title="Excluir livro" onClick={e=>{e.stopPropagation();removeBook(b.id)}}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m5 4v7m4-7v7"/></svg></button></div>
     </div></article>)}</div>}
-  const navItems:{name:View;label:string;icon:"home"|"shelf"|"diary"|"target"|"user"}[]=[
+  const navItems:{name:View;label:string;icon:"home"|"shelf"|"diary"|"target"|"calendar"|"user"}[]=[
     {name:"Dashboard",label:"Início",icon:"home"},
     {name:"Minha biblioteca",label:"Minha biblioteca",icon:"shelf"},
     {name:"Diário",label:"Diário",icon:"diary"},
     {name:"Metas",label:"Metas",icon:"target"},
+    {name:"Cronograma",label:"Cronograma",icon:"calendar"},
     {name:"Perfil",label:"Perfil",icon:"user"},
   ];
   function navIcon(icon:(typeof navItems)[number]["icon"]){
@@ -364,14 +366,16 @@ export default function Dashboard({name}:{name:string}){
       case "home":return <svg {...attrs}><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10Z"/><path d="M9 21v-7h6v7"/></svg>;
       case "shelf":return <svg {...attrs}><path d="M3 3v18M21 3v18M3 20h18M3 12h18"/><rect x="5.5" y="5" width="3.5" height="7" rx=".5"/><rect x="10.5" y="4" width="3.5" height="8" rx=".5"/><path d="m16.5 5 2.5 7M6 14.5v5M10 15v5M13.5 14.5v5M17 15v5"/></svg>;
       case "diary":return <svg {...attrs}><path d="m15 5 4 4M4 20l4.5-1 11-11a2 2 0 0 0-4-4l-11 11L4 20Z"/><path d="m14 6 4 4"/></svg>;
+      case "calendar":return <svg {...attrs}><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 15h3M8 18h7"/></svg>;
       case "target":return <svg {...attrs}><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>;
       case "user":return <svg {...attrs}><circle cx="12" cy="8" r="4"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg>;
     }
   }
   return <main className="shell"><button type="button" className="menu-toggle" aria-label={menuOpen?"Fechar menu":"Abrir menu"} aria-expanded={menuOpen} aria-controls="main-sidebar" onClick={()=>setMenuOpen(x=>!x)}><span className="hamburger-bars" aria-hidden="true"><i/><i/><i/></span></button>{menuOpen&&<button type="button" className="menu-backdrop" onClick={()=>setMenuOpen(false)} aria-label="Fechar menu"/>}<aside id="main-sidebar" className={"sidebar drawer-sidebar"+(menuOpen?" is-open":"")} aria-hidden={!menuOpen}><div className="brand"><LioLogo className="lio-sidebar-logo"/><button type="button" className="sidebar-close" onClick={()=>setMenuOpen(false)} aria-label="Fechar menu">×</button></div><p className="sidebar-label">SEU ESPAÇO LITERÁRIO</p><nav aria-label="Navegação principal">{navItems.map(item=><button key={item.name} className={view===item.name?"nav-button active":"nav-button"} onClick={()=>{setView(item.name);setMenuOpen(false);}}><span className="nav-icon" aria-hidden="true">{navIcon(item.icon)}</span>{item.label}</button>)}</nav><div className="side-note"><div className="side-note-art">❝</div><strong>Uma história de cada vez.</strong><p>Seu universo de livros, metas e descobertas.</p><button type="button" onClick={()=>{edit();setMenuOpen(false);}}>＋ Novo livro</button></div></aside>
-    <section className="content"><header className="topbar"><div><p className="eyebrow">✳ {year} · Seu universo de histórias</p><h1>{view==="Dashboard"?"Olá, "+name.split(" ")[0]+"!":view}</h1><p className="header-subtitle">{view==="Dashboard"?"Cada página conta. Descubra o próximo capítulo da sua estante.":view==="Minha biblioteca"?"Todos os seus mundos favoritos, bem aqui.":view==="Diário"?"Guarde suas impressões e os melhores trechos.":view==="Metas"?"Pequenos passos, grandes histórias.":"Seu cantinho de leitura."}</p></div><div className="topbar-actions"><button className="primary add-book-button" onClick={()=>edit()}>＋ Adicionar livro</button></div></header>
+    <section className="content"><header className="topbar"><div><p className="eyebrow">✳ {year} · Seu universo de histórias</p><h1>{view==="Dashboard"?"Olá, "+name.split(" ")[0]+"!":view}</h1><p className="header-subtitle">{view==="Dashboard"?"Cada página conta. Descubra o próximo capítulo da sua estante.":view==="Minha biblioteca"?"Todos os seus mundos favoritos, bem aqui.":view==="Diário"?"Guarde suas impressões e os melhores trechos.":view==="Metas"?"Pequenos passos, grandes histórias.":view==="Cronograma"?"Organize cada página no seu tempo.":"Seu cantinho de leitura."}</p></div><div className="topbar-actions"><button className="primary add-book-button" onClick={()=>edit()}>＋ Adicionar livro</button></div></header>
     <div className="mobile-nav" aria-label="Navegação alternativa">{navItems.map(item=><button key={item.name} className={view===item.name?"filter active":"filter"} onClick={()=>setView(item.name)}><span className="mobile-nav-icon" aria-hidden="true">{navIcon(item.icon)}</span> {item.label}</button>)}</div>
     {error&&!open&&<p className="error" role="alert">{error}</p>}{loading&&<p>Carregando sua estante…</p>}
+    {view==="Cronograma"&&<ReadingPlanner books={books} onProgress={refresh}/>}
     {view==="Dashboard"&&<>
     <section className="welcome-banner"><div className="welcome-copy"><span className="welcome-kicker">✦ SUA JORNADA LITERÁRIA</span><h2>{books.length?"Sua próxima aventura começa aqui.":"Toda grande história começa na primeira página."}</h2><p>{books.length?"Você tem "+books.length+" "+(books.length===1?"livro esperando por você.":"livros na estante. Continue sua história!"):"Crie sua biblioteca e transforme cada leitura em uma lembrança."}</p><div className="welcome-actions"><button className="welcome-button" onClick={()=>featuredBook?openDetail(featuredBook):edit()}>{featuredBook?"Ver minha próxima leitura":"Adicionar meu primeiro livro"} <span aria-hidden="true">↗</span></button><button className="welcome-link" onClick={()=>setView("Minha biblioteca")}>Explorar estante →</button></div></div><div className="welcome-illustration lio-floating-books" aria-hidden="true"><div className="lio-float-book lio-float-book-a"><span className="lio-float-spine"/><span className="lio-float-mark">✧</span></div><div className="lio-float-book lio-float-book-b"><span className="lio-float-spine"/><span className="lio-float-mark">✦</span></div><div className="lio-float-book lio-float-book-c"><span className="lio-float-spine"/><span className="lio-float-mark">✳</span></div></div></section>
     {featuredBook&&<section className="featured-strip"><span className="featured-icon">📖</span><div><span className="featured-eyebrow">{featuredBook.status==="Lendo"?"CONTINUE LENDO":"DA SUA ESTANTE"}</span><strong>{featuredBook.title}</strong><small>{featuredBook.author}{featuredBook.totalPages?" · "+Math.round(featuredBook.currentPage/featuredBook.totalPages*100)+"% concluído":""}</small></div><button className="featured-action" onClick={()=>openDetail(featuredBook)}>Abrir livro <span aria-hidden="true">↗</span></button></section>}
