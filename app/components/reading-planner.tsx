@@ -42,7 +42,7 @@ export default function ReadingPlanner({books,onProgress}:{books:Book[];onProgre
     setSessions((await e.json()).filter((item:Session)=>item.kind==="Sessão"));
   }
   useEffect(()=>{void reload().catch(e=>setError(e instanceof Error?e.message:"Erro ao carregar"));},[]);
-  useEffect(()=>{if(!selected&&books.length)setSelected(books[0].id)},[books,selected]);
+  useEffect(()=>{if(!selected&&books.length){const firstUnread=books.find(item=>item.totalPages>item.currentPage&&item.status==="Lendo")||books.find(item=>item.totalPages>item.currentPage)||books[0];setSelected(firstUnread.id)}},[books,selected]);
   const book=books.find(x=>x.id===selected);
   const plan=useMemo(()=>{
     const item=plans.find(p=>p.bookId===selected);
