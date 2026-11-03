@@ -7,6 +7,7 @@ type Session={bookId:string;kind:string;createdAt:string;pagesRead:number;conten
 type Plan={deadline:string;minutesPerPage:number|null};
 const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")};
 const dateFrom=(value:string)=>new Date(value+"T12:00:00");
+const localDay=(date:Date)=>[date.getFullYear(),String(date.getMonth()+1).padStart(2,"0"),String(date.getDate()).padStart(2,"0")].join("-");
 const daysBetween=(start:string,end:string)=>Math.round((Date.UTC(+end.slice(0,4),+end.slice(5,7)-1,+end.slice(8,10))-Date.UTC(+start.slice(0,4),+start.slice(5,7)-1,+start.slice(8,10)))/86400000);
 const ceil=(v:number)=>Math.max(0,Math.ceil(v));
 const inputStyle={width:"100%",minWidth:0};
@@ -52,8 +53,8 @@ export default function ReadingPlanner({books,onProgress}:{books:Book[];onProgre
   const percent=book&&book.totalPages>0?Math.min(100,Math.round(book.currentPage/book.totalPages*100)):0;
   const dailyMinutes=plan?.minutesPerPage?Math.ceil(pagesPerDay*plan.minutesPerPage):null;
   const personalSessions=sessions.filter(s=>s.bookId===selected);
-  const readingDays=new Set(personalSessions.map(s=>new Date(s.createdAt).toLocaleDateString("en-CA")));
-  const sessionToday=personalSessions.filter(s=>new Date(s.createdAt).toLocaleDateString("en-CA")===now).reduce((sum,s)=>sum+s.pagesRead,0);
+  const readingDays=new Set(personalSessions.map(s=>localDay(new Date(s.createdAt))));
+  const sessionToday=personalSessions.filter(s=>localDay(new Date(s.createdAt))===now).reduce((sum,s)=>sum+s.pagesRead,0);
   let streak=0;
   {const cursor=new Date();cursor.setHours(12,0,0,0);const hasToday=readingDays.has(today());if(!hasToday)cursor.setDate(cursor.getDate()-1);for(let i=0;i<366;i++){const key=[cursor.getFullYear(),String(cursor.getMonth()+1).padStart(2,"0"),String(cursor.getDate()).padStart(2,"0")].join("-");if(!readingDays.has(key))break;streak++;cursor.setDate(cursor.getDate()-1)}}
   const todayLabel=plan&&plan.deadline<now?"Prazo encerrado — você pode escolher uma nova data.":remaining===0?"Leitura concluída!":plan?"Para concluir até "+dateFrom(plan.deadline).toLocaleDateString("pt-BR"):"Escolha uma data para calcular seu ritmo de leitura.";
