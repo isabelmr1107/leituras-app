@@ -1699,6 +1699,63 @@ html[data-palette="floresta"] .lio-schedule-main-button{
 }
 
 
+/* Jardim: verde visível de verdade, preservando as quatro cores da paleta original.
+   Uma cor mais intensa é usada em superfícies interativas para garantir contraste. */
+html[data-palette="jardim"]{
+  --lio-jardim-verde:#68a783;
+  --lio-jardim-verde-claro:#b7e7bd;
+}
+html[data-palette="jardim"] .primary:not(.lio-auth-submit),
+html[data-palette="jardim"] .primary.add-book-button,
+html[data-palette="jardim"] .welcome-button,
+html[data-palette="jardim"] .filter.active,
+html[data-palette="jardim"] .mobile-nav .filter.active,
+html[data-palette="jardim"] .view-switch button.active,
+html[data-palette="jardim"] .custom-shelf-tabs button.active,
+html[data-palette="jardim"] .lio-schedule-main-button{
+  background:linear-gradient(110deg,#d96aac 0%,#a88de9 44%,var(--lio-jardim-verde) 100%)!important;
+  color:#fff!important;
+}
+html[data-palette="jardim"] .progress span,
+html[data-palette="jardim"] .month-chart .chart-track span,
+html[data-palette="jardim"] .lio-monthly-panel .insights-track>div,
+html[data-palette="jardim"] .insights-track>div,
+html[data-palette="jardim"] .lio-schedule-track>span{
+  background:linear-gradient(90deg,#d96aac 0%,#a88de9 40%,#89c99b 70%,#68a783 100%)!important;
+}
+html[data-palette="jardim"] .lio-schedule-heading-icon,
+html[data-palette="jardim"] .lio-schedule-dot{
+  background:linear-gradient(125deg,#d96aac 0%,#a88de9 44%,#75bd91 100%)!important;
+}
+html[data-palette="jardim"] .lio-schedule-daily-number{
+  background:linear-gradient(100deg,#d96aac 0%,#a88de9 42%,#68a783 100%)!important;
+  -webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;
+}
+html[data-palette="jardim"] .lio-schedule-daily,
+html[data-palette="jardim"] .lio-schedule-calc-result{
+  background:linear-gradient(140deg,color-mix(in srgb,#d96aac 10%,var(--card)),color-mix(in srgb,#b7e7bd 25%,var(--card)))!important;
+}
+html[data-palette="jardim"] .lio-profile-overview .avatar{
+  background:linear-gradient(135deg,#d96aac 0%,#a88de9 38%,#68a783 100%)!important;
+}
+html[data-palette="jardim"] .lio-personalization-icon{
+  background:linear-gradient(135deg,color-mix(in srgb,#d96aac 28%,var(--card)),color-mix(in srgb,#b7e7bd 55%,var(--card)))!important;
+}
+html[data-palette="jardim"] .nav-button.active{
+  background:linear-gradient(100deg,color-mix(in srgb,#d96aac 20%,transparent),color-mix(in srgb,#b7e7bd 25%,transparent))!important;
+  box-shadow:inset 3px 0 var(--lio-jardim-verde)!important;
+}
+html[data-palette="jardim"] .nav-button.active .nav-icon{
+  color:var(--lio-jardim-verde)!important;
+}
+html[data-palette="jardim"] .enhanced-stats .stat:nth-child(3),
+html[data-palette="jardim"] .enhanced-stats .stat:nth-child(4){
+  --lio-stat-accent:var(--lio-jardim-verde-claro);
+}
+html[data-palette="jardim"] .lio-palette-choice.selected{
+  box-shadow:0 0 0 2px color-mix(in srgb,#b7e7bd 35%,transparent);
+}
+
 /* Início: ecos do fundo da tela de entrada — aurora suave com linhas curvas.
    Decoração isolada à página inicial. As cores acompanham a paleta LIO. */
 .shell.lio-home-shell{position:relative;isolation:isolate}
