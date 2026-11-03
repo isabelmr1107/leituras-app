@@ -125,20 +125,24 @@ export default function ReadingPlanner({books,onProgress}:{books:Book[];onProgre
       <button className="primary" type="button" disabled={busy||!book||!deadline} onClick={savePlan}>Salvar meu cronograma</button>
       {book&&book.totalPages===0&&<p style={{color:"var(--muted)",fontSize:13,marginTop:10}}>Adicione o total de páginas editando o livro na biblioteca, ou cadastre outra edição abaixo.</p>}
     </div>
-    {book&&plan&&<div style={panelStyle}>
-      <h2>{book.title}</h2><p style={{color:"var(--muted)"}}>{todayLabel}</p>
+    {book&&<div style={panelStyle}>
+      <h2>⏱ Cronômetro e ofensivas</h2><p style={{color:"var(--muted)"}}>Acompanhe seu hábito de leitura mesmo sem criar um cronograma.</p>
+      <h3>{book.title}</h3>
+      {remaining===0&&<p style={{color:"var(--muted)"}}>Este livro já está concluído. Escolha outro livro para registrar novas páginas.</p>}
+      {plan&&<><p style={{color:"var(--muted)"}}>{todayLabel}</p>
       <div className="planner-stats" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(145px,1fr))",gap:12,margin:"18px 0"}}>
         <div><span style={{fontSize:12,color:"var(--muted)"}}>Meta por dia</span><strong style={{display:"block",fontSize:30}}>{pagesPerDay} <span style={{fontSize:13}}>páginas</span></strong></div>
         <div><span style={{fontSize:12,color:"var(--muted)"}}>Faltam</span><strong style={{display:"block",fontSize:30}}>{remaining} <span style={{fontSize:13}}>páginas</span></strong></div>
         <div><span style={{fontSize:12,color:"var(--muted)"}}>Dias disponíveis</span><strong style={{display:"block",fontSize:30}}>{days}</strong></div>
         <div><span style={{fontSize:12,color:"var(--muted)"}}>Tempo estimado/dia</span><strong style={{display:"block",fontSize:30}}>{dailyMinutes===null?"—":dailyMinutes+" min"}</strong></div>
       </div>
+      </>}
       <div className="progress" aria-label={"Progresso: "+percent+" por cento"}><span style={{width:percent+"%"}}/></div>
       <p style={{fontSize:13,color:"var(--muted)",marginTop:10}}>{percent}% concluído · {sessionToday} páginas registradas hoje · 🔥 {streak} {streak===1?"dia seguido":"dias seguidos"}</p>
-      {plan.deadline<now&&<p>Se desejar, escolha uma nova data no formulário acima para reorganizar seu plano.</p>}
+      {plan&&plan.deadline<now&&<p>Se desejar, escolha uma nova data no formulário acima para reorganizar seu plano.</p>}
       <hr style={{border:0,borderTop:"1px solid var(--line)",margin:"22px 0"}}/>
       <h3>Registrar minha leitura</h3>
-      <p style={{color:"var(--muted)",fontSize:13}}>Depois de ler, informe a página em que parou. O cronograma se ajusta automaticamente.</p>
+      <p style={{color:"var(--muted)",fontSize:13}}>Depois de ler, informe a página em que parou. Se você tiver um cronograma salvo, a meta será recalculada automaticamente.</p>
       <div style={{display:"flex",flexWrap:"wrap",alignItems:"end",gap:12}}>
         <label style={{flex:"1 1 180px"}}>Página em que parei<input type="number" min={(book.currentPage||0)+1} max={book.totalPages} value={page} onChange={e=>setPage(e.target.value)} disabled={remaining===0}/></label>
         <button type="button" className="primary" disabled={busy||remaining===0} onClick={checkIn}>Registrar páginas</button>
@@ -148,7 +152,7 @@ export default function ReadingPlanner({books,onProgress}:{books:Book[];onProgre
         <button style={buttonStyle} type="button" disabled={remaining===0} onClick={()=>setRunning(v=>!v)}>{running?"Pausar":"Iniciar cronômetro"}</button>
         <button style={buttonStyle} type="button" onClick={()=>{setRunning(false);setSeconds(0)}}>Zerar</button>
       </div>
-      <p style={{color:"var(--muted)",fontSize:12,marginTop:10}}>Ao registrar uma sessão cronometrada de pelo menos um minuto, a estimativa de tempo por página será atualizada. O cronômetro funciona enquanto esta aba estiver aberta.</p>
+      <p style={{color:"var(--muted)",fontSize:12,marginTop:10}}>Ao registrar uma sessão cronometrada de pelo menos um minuto com um cronograma ativo, a estimativa de tempo por página será atualizada. O cronômetro funciona enquanto esta aba estiver aberta.</p>
     </div>}
     {(!books.length||!book)&&<div style={panelStyle}><p>Cadastre seu primeiro livro para começar um cronograma.</p></div>}
     <div style={panelStyle}><h3>＋ Cadastrar um livro para o cronograma</h3>
