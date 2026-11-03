@@ -1755,3 +1755,77 @@ html[data-palette="jardim"] .enhanced-stats .stat:nth-child(4){
 html[data-palette="jardim"] .lio-palette-choice.selected{
   box-shadow:0 0 0 2px color-mix(in srgb,#b7e7bd 35%,transparent);
 }
+
+/* Diário LIO: alternância entre cartões lado a lado e lista com rolagem interna.
+   Mantém cada registro completo, acessível e com o botão Excluir visível. */
+.journal-layout-options{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:-2px 0 18px}
+.journal-layout-options>span{font-size:12px;font-weight:750;color:var(--muted)}
+.journal-layout-switch{display:flex;flex-wrap:wrap;gap:7px}
+html[data-theme] .journal-layout-switch button{
+  border:1px solid var(--line);border-radius:11px;padding:9px 13px;
+  background:var(--card);color:var(--ink);font-size:12px;font-weight:700;
+}
+html[data-theme] .journal-layout-switch button.active{
+  border-color:var(--lio-color-b)!important;
+  background:linear-gradient(110deg,var(--lio-color-a),var(--lio-color-b),var(--lio-color-c))!important;
+  color:#fff!important;
+}
+.journal-entries-scroll{
+  max-height:min(70vh,780px);overflow-y:auto;overscroll-behavior:contain;
+  scrollbar-width:thin;scrollbar-color:var(--lio-color-b) transparent;
+  padding-right:5px;
+}
+.journal-entries-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:14px;
+}
+.journal-entries-grid .journal-entry{min-width:0;display:flex;flex-direction:column}
+.journal-entries-grid .journal-entry-foot{margin-top:auto}
+.journal-columns-gallery{grid-template-columns:1fr}
+.journal-columns-gallery .journal-composer{max-width:100%}
+.journal-entries:focus-visible{outline:2px solid var(--lio-color-b);outline-offset:5px;border-radius:12px}
+@media(max-width:760px){.journal-entries-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.journal-layout-switch{width:100%}.journal-layout-switch button{flex:1}.journal-entries-scroll{max-height:65vh}}
+
+/* Início: ecos do fundo da tela de entrada — aurora suave com linhas curvas.
+   Decoração isolada à página inicial. As cores acompanham a paleta LIO. */
+.shell.lio-home-shell{position:relative;isolation:isolate}
+.shell.lio-home-shell::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 61% 62% at 10% 16%,color-mix(in srgb,var(--lio-color-a) 25%,transparent),transparent 78%),
+    radial-gradient(ellipse 60% 57% at 90% 8%,color-mix(in srgb,var(--lio-color-d) 54%,transparent),transparent 77%),
+    radial-gradient(ellipse 54% 54% at 6% 95%,color-mix(in srgb,var(--lio-color-b) 31%,transparent),transparent 80%),
+    radial-gradient(ellipse 58% 55% at 91% 86%,color-mix(in srgb,var(--lio-color-c) 17%,#ffd8c1),transparent 82%),
+    var(--bg);
+}
+.shell.lio-home-shell::after{
+  content:"";position:fixed;z-index:0;pointer-events:none;
+  width:65vw;height:54vh;min-width:600px;min-height:420px;
+  top:-19vh;right:-23vw;transform:rotate(37deg);
+  border:2px solid rgba(255,255,255,.66);border-radius:95px;
+  opacity:.8;
+}
+html[data-theme="dark"] .shell.lio-home-shell::before{
+  background:
+    radial-gradient(ellipse 58% 59% at 4% 12%,color-mix(in srgb,var(--lio-color-a) 20%,transparent),transparent 77%),
+    radial-gradient(ellipse 58% 55% at 93% 10%,color-mix(in srgb,var(--lio-color-d) 12%,transparent),transparent 77%),
+    radial-gradient(ellipse 57% 60% at 8% 92%,color-mix(in srgb,var(--lio-color-b) 15%,transparent),transparent 80%),
+    radial-gradient(ellipse 54% 52% at 91% 86%,color-mix(in srgb,var(--lio-color-c) 11%,transparent),transparent 80%),
+    var(--bg);
+}
+html[data-theme="dark"] .shell.lio-home-shell::after{border-color:rgba(236,229,255,.12)}
+/* A decoração não impede os cliques e não se mistura com a interface. */
+.shell.lio-home-shell>.content{position:relative;z-index:1;background:transparent}
+@media(max-width:600px){
+  .shell.lio-home-shell::before{background:
+    radial-gradient(ellipse 87% 41% at 6% 8%,color-mix(in srgb,var(--lio-color-a) 25%,transparent),transparent 85%),
+    radial-gradient(ellipse 90% 47% at 92% 37%,color-mix(in srgb,var(--lio-color-d) 36%,transparent),transparent 84%),
+    radial-gradient(ellipse 88% 49% at 9% 89%,color-mix(in srgb,var(--lio-color-b) 21%,transparent),transparent 85%),
+    var(--bg)}
+  .shell.lio-home-shell::after{right:-110vw;top:-16vh;min-width:470px;min-height:360px;opacity:.55}
+  html[data-theme="dark"] .shell.lio-home-shell::before{
+    background:
+      radial-gradient(ellipse 90% 45% at 3% 10%,color-mix(in srgb,var(--lio-color-a) 20%,transparent),transparent 87%),
+      radial-gradient(ellipse 92% 50% at 92% 40%,color-mix(in srgb,var(--lio-color-d) 12%,transparent),transparent 85%),
+      var(--bg)}
+}
