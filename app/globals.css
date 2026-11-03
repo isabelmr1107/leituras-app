@@ -1829,3 +1829,21 @@ html[data-theme="dark"] .shell.lio-home-shell::after{border-color:rgba(236,229,2
       radial-gradient(ellipse 92% 50% at 92% 40%,color-mix(in srgb,var(--lio-color-d) 12%,transparent),transparent 85%),
       var(--bg)}
 }
+
+
+/* Jardim — gráficos em tons pastel, iguais à linguagem das barras de páginas.
+   A altura e os valores das colunas continuam controlados pelos dados. */
+html[data-palette="jardim"] .lio-monthly-panel .insights-track>div,
+html[data-palette="jardim"] .insights-track>div,
+html[data-palette="jardim"] .month-chart .chart-track span{
+  background:linear-gradient(to top,#f4a6c3 0%,#e7b6d8 30%,#d6c3ed 55%,#b9e5c2 82%,#afe3ba 100%)!important;
+}
+html[data-palette="jardim"] .lio-monthly-panel .lio-pages-bars .insights-track>div{
+  background:linear-gradient(to top,#f4a6c3 0%,#d1c8ea 46%,#b4e4bc 100%)!important;
+}
+html[data-palette="jardim"] .progress span,
+html[data-palette="jardim"] .lio-schedule-track>span{
+  background:linear-gradient(90deg,#ef9ec3,#cbb6ee,#b7e7bd)!important;
+}
+/* Remova o contorno inclinado sobreposto ao fundo do Início, mantendo o degradê suave. */
+.shell.lio-home-shell::after{content:none!important;display:none!important}
