@@ -1638,3 +1638,62 @@ html[data-theme] .lio-profile-name-card{
 .lio-profile-name-card form button{min-height:43px}
 .lio-profile-name-success{color:var(--lio-color-c);font-size:13px;font-weight:700;margin:14px 0 0}
 @media(max-width:550px){.lio-profile-name-card form button{width:100%}}
+
+
+/* Cronograma: todos os detalhes decorativos herdam a paleta ativa do LIO. */
+html[data-theme] .lio-schedule{
+  --schedule-a:var(--lio-color-a);
+  --schedule-b:var(--lio-color-b);
+  --schedule-c:var(--lio-color-c);
+  --schedule-soft:color-mix(in srgb,var(--schedule-a) 12%,transparent);
+}
+html[data-theme] .lio-schedule-heading-icon,
+html[data-theme] .lio-schedule-dot,
+html[data-theme] .lio-schedule-main-button,
+html[data-theme] .lio-schedule-track>span{
+  background:linear-gradient(105deg,var(--schedule-a),var(--schedule-b),var(--schedule-c))!important;
+}
+html[data-theme] .lio-schedule-heading-icon{
+  box-shadow:0 12px 35px color-mix(in srgb,var(--schedule-a) 22%,transparent);
+}
+html[data-theme] .lio-schedule-dot{
+  box-shadow:0 0 0 4px var(--schedule-soft);
+}
+html[data-theme] .lio-schedule-main-button{
+  box-shadow:0 6px 18px color-mix(in srgb,var(--schedule-a) 24%,transparent);
+}
+html[data-theme] .lio-schedule-daily-number{
+  background:linear-gradient(110deg,var(--schedule-a),var(--schedule-b),var(--schedule-c))!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent;
+}
+html[data-theme] .lio-schedule-daily{
+  background:linear-gradient(155deg,var(--schedule-soft),transparent 58%),var(--card);
+}
+html[data-theme] .lio-schedule-calc-result{
+  background:linear-gradient(145deg,color-mix(in srgb,var(--schedule-a) 12%,var(--card)),color-mix(in srgb,var(--schedule-c) 10%,var(--card)));
+}
+html[data-theme="dark"] .lio-schedule-calc-result{
+  background:linear-gradient(145deg,color-mix(in srgb,var(--schedule-a) 12%,#0b0e16),color-mix(in srgb,var(--schedule-c) 9%,#0b0e16));
+}
+html[data-theme] .lio-schedule-cover:not(:has(img)){
+  background:linear-gradient(145deg,var(--schedule-a),var(--schedule-b));
+}
+html[data-theme] .lio-schedule input:focus,
+html[data-theme] .lio-schedule select:focus{
+  outline:2px solid var(--schedule-b);
+  outline-offset:1px;
+  border-color:var(--schedule-a)!important;
+}
+html[data-theme] .lio-schedule-secondary-button:not(:disabled):hover{
+  border-color:var(--schedule-b);
+}
+html[data-theme] .lio-schedule-status-tile{
+  border-color:color-mix(in srgb,var(--schedule-a) 16%,var(--line));
+}
+html[data-palette="solar"] .lio-schedule-main-button,
+html[data-palette="tangerina"] .lio-schedule-main-button,
+html[data-palette="floresta"] .lio-schedule-main-button{
+  color:#17151c;
+}
