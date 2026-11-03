@@ -14,6 +14,11 @@ type BookSuggestion={title:string;author:string;totalPages:number|null;category:
 const months=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
 const blank={title:"",author:"",category:"",coverUrl:"",status:"Quero ler" as Status,rating:0,totalPages:0,currentPage:0,startedAt:"",finishedAt:""};
 export default function Dashboard({name}:{name:string}){
+  const [displayName,setDisplayName]=useState(name);
+  const [draftName,setDraftName]=useState(name);
+  const [nameBusy,setNameBusy]=useState(false);
+  const [nameNotice,setNameNotice]=useState("");
+  const [nameError,setNameError]=useState("");
   const [books,setBooks]=useState<Book[]>([]);
   const [entries,setEntries]=useState<Entry[]>([]);
   const [view,setView]=useState<View>("Dashboard");
@@ -71,6 +76,26 @@ export default function Dashboard({name}:{name:string}){
     if(!a.ok||!b.ok)throw new Error("Não foi possível carregar seus dados.");
     setBooks(await a.json());setEntries(await b.json());
   },[]);
+  useEffect(()=>{
+    let active=true;
+    fetch("/api/profile",{cache:"no-store"}).then(async r=>{if(!r.ok)throw new Error("Perfil indisponível");return r.json()}).then(data=>{
+      if(active&&typeof data.name==="string"){setDisplayName(data.name);setDraftName(data.name)}
+    }).catch(()=>{});
+    return()=>{active=false};
+  },[]);
+  async function saveDisplayName(event:React.FormEvent){
+    event.preventDefault();setNameError("");setNameNotice("");
+    const trimmed=draftName.trim();
+    if(trimmed.length<2||trimmed.length>80){setNameError("Digite um nome de 2 a 80 caracteres.");return}
+    setNameBusy(true);
+    try{
+      const response=await fetch("/api/profile",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:trimmed})});
+      const data=await response.json();
+      if(!response.ok)throw new Error(data.error||"Não foi possível salvar o nome.");
+      setDisplayName(data.name);setDraftName(data.name);setNameNotice("Seu nome foi atualizado!");
+    }catch(error){setNameError(error instanceof Error?error.message:"Erro ao salvar.");}
+    finally{setNameBusy(false)}
+  }
   useEffect(()=>{
     const saved=getSavedPreferences();
     setThemeChoice(saved.theme);setPalette(saved.palette);applyLioPreferences(saved.theme,saved.palette);setPreferencesLoaded(true);
@@ -372,7 +397,7 @@ export default function Dashboard({name}:{name:string}){
     }
   }
   return <main className="shell"><button type="button" className="menu-toggle" aria-label={menuOpen?"Fechar menu":"Abrir menu"} aria-expanded={menuOpen} aria-controls="main-sidebar" onClick={()=>setMenuOpen(x=>!x)}><span className="hamburger-bars" aria-hidden="true"><i/><i/><i/></span></button>{menuOpen&&<button type="button" className="menu-backdrop" onClick={()=>setMenuOpen(false)} aria-label="Fechar menu"/>}<aside id="main-sidebar" className={"sidebar drawer-sidebar"+(menuOpen?" is-open":"")} aria-hidden={!menuOpen}><div className="brand"><LioLogo className="lio-sidebar-logo"/><button type="button" className="sidebar-close" onClick={()=>setMenuOpen(false)} aria-label="Fechar menu">×</button></div><p className="sidebar-label">SEU ESPAÇO LITERÁRIO</p><nav aria-label="Navegação principal">{navItems.map(item=><button key={item.name} className={view===item.name?"nav-button active":"nav-button"} onClick={()=>{setView(item.name);setMenuOpen(false);}}><span className="nav-icon" aria-hidden="true">{navIcon(item.icon)}</span>{item.label}</button>)}</nav><div className="side-note"><div className="side-note-art">❝</div><strong>Uma história de cada vez.</strong><p>Seu universo de livros, metas e descobertas.</p><button type="button" onClick={()=>{edit();setMenuOpen(false);}}>＋ Novo livro</button></div></aside>
-    <section className="content"><header className="topbar"><div><p className="eyebrow">✳ {year} · Seu universo de histórias</p><h1>{view==="Dashboard"?"Olá, "+name.split(" ")[0]+"!":view}</h1><p className="header-subtitle">{view==="Dashboard"?"Cada página conta. Descubra o próximo capítulo da sua estante.":view==="Minha biblioteca"?"Todos os seus mundos favoritos, bem aqui.":view==="Diário"?"Guarde suas impressões e os melhores trechos.":view==="Metas"?"Pequenos passos, grandes histórias.":view==="Cronograma"?"Organize cada página no seu tempo.":"Seu cantinho de leitura."}</p></div><div className="topbar-actions"><button className="primary add-book-button" onClick={()=>edit()}>＋ Adicionar livro</button></div></header>
+    <section className="content"><header className="topbar"><div><p className="eyebrow">✳ {year} · Seu universo de histórias</p><h1>{view==="Dashboard"?"Olá, "+displayName.split(" ")[0]+"!":view}</h1><p className="header-subtitle">{view==="Dashboard"?"Cada página conta. Descubra o próximo capítulo da sua estante.":view==="Minha biblioteca"?"Todos os seus mundos favoritos, bem aqui.":view==="Diário"?"Guarde suas impressões e os melhores trechos.":view==="Metas"?"Pequenos passos, grandes histórias.":view==="Cronograma"?"Organize cada página no seu tempo.":"Seu cantinho de leitura."}</p></div><div className="topbar-actions"><button className="primary add-book-button" onClick={()=>edit()}>＋ Adicionar livro</button></div></header>
     <div className="mobile-nav" aria-label="Navegação alternativa">{navItems.map(item=><button key={item.name} className={view===item.name?"filter active":"filter"} onClick={()=>setView(item.name)}><span className="mobile-nav-icon" aria-hidden="true">{navIcon(item.icon)}</span> {item.label}</button>)}</div>
     {error&&!open&&<p className="error" role="alert">{error}</p>}{loading&&<p>Carregando sua estante…</p>}
     {view==="Cronograma"&&<ReadingPlanner books={books} onProgress={refresh}/>}
@@ -434,7 +459,8 @@ export default function Dashboard({name}:{name:string}){
       </section>
     </section>}
     {view==="Perfil"&&<section className="section lio-profile-page">
-      <div className="profile-card lio-profile-overview"><div className="avatar">{name.charAt(0).toUpperCase()}</div><div><h2>{name}</h2><p>Seu espaço pessoal de leituras.</p></div></div>
+      <div className="profile-card lio-profile-overview"><div className="avatar">{displayName.charAt(0).toUpperCase()}</div><div><h2>{displayName}</h2><p>Seu espaço pessoal de leituras.</p></div></div>
+      <section className="lio-profile-name-card" aria-labelledby="lio-profile-name-heading"><h3 id="lio-profile-name-heading">Meu nome no LIO</h3><p>Você pode atualizar o nome exibido no seu perfil sempre que quiser. Seu e-mail e seus livros não mudam.</p><form onSubmit={saveDisplayName}><label htmlFor="lio-display-name">Nome de exibição<input id="lio-display-name" type="text" autoComplete="name" maxLength={80} required value={draftName} onChange={event=>setDraftName(event.target.value)}/></label><button type="submit" className="primary" disabled={nameBusy||draftName.trim()===displayName}>{nameBusy?"Salvando…":"Salvar nome"}</button></form>{nameError&&<p role="alert" className="error">{nameError}</p>}{nameNotice&&<p role="status" className="lio-profile-name-success">{nameNotice}</p>}</section>
       <section className="lio-personalization" aria-labelledby="lio-personalization-heading">
         <div className="lio-personalization-header"><span className="lio-personalization-icon" aria-hidden="true">✦</span><div><h2 id="lio-personalization-heading">Personalização</h2><p>Deixe o LIO com a sua cara. Suas escolhas ficam salvas neste dispositivo.</p></div></div>
         <div className="lio-personalization-part"><h3>Aparência</h3><div className="lio-appearance-choices" role="group" aria-label="Escolher aparência">
