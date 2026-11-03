@@ -1697,3 +1697,34 @@ html[data-palette="tangerina"] .lio-schedule-main-button,
 html[data-palette="floresta"] .lio-schedule-main-button{
   color:#17151c;
 }
+
+
+/* Diário LIO: alternância entre cartões lado a lado e lista com rolagem interna.
+   Mantém cada registro completo, acessível e com o botão Excluir visível. */
+.journal-layout-options{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:-2px 0 18px}
+.journal-layout-options>span{font-size:12px;font-weight:750;color:var(--muted)}
+.journal-layout-switch{display:flex;flex-wrap:wrap;gap:7px}
+html[data-theme] .journal-layout-switch button{
+  border:1px solid var(--line);border-radius:11px;padding:9px 13px;
+  background:var(--card);color:var(--ink);font-size:12px;font-weight:700;
+}
+html[data-theme] .journal-layout-switch button.active{
+  border-color:var(--lio-color-b)!important;
+  background:linear-gradient(110deg,var(--lio-color-a),var(--lio-color-b),var(--lio-color-c))!important;
+  color:#fff!important;
+}
+.journal-entries-scroll{
+  max-height:min(70vh,780px);overflow-y:auto;overscroll-behavior:contain;
+  scrollbar-width:thin;scrollbar-color:var(--lio-color-b) transparent;
+  padding-right:5px;
+}
+.journal-entries-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:14px;
+}
+.journal-entries-grid .journal-entry{min-width:0;display:flex;flex-direction:column}
+.journal-entries-grid .journal-entry-foot{margin-top:auto}
+.journal-columns-gallery{grid-template-columns:1fr}
+.journal-columns-gallery .journal-composer{max-width:100%}
+.journal-entries:focus-visible{outline:2px solid var(--lio-color-b);outline-offset:5px;border-radius:12px}
+@media(max-width:760px){.journal-entries-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.journal-layout-switch{width:100%}.journal-layout-switch button{flex:1}.journal-entries-scroll{max-height:65vh}}
