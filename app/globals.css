@@ -1847,3 +1847,55 @@ html[data-palette="jardim"] .lio-schedule-track>span{
 }
 /* Remova o contorno inclinado sobreposto ao fundo do Início, mantendo o degradê suave. */
 .shell.lio-home-shell::after{content:none!important;display:none!important}
+
+
+/* Cadastro e edição de livros: modal isolado do layout das páginas.
+   Capa, ISBN e campos nunca devem esticar ou escapar do painel. */
+.lio-book-overlay{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2500!important;
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  padding:clamp(10px,3vw,24px)!important;
+  overflow:hidden;
+}
+.lio-book-overlay .modal{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  width:min(560px,100%)!important;
+  min-width:0;
+  max-width:100%!important;
+  max-height:calc(100dvh - clamp(20px,6vw,48px))!important;
+  margin:0!important;
+  overflow:hidden;
+  padding:clamp(17px,3vw,25px)!important;
+}
+.lio-book-overlay .modal-head{flex:0 0 auto;gap:10px;align-items:start;margin-bottom:12px}
+.lio-book-overlay .modal-head>div{min-width:0;flex:1}
+.lio-book-overlay .modal-head h2{overflow-wrap:anywhere}
+.lio-book-overlay .modal .modal-scroll{
+  flex:1 1 auto;
+  min-height:0;
+  min-width:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  padding-right:5px;
+}
+.lio-book-overlay .modal-scroll>*{max-width:100%}
+.lio-book-overlay .modal-scroll :is(input,select,textarea){display:block;max-width:100%;min-width:0;width:100%}
+.lio-book-overlay .modal-scroll .lookup-row{min-width:0;flex-wrap:wrap}
+.lio-book-overlay .modal-scroll .lookup-row>button{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.lio-book-overlay .modal-scroll .cover-picker{width:100%;max-width:100%}
+.lio-book-overlay .modal-scroll .cover-option{max-width:100%;min-width:0}
+.lio-book-overlay .modal>.primary.full{flex:0 0 auto;width:100%;margin-top:12px}
+.lio-book-overlay .modal>.error{flex:0 0 auto;max-height:72px;overflow-y:auto}
+@media(max-width:550px){
+  .lio-book-overlay{padding:10px!important}
+  .lio-book-overlay .modal{max-height:calc(100dvh - 20px)!important;border-radius:18px!important}
+  .lio-book-overlay .modal-head h2{font-size:22px}
+}
