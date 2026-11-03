@@ -10,7 +10,7 @@ const schema = z.object({
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return Response.json({ error: "Não autorizado" }, { status: 401 });
-  const entries = await prisma.readingEntry.findMany({ where: { book: { userId: session.user.id } }, include: { book: { select: { title: true } } }, orderBy: { createdAt: "desc" }, take: 300 });
+  const entries = await prisma.readingEntry.findMany({ where: { kind: { not: "Plano" }, book: { userId: session.user.id } }, include: { book: { select: { title: true } } }, orderBy: { createdAt: "desc" }, take: 300 });
   return Response.json(entries);
 }
 export async function POST(request: Request) {
