@@ -1697,3 +1697,48 @@ html[data-palette="tangerina"] .lio-schedule-main-button,
 html[data-palette="floresta"] .lio-schedule-main-button{
   color:#17151c;
 }
+
+
+/* Início: ecos do fundo da tela de entrada — aurora suave com linhas curvas.
+   Decoração isolada à página inicial. As cores acompanham a paleta LIO. */
+.shell.lio-home-shell{position:relative;isolation:isolate}
+.shell.lio-home-shell::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 61% 62% at 10% 16%,color-mix(in srgb,var(--lio-color-a) 25%,transparent),transparent 78%),
+    radial-gradient(ellipse 60% 57% at 90% 8%,color-mix(in srgb,var(--lio-color-d) 54%,transparent),transparent 77%),
+    radial-gradient(ellipse 54% 54% at 6% 95%,color-mix(in srgb,var(--lio-color-b) 31%,transparent),transparent 80%),
+    radial-gradient(ellipse 58% 55% at 91% 86%,color-mix(in srgb,var(--lio-color-c) 17%,#ffd8c1),transparent 82%),
+    var(--bg);
+}
+.shell.lio-home-shell::after{
+  content:"";position:fixed;z-index:0;pointer-events:none;
+  width:65vw;height:54vh;min-width:600px;min-height:420px;
+  top:-19vh;right:-23vw;transform:rotate(37deg);
+  border:2px solid rgba(255,255,255,.66);border-radius:95px;
+  opacity:.8;
+}
+html[data-theme="dark"] .shell.lio-home-shell::before{
+  background:
+    radial-gradient(ellipse 58% 59% at 4% 12%,color-mix(in srgb,var(--lio-color-a) 20%,transparent),transparent 77%),
+    radial-gradient(ellipse 58% 55% at 93% 10%,color-mix(in srgb,var(--lio-color-d) 12%,transparent),transparent 77%),
+    radial-gradient(ellipse 57% 60% at 8% 92%,color-mix(in srgb,var(--lio-color-b) 15%,transparent),transparent 80%),
+    radial-gradient(ellipse 54% 52% at 91% 86%,color-mix(in srgb,var(--lio-color-c) 11%,transparent),transparent 80%),
+    var(--bg);
+}
+html[data-theme="dark"] .shell.lio-home-shell::after{border-color:rgba(236,229,255,.12)}
+/* A decoração não impede os cliques e não se mistura com a interface. */
+.shell.lio-home-shell>.content{position:relative;z-index:1;background:transparent}
+@media(max-width:600px){
+  .shell.lio-home-shell::before{background:
+    radial-gradient(ellipse 87% 41% at 6% 8%,color-mix(in srgb,var(--lio-color-a) 25%,transparent),transparent 85%),
+    radial-gradient(ellipse 90% 47% at 92% 37%,color-mix(in srgb,var(--lio-color-d) 36%,transparent),transparent 84%),
+    radial-gradient(ellipse 88% 49% at 9% 89%,color-mix(in srgb,var(--lio-color-b) 21%,transparent),transparent 85%),
+    var(--bg)}
+  .shell.lio-home-shell::after{right:-110vw;top:-16vh;min-width:470px;min-height:360px;opacity:.55}
+  html[data-theme="dark"] .shell.lio-home-shell::before{
+    background:
+      radial-gradient(ellipse 90% 45% at 3% 10%,color-mix(in srgb,var(--lio-color-a) 20%,transparent),transparent 87%),
+      radial-gradient(ellipse 92% 50% at 92% 40%,color-mix(in srgb,var(--lio-color-d) 12%,transparent),transparent 85%),
+      var(--bg)}
+}
