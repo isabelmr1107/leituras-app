@@ -21,6 +21,9 @@ export default function ReadingPlanner({books,onProgress}:{books:Book[];onProgre
   const [deadline,setDeadline]=useState("");
   const [speed,setSpeed]=useState("");
   const [page,setPage]=useState("");
+  const [quickPages,setQuickPages]=useState("400");
+  const [quickDays,setQuickDays]=useState("7");
+  const [quickCurrent,setQuickCurrent]=useState("0");
   const [newTitle,setNewTitle]=useState("");
   const [newAuthor,setNewAuthor]=useState("");
   const [newTotal,setNewTotal]=useState("");
@@ -94,7 +97,24 @@ export default function ReadingPlanner({books,onProgress}:{books:Book[];onProgre
       await onProgress();await reload();setSeconds(0);setRunning(false);setMessage("Leitura registrada! Sua meta diária foi recalculada.");
     }catch(e){setError(e instanceof Error?e.message:"Erro ao registrar");}finally{setBusy(false)}
   }
+  const quickRemaining=Math.max(0,Math.max(0,Number(quickPages)||0)-Math.max(0,Number(quickCurrent)||0));
+  const quickDayCount=Math.max(1,Math.floor(Number(quickDays)||1));
+  const quickDaily=Math.ceil(quickRemaining/quickDayCount);
   return <section className="reading-planner" style={{display:"grid",gap:18}}>
+    <div style={panelStyle}>
+      <h2>🧮 Calculadora Literária</h2>
+      <p style={{color:"var(--muted)"}}>Descubra quantas páginas precisa ler por dia — sem precisar cadastrar o livro.</p>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(175px,1fr))",gap:12}}>
+        <label>Total de páginas<input type="number" min="1" max="100000" value={quickPages} onChange={e=>setQuickPages(e.target.value)}/></label>
+        <label>Quantos dias tenho?<input type="number" min="1" max="3650" value={quickDays} onChange={e=>setQuickDays(e.target.value)}/></label>
+        <label>Página atual (opcional)<input type="number" min="0" max={Math.max(0,Number(quickPages)||0)} value={quickCurrent} onChange={e=>setQuickCurrent(e.target.value)}/></label>
+      </div>
+      <div aria-live="polite" style={{border:"1px solid var(--line)",borderRadius:14,marginTop:12,padding:18,background:"var(--bg)"}}>
+        <span style={{fontSize:13,color:"var(--muted)"}}>Sua meta diária</span>
+        <strong style={{display:"block",fontSize:32,margin:"5px 0"}}>{quickDaily} páginas/dia</strong>
+        <p style={{color:"var(--muted)",fontSize:13,marginBottom:0}}>Para ler {quickRemaining} páginas em {quickDayCount} {quickDayCount===1?"dia":"dias"}.</p>
+      </div>
+    </div>
     <div style={panelStyle}><h2>✦ Seu cronograma de leitura</h2><p style={{color:"var(--muted)",lineHeight:1.6}}>Um capítulo de cada vez, no seu ritmo. Escolha um livro e a data em que gostaria de terminá-lo. O LIO recalcula as páginas por dia conforme você avança.</p>
       <label>Livro da sua biblioteca<select value={selected} onChange={e=>setSelected(e.target.value)} style={inputStyle}><option value="">Selecione um livro</option>{books.map(b=><option key={b.id} value={b.id}>{b.title} — {b.author}</option>)}</select></label>
       {book&&<p style={{color:"var(--muted)",fontSize:13}}>Total: <strong>{book.totalPages||"não informado"} páginas</strong> · Página atual: <strong>{book.currentPage}</strong></p>}
