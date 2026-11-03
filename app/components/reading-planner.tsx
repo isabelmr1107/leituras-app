@@ -1,7 +1,7 @@
 "use client";
 import {useEffect,useMemo,useState} from "react";
 
-type Book={id:string;title:string;author:string;totalPages:number;currentPage:number;status:string};
+type Book={id:string;title:string;author:string;totalPages:number;currentPage:number;status:string;coverUrl?:string|null};
 type PlanRecord={bookId:string;content:string;createdAt:string};
 type Session={bookId:string;kind:string;createdAt:string;pagesRead:number;content:string};
 type Plan={deadline:string;minutesPerPage:number|null};
@@ -24,6 +24,8 @@ export default function ReadingPlanner({books,onProgress}:{books:Book[];onProgre
   const [quickPages,setQuickPages]=useState("400");
   const [quickDays,setQuickDays]=useState("7");
   const [quickCurrent,setQuickCurrent]=useState("0");
+  const [settingsOpen,setSettingsOpen]=useState(false);
+  const [showRegistration,setShowRegistration]=useState(false);
   const [newTitle,setNewTitle]=useState("");
   const [newAuthor,setNewAuthor]=useState("");
   const [newTotal,setNewTotal]=useState("");
@@ -100,73 +102,103 @@ export default function ReadingPlanner({books,onProgress}:{books:Book[];onProgre
   const quickRemaining=Math.max(0,Math.max(0,Number(quickPages)||0)-Math.max(0,Number(quickCurrent)||0));
   const quickDayCount=Math.max(1,Math.floor(Number(quickDays)||1));
   const quickDaily=Math.ceil(quickRemaining/quickDayCount);
-  return <section className="reading-planner" style={{display:"grid",gap:18}}>
-    <div style={panelStyle}>
-      <h2>🧮 Calculadora Literária</h2>
-      <p style={{color:"var(--muted)"}}>Descubra quantas páginas precisa ler por dia — sem precisar cadastrar o livro.</p>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(175px,1fr))",gap:12}}>
-        <label>Total de páginas<input type="number" min="1" max="100000" value={quickPages} onChange={e=>setQuickPages(e.target.value)}/></label>
-        <label>Quantos dias tenho?<input type="number" min="1" max="3650" value={quickDays} onChange={e=>setQuickDays(e.target.value)}/></label>
-        <label>Página atual (opcional)<input type="number" min="0" max={Math.max(0,Number(quickPages)||0)} value={quickCurrent} onChange={e=>setQuickCurrent(e.target.value)}/></label>
-      </div>
-      <div aria-live="polite" style={{border:"1px solid var(--line)",borderRadius:14,marginTop:12,padding:18,background:"var(--bg)"}}>
-        <span style={{fontSize:13,color:"var(--muted)"}}>Sua meta diária</span>
-        <strong style={{display:"block",fontSize:32,margin:"5px 0"}}>{quickDaily} páginas/dia</strong>
-        <p style={{color:"var(--muted)",fontSize:13,marginBottom:0}}>Para ler {quickRemaining} páginas em {quickDayCount} {quickDayCount===1?"dia":"dias"}.</p>
-      </div>
+  const todayTarget=plan&&remaining>0?pagesPerDay+sessionToday:0;
+  const dayCompletion=todayTarget>0?Math.min(100,Math.round(sessionToday/todayTarget*100)):0;
+  const deadlineExpired=!!plan&&plan.deadline<now&&remaining>0;
+  const deadlineText=plan?dateFrom(plan.deadline).toLocaleDateString("pt-BR"):"Não definido";
+  return <section className="reading-planner lio-schedule">
+    <div className="lio-schedule-heading">
+      <div><span className="lio-schedule-eyebrow">✦ SUA JORNADA LITERÁRIA</span><h2>Seu ritmo, sua história.</h2><p>Planeje sua leitura sem pressa e acompanhe cada página conquistada.</p></div>
+      <span className="lio-schedule-heading-icon" aria-hidden="true">✧</span>
     </div>
-    <div style={panelStyle}><h2>✦ Seu cronograma de leitura</h2><p style={{color:"var(--muted)",lineHeight:1.6}}>Um capítulo de cada vez, no seu ritmo. Escolha um livro e a data em que gostaria de terminá-lo. O LIO recalcula as páginas por dia conforme você avança.</p>
-      <label>Livro da sua biblioteca<select value={selected} onChange={e=>setSelected(e.target.value)} style={inputStyle}><option value="">Selecione um livro</option>{books.map(b=><option key={b.id} value={b.id}>{b.title} — {b.author}</option>)}</select></label>
-      {book&&<p style={{color:"var(--muted)",fontSize:13}}>Total: <strong>{book.totalPages||"não informado"} páginas</strong> · Página atual: <strong>{book.currentPage}</strong></p>}
-      <div className="planner-fields" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:14}}>
-        <label>Quero terminar até<input type="date" min={now} value={deadline} onChange={e=>setDeadline(e.target.value)} style={inputStyle}/></label>
-        <label>Minutos por página (opcional)<input type="number" min="0.1" max="120" step="0.1" placeholder="Ex.: 1,5" value={speed} onChange={e=>setSpeed(e.target.value)} style={inputStyle}/></label>
+    <div className="lio-schedule-grid">
+      <div className="lio-schedule-main">
+        <section className="lio-schedule-card lio-schedule-book" aria-label="Seu livro de leitura">
+          <div className="lio-schedule-section-title"><span className="lio-schedule-dot"/> LEITURA EM FOCO</div>
+          {books.length>0?<><label className="lio-schedule-picker-label">Selecione o livro
+            <select value={selected} onChange={e=>setSelected(e.target.value)} className="lio-schedule-book-picker">
+              {books.map(item=><option key={item.id} value={item.id}>{item.title} — {item.author}</option>)}
+            </select>
+          </label>
+          {book&&<div className="lio-schedule-book-row">
+            <div className="lio-schedule-cover" aria-hidden="true">{book.coverUrl?<img src={book.coverUrl} alt="" loading="lazy"/>:<span>✦</span>}</div>
+            <div className="lio-schedule-book-info">
+              <h3>{book.title}</h3><p>{book.author}</p>
+              <div className="lio-schedule-progress-line"><span>{book.currentPage} de {book.totalPages||"—"} páginas</span><strong>{percent}%</strong></div>
+              <div className="lio-schedule-track" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label="Progresso do livro"><span style={{width:percent+"%"}}/></div>
+              <div className="lio-schedule-book-foot"><span>◷ Prazo: {deadlineText}</span><span>{remaining===0?"✓ Concluído":plan?(deadlineExpired?"Prazo vencido":days+" dias disponíveis"):"Defina sua meta abaixo"}</span></div>
+            </div>
+          </div>}</>:<div className="lio-schedule-empty">Você ainda não tem livros cadastrados. Use o formulário no final desta página para adicionar seu primeiro livro.</div>}
+        </section>
+        <section className="lio-schedule-card lio-schedule-daily" aria-label="Meta de hoje">
+          <div className="lio-schedule-section-title"><span className="lio-schedule-dot"/> SEU OBJETIVO DE HOJE</div>
+          <div className="lio-schedule-daily-inner">
+            <span className="lio-schedule-daily-label">Meta de hoje</span>
+            <strong className="lio-schedule-daily-number">{plan?pagesPerDay:remaining===0&&book?0:"—"}</strong>
+            <span className="lio-schedule-daily-unit">páginas por dia</span>
+            <p className="lio-schedule-time">{plan?(dailyMinutes===null?"⏱ Adicione seu ritmo para estimar os minutos":"⏱ Cerca de "+dailyMinutes+" minutos"):"Crie um cronograma para definir sua meta diária"}</p>
+          </div>
+          <div className="lio-schedule-daily-progress">
+            <div><span>Lidas hoje</span><strong>{sessionToday}{plan?" / "+todayTarget:" páginas"}</strong></div>
+            <div className="lio-schedule-track" role={plan?"progressbar":undefined} aria-label="Progresso da meta diária" aria-valuenow={plan?dayCompletion:undefined} aria-valuemin={plan?0:undefined} aria-valuemax={plan?100:undefined}><span style={{width:(plan?dayCompletion:0)+"%"}}/></div>
+          </div>
+          {book&&<div className="lio-schedule-checkin">
+            <label>Em qual página você parou?
+              <input type="number" min={book.currentPage+1} max={book.totalPages||undefined} value={page} onChange={e=>setPage(e.target.value)} disabled={remaining===0}/>
+            </label>
+            <button type="button" className="lio-schedule-main-button" disabled={busy||remaining===0||book.totalPages<=0} onClick={checkIn}>＋ Registrar leitura</button>
+          </div>}
+          <div className="lio-schedule-timer">
+            <div className="lio-schedule-timer-clock"><span aria-hidden="true">◷</span> <strong>{String(Math.floor(seconds/60)).padStart(2,"0")}:{String(seconds%60).padStart(2,"0")}</strong></div>
+            <button type="button" className="lio-schedule-secondary-button" disabled={!book||remaining===0||book.totalPages<=0} onClick={()=>setRunning(value=>!value)}>{running?"Ⅱ Pausar cronômetro":"▷ Iniciar cronômetro"}</button>
+            <button type="button" className="lio-schedule-reset-button" onClick={()=>{setRunning(false);setSeconds(0)}} aria-label="Zerar cronômetro">↺</button>
+          </div>
+          <p className="lio-schedule-note">O cronômetro fica ativo enquanto esta página estiver aberta. Registre sua leitura para salvar as páginas.</p>
+        </section>
+        <section className="lio-schedule-card lio-schedule-status">
+          <div className="lio-schedule-section-title"><span className="lio-schedule-dot"/> STATUS E CONQUISTAS</div>
+          <div className="lio-schedule-status-grid">
+            <div className="lio-schedule-status-tile"><span className="lio-schedule-status-emoji" aria-hidden="true">🔥</span><div><span>Ofensiva de leitura</span><strong>{streak} {streak===1?"dia seguido":"dias seguidos"}</strong><small>{streak>0?"Continue construindo seu hábito!":"Registre uma sessão para começar."}</small></div></div>
+            <div className="lio-schedule-status-tile"><span className="lio-schedule-status-emoji" aria-hidden="true">{remaining===0?"✨":deadlineExpired?"⚠️":"✧"}</span><div><span>Seu andamento</span><strong>{remaining===0?"Livro concluído":deadlineExpired?"Reajuste seu prazo":plan?"No seu ritmo":"Plano flexível"}</strong><small>{remaining===0?"Parabéns pela leitura!":plan?remaining+" páginas restantes":"Defina um prazo quando desejar."}</small></div></div>
+          </div>
+          <button type="button" className="lio-schedule-secondary-button lio-schedule-adjust" onClick={()=>setSettingsOpen(value=>!value)} aria-expanded={settingsOpen} aria-controls="lio-schedule-settings">{settingsOpen?"− Fechar ajustes":"✎ Criar ou reajustar cronograma"}</button>
+        </section>
+        <section id="lio-schedule-settings" className={"lio-schedule-card lio-schedule-settings"+(!settingsOpen?" is-collapsed":"")} hidden={!settingsOpen}>
+          <h3>✦ Ajustar seu planejamento</h3><p>Selecione uma data e, se quiser, informe seu ritmo médio de leitura. Você pode mudar o prazo a qualquer momento.</p>
+          <div className="lio-schedule-fields">
+            <label>Quero terminar até<input type="date" min={now} value={deadline} onChange={e=>setDeadline(e.target.value)}/></label>
+            <label>Minutos por página (opcional)<input type="number" min="0.1" max="120" step="0.1" placeholder="Ex.: 1,5" value={speed} onChange={e=>setSpeed(e.target.value)}/></label>
+          </div>
+          <button className="lio-schedule-main-button" type="button" disabled={busy||!book||!deadline} onClick={savePlan}>Salvar meu cronograma</button>
+          {book&&book.totalPages===0&&<p className="lio-schedule-note">Para montar um cronograma, adicione o total de páginas do livro na biblioteca.</p>}
+        </section>
       </div>
-      <button className="primary" type="button" disabled={busy||!book||!deadline} onClick={savePlan}>Salvar meu cronograma</button>
-      {book&&book.totalPages===0&&<p style={{color:"var(--muted)",fontSize:13,marginTop:10}}>Adicione o total de páginas editando o livro na biblioteca, ou cadastre outra edição abaixo.</p>}
-    </div>
-    {book&&<div style={panelStyle}>
-      <h2>⏱ Cronômetro e ofensivas</h2><p style={{color:"var(--muted)"}}>Acompanhe seu hábito de leitura mesmo sem criar um cronograma.</p>
-      <h3>{book.title}</h3>
-      {remaining===0&&<p style={{color:"var(--muted)"}}>Este livro já está concluído. Escolha outro livro para registrar novas páginas.</p>}
-      {plan&&<><p style={{color:"var(--muted)"}}>{todayLabel}</p>
-      <div className="planner-stats" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(145px,1fr))",gap:12,margin:"18px 0"}}>
-        <div><span style={{fontSize:12,color:"var(--muted)"}}>Meta por dia</span><strong style={{display:"block",fontSize:30}}>{pagesPerDay} <span style={{fontSize:13}}>páginas</span></strong></div>
-        <div><span style={{fontSize:12,color:"var(--muted)"}}>Faltam</span><strong style={{display:"block",fontSize:30}}>{remaining} <span style={{fontSize:13}}>páginas</span></strong></div>
-        <div><span style={{fontSize:12,color:"var(--muted)"}}>Dias disponíveis</span><strong style={{display:"block",fontSize:30}}>{days}</strong></div>
-        <div><span style={{fontSize:12,color:"var(--muted)"}}>Tempo estimado/dia</span><strong style={{display:"block",fontSize:30}}>{dailyMinutes===null?"—":dailyMinutes+" min"}</strong></div>
-      </div>
-      </>}
-      <div className="progress" aria-label={"Progresso: "+percent+" por cento"}><span style={{width:percent+"%"}}/></div>
-      <p style={{fontSize:13,color:"var(--muted)",marginTop:10}}>{percent}% concluído · {sessionToday} páginas registradas hoje · 🔥 {streak} {streak===1?"dia seguido":"dias seguidos"}</p>
-      {plan&&plan.deadline<now&&<p>Se desejar, escolha uma nova data no formulário acima para reorganizar seu plano.</p>}
-      <hr style={{border:0,borderTop:"1px solid var(--line)",margin:"22px 0"}}/>
-      <h3>Registrar minha leitura</h3>
-      <p style={{color:"var(--muted)",fontSize:13}}>Depois de ler, informe a página em que parou. Se você tiver um cronograma salvo, a meta será recalculada automaticamente.</p>
-      <div style={{display:"flex",flexWrap:"wrap",alignItems:"end",gap:12}}>
-        <label style={{flex:"1 1 180px"}}>Página em que parei<input type="number" min={(book.currentPage||0)+1} max={book.totalPages} value={page} onChange={e=>setPage(e.target.value)} disabled={remaining===0}/></label>
-        <button type="button" className="primary" disabled={busy||remaining===0} onClick={checkIn}>Registrar páginas</button>
-      </div>
-      <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:10,marginTop:12}}>
-        <strong style={{fontVariantNumeric:"tabular-nums"}}>⏱ {String(Math.floor(seconds/60)).padStart(2,"0")}:{String(seconds%60).padStart(2,"0")}</strong>
-        <button style={buttonStyle} type="button" disabled={remaining===0} onClick={()=>setRunning(v=>!v)}>{running?"Pausar":"Iniciar cronômetro"}</button>
-        <button style={buttonStyle} type="button" onClick={()=>{setRunning(false);setSeconds(0)}}>Zerar</button>
-      </div>
-      <p style={{color:"var(--muted)",fontSize:12,marginTop:10}}>Ao registrar uma sessão cronometrada de pelo menos um minuto com um cronograma ativo, a estimativa de tempo por página será atualizada. O cronômetro funciona enquanto esta aba estiver aberta.</p>
-    </div>}
-    {(!books.length||!book)&&<div style={panelStyle}><p>Cadastre seu primeiro livro para começar um cronograma.</p></div>}
-    <div style={panelStyle}><h3>＋ Cadastrar um livro para o cronograma</h3>
-      <form onSubmit={addBook} style={{display:"grid",gap:4}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>
-          <label>Título<input value={newTitle} onChange={e=>setNewTitle(e.target.value)} required maxLength={200}/></label>
-          <label>Autor<input value={newAuthor} onChange={e=>setNewAuthor(e.target.value)} required maxLength={200}/></label>
-          <label>Total de páginas<input type="number" min={1} max={100000} value={newTotal} onChange={e=>setNewTotal(e.target.value)} required/></label>
-        </div>
-        <button type="submit" style={{...buttonStyle,justifySelf:"start"}} disabled={busy}>Cadastrar livro</button>
-      </form>
+      <aside className="lio-schedule-side">
+        <section className="lio-schedule-card lio-schedule-calculator">
+          <div className="lio-schedule-section-title"><span className="lio-schedule-dot"/> CALCULADORA LITERÁRIA</div>
+          <h3>Quantas páginas por dia?</h3><p>Faça uma conta rápida, sem cadastrar nenhum livro.</p>
+          <div className="lio-schedule-calc-fields">
+            <label>Total de páginas<input type="number" min="1" max="100000" value={quickPages} onChange={e=>setQuickPages(e.target.value)}/></label>
+            <label>Quantos dias tenho?<input type="number" min="1" max="3650" value={quickDays} onChange={e=>setQuickDays(e.target.value)}/></label>
+            <label>Página atual (opcional)<input type="number" min="0" max={Math.max(0,Number(quickPages)||0)} value={quickCurrent} onChange={e=>setQuickCurrent(e.target.value)}/></label>
+          </div>
+          <div className="lio-schedule-calc-result" aria-live="polite"><span>Sua meta diária</span><strong>{quickDaily}</strong><b>páginas / dia</b><small>{quickRemaining} páginas restantes em {quickDayCount} {quickDayCount===1?"dia":"dias"}.</small></div>
+        </section>
+        <section className="lio-schedule-card lio-schedule-add">
+          <div className="lio-schedule-section-title"><span className="lio-schedule-dot"/> MINHA ESTANTE</div>
+          <h3>Uma nova história?</h3><p>Inclua um livro na sua biblioteca para organizar a leitura.</p>
+          <button type="button" className="lio-schedule-secondary-button" onClick={()=>setShowRegistration(value=>!value)} aria-expanded={showRegistration}>{showRegistration?"− Fechar cadastro":"＋ Cadastrar livro"}</button>
+          {showRegistration&&<form onSubmit={addBook} className="lio-schedule-add-form">
+            <label>Título<input value={newTitle} onChange={e=>setNewTitle(e.target.value)} required maxLength={200}/></label>
+            <label>Autor<input value={newAuthor} onChange={e=>setNewAuthor(e.target.value)} required maxLength={200}/></label>
+            <label>Total de páginas<input type="number" min={1} max={100000} value={newTotal} onChange={e=>setNewTotal(e.target.value)} required/></label>
+            <button type="submit" className="lio-schedule-main-button" disabled={busy}>Salvar livro</button>
+          </form>}
+        </section>
+        <p className="lio-schedule-disclaimer">✦ O LIO calcula o ritmo em dias corridos. As ofensivas são baseadas nos registros de sessões e o cronômetro não continua contando com a aba fechada.</p>
+      </aside>
     </div>
     {error&&<p className="error" role="alert">{error}</p>}
-    {message&&<p role="status" style={{color:"var(--accent)",fontWeight:700}}>{message}</p>}
-    <p style={{color:"var(--muted)",fontSize:12}}>O cálculo considera os dias corridos, incluindo hoje e o dia do prazo. Lembretes push e metas para vários livros serão adicionados em uma etapa futura.</p>
+    {message&&<p className="lio-schedule-success" role="status">{message}</p>}
   </section>
 }
