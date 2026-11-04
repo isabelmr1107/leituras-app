@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import MobileIntro from "./components/mobile-intro";
 export const metadata: Metadata = {
   title:"LIO — sua biblioteca pessoal",
   applicationName:"LIO",
@@ -13,5 +14,5 @@ export const metadata: Metadata = {
 };
 export const viewport: Viewport = {width:"device-width",initialScale:1,themeColor:"#10111b"};
 export default function RootLayout({children}:{children:React.ReactNode}) {
-  return <html lang="pt-BR"><body>{children}</body></html>;
+  return <html lang="pt-BR"><body>{children}<MobileIntro/></body></html>;
 }
