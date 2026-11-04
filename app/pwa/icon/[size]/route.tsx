@@ -1,46 +1,51 @@
-import { ImageResponse } from "next/og";
+import {ImageResponse} from "next/og";
 
-export const runtime = "nodejs";
+export const runtime="nodejs";
 
-export async function GET(request: Request, context: {params: Promise<{size: string}>}) {
-  const {size: rawSize} = await context.params;
-  const dimension = Number(rawSize);
-  if (dimension !== 192 && dimension !== 512) {
-    return new Response("Tamanho não disponível", {status: 404});
-  }
-  const maskable = new URL(request.url).searchParams.has("maskable");
-  const unit = dimension / 512;
+// Ícone aprovado: somente a marca vetorial LIO, sem nome ou moldura adicional.
+export async function GET(request:Request,{params}:{params:Promise<{size:string}>}){
+  const {size:raw}=await params;
+  const size=Number(raw);
+  if(size!==192&&size!==512)return new Response("Tamanho indisponível",{status:404});
+  const maskable=new URL(request.url).searchParams.has("maskable");
+  const s=size/512;
+  const markScale=maskable?.78:1;
+  const w=(v:number)=>Math.round(v*s*markScale);
   return new ImageResponse(
     <div style={{
-      width: "100%", height: "100%", display: "flex", position: "relative",
-      alignItems: "center", justifyContent: "center", overflow: "hidden",
-      background: "linear-gradient(138deg, #382452 0%, #57417d 39%, #2c5e7d 100%)",
-      color: "#fff"
+      display:"flex",position:"relative",alignItems:"center",justifyContent:"center",
+      width:"100%",height:"100%",overflow:"hidden",
+      background:"linear-gradient(132deg,#e2c7ff 0%,#c6dbff 32%,#b6eee0 60%,#fbd5e8 100%)"
     }}>
       <div style={{
-        display: "flex", position: "absolute", width: dimension * 0.88,
-        height: dimension * 0.88, borderRadius: dimension * 0.44,
-        background: "radial-gradient(circle at 34% 28%, rgba(222,191,255,.36), transparent 65%)"
+        display:"flex",position:"absolute",width:size*0.95,height:size*0.85,
+        top:-size*0.11,left:-size*0.14,borderRadius:size*0.5,
+        background:"radial-gradient(ellipse at center,rgba(188,130,236,.38),transparent 72%)"
       }}/>
       <div style={{
-        display: "flex", alignItems: "center", justifyContent: "center",
-        flexDirection: "column", width: dimension * (maskable ? 0.63 : 0.75),
-        height: dimension * 0.63, borderRadius: dimension * 0.16,
-        background: "rgba(13,12,30,.34)",
-        border: `${Math.max(1, Math.round(3 * unit))}px solid rgba(255,255,255,.32)`,
-        boxShadow: "0 18px 55px rgba(15,7,30,.2)"
-      }}>
+        display:"flex",position:"absolute",width:size*.88,height:size*.8,
+        bottom:-size*.29,right:-size*.3,borderRadius:size*.48,
+        background:"radial-gradient(ellipse at center,rgba(249,148,204,.42),transparent 76%)"
+      }}/>
+      <div style={{display:"flex",alignItems:"flex-end",justifyContent:"center",gap:w(14),width:w(370),height:w(235)}}>
         <div style={{
-          display: "flex", fontSize: Math.round((maskable ? 140 : 164)*unit),
-          fontFamily: "sans-serif", fontWeight: 800, letterSpacing: "-.11em",
-          marginRight: Math.round(16*unit), lineHeight: 1, color: "#f7f2ff"
-        }}>lio</div>
+          display:"flex",height:w(201),width:w(59),flexShrink:0,
+          borderRadius:w(4),background:"linear-gradient(100deg,#ffffff,#edf1ff)",
+          boxShadow:"0 9px 20px rgba(81,60,135,.1)"
+        }}/>
         <div style={{
-          display: "flex", fontSize: Math.round(27*unit), letterSpacing: ".25em",
-          color: "#93e5df", fontFamily: "sans-serif", marginTop: Math.round(12*unit)
-        }}>✦ ✦ ✦</div>
+          display:"flex",height:w(183),width:w(66),flexShrink:0,
+          transform:"rotate(-9deg)",borderRadius:w(4),
+          background:"linear-gradient(110deg,#ffffff,#f0f3ff)",
+          boxShadow:"0 9px 20px rgba(81,60,135,.1)"
+        }}/>
+        <div style={{
+          display:"flex",width:w(187),height:w(187),flexShrink:0,
+          borderRadius:"50%",border:`${w(43)}px solid #f9faff`,
+          boxShadow:"0 9px 20px rgba(81,60,135,.1)"
+        }}/>
       </div>
     </div>,
-    {width: dimension, height: dimension}
+    {width:size,height:size}
   );
 }
