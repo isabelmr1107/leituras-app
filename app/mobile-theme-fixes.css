@@ -72,6 +72,17 @@
   html[data-theme="dark"] .lio-intro-dots button:not(.active){background:#564861!important}
   /* Keep the approved colorful splash image, including in dark mode. */
   html[data-theme] .lio-intro-splash{background:transparent!important}
+  html[data-theme="dark"] .lio-intro-splash-bg{
+    background:
+      radial-gradient(ellipse 88% 59% at 6% 10%,color-mix(in srgb,var(--lio-color-a) 35%,transparent),transparent 83%),
+      radial-gradient(ellipse 80% 58% at 95% 10%,color-mix(in srgb,var(--lio-color-c) 22%,transparent),transparent 86%),
+      radial-gradient(ellipse 85% 62% at 95% 92%,color-mix(in srgb,var(--lio-color-b) 21%,transparent),transparent 88%),
+      #171321!important;
+  }
+  html[data-theme="dark"] .lio-intro-splash-bg button{
+    background:#ffffff18!important;
+    color:#f6ecff!important;
+  }
   /* Top row: logo on Início; top-right profile shortcut elsewhere. */
   .lio-mobile-top-actions{
     display:flex;justify-content:flex-end;align-items:center;
@@ -94,7 +105,7 @@
     outline:2px solid var(--lio-color-a);outline-offset:3px;
   }
   .shell>.menu-toggle{display:none!important}
-  .lio-app-bottom-nav{
+  html[data-theme] .lio-app-bottom-nav{
     background:color-mix(in srgb,var(--lio-app-surface) 94%,transparent)!important;
     border-color:var(--lio-app-border)!important;
     box-shadow:0 -9px 28px var(--lio-app-shadow)!important;
