@@ -1,5 +1,5 @@
 /* LIO PWA: sem cache de páginas pessoais, autenticação ou APIs. */
-const CACHE_NAME = "lio-public-assets-v1";
+const CACHE_NAME = "lio-public-assets-v2";
 self.addEventListener("install", (event) => {
   event.waitUntil(self.skipWaiting());
 });
