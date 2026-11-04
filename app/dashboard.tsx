@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import LioLogo from "./components/lio-logo";
 import ReadingPlanner from "./components/reading-planner";
 import PwaInstall from "./components/pwa-install";
+import MobileHome from "./components/mobile-home";
 import ShareReading from "./components/share-reading";
 import {palettes,applyLioPreferences,getSavedPreferences,saveLioPreferences,systemTheme,type LioPaletteId,type LioThemeChoice} from "./components/lio-preferences";
 type Status="Quero ler"|"Lendo"|"Lido"|"Abandonado";
@@ -420,6 +421,14 @@ export default function Dashboard({name}:{name:string}){
     {error&&!open&&<p className="error" role="alert">{error}</p>}{loading&&<p>Carregando sua estante…</p>}
     {view==="Cronograma"&&<ReadingPlanner books={books} onProgress={refresh}/>}
     {view==="Dashboard"&&<>
+    <MobileHome name={displayName} count={books.length} read={thisYear.length} goal={booksGoal} reading={reading.length}
+      featured={featuredBook||null}
+      onAdd={()=>edit()}
+      onFeatured={()=>featuredBook?openDetail(featuredBook):edit()}
+      onShelf={()=>setView("Minha biblioteca")}
+      onDiary={()=>setView("Diário")}
+      onGoals={()=>setView("Metas")}/>
+    <div className="lio-original-home">
     <section className="welcome-banner"><div className="welcome-copy"><span className="welcome-kicker">✦ SUA JORNADA LITERÁRIA</span><h2>{books.length?"Sua próxima aventura começa aqui.":"Toda grande história começa na primeira página."}</h2><p>{books.length?"Você tem "+books.length+" "+(books.length===1?"livro esperando por você.":"livros na estante. Continue sua história!"):"Crie sua biblioteca e transforme cada leitura em uma lembrança."}</p><div className="welcome-actions"><button className="welcome-button" onClick={()=>featuredBook?openDetail(featuredBook):edit()}>{featuredBook?"Ver minha próxima leitura":"Adicionar meu primeiro livro"} <span aria-hidden="true">↗</span></button><button className="welcome-link" onClick={()=>setView("Minha biblioteca")}>Explorar estante →</button></div></div><div className="welcome-illustration lio-floating-books" aria-hidden="true"><div className="lio-float-book lio-float-book-a"><span className="lio-float-spine"/><span className="lio-float-mark">✧</span></div><div className="lio-float-book lio-float-book-b"><span className="lio-float-spine"/><span className="lio-float-mark">✦</span></div><div className="lio-float-book lio-float-book-c"><span className="lio-float-spine"/><span className="lio-float-mark">✳</span></div></div></section>
     {featuredBook&&<section className="featured-strip"><span className="featured-icon">📖</span><div><span className="featured-eyebrow">{featuredBook.status==="Lendo"?"CONTINUE LENDO":"DA SUA ESTANTE"}</span><strong>{featuredBook.title}</strong><small>{featuredBook.author}{featuredBook.totalPages?" · "+Math.round(featuredBook.currentPage/featuredBook.totalPages*100)+"% concluído":""}</small></div><button className="featured-action" onClick={()=>openDetail(featuredBook)}>Abrir livro <span aria-hidden="true">↗</span></button></section>}
     <section className="stats enhanced-stats">
@@ -427,7 +436,7 @@ export default function Dashboard({name}:{name:string}){
       <button className="stat stat-button" onClick={()=>setView("Diário")}><span>Páginas acompanhadas</span><strong>{trackedPages}</strong><small>{pages} registradas no diário</small></button>
       <div className="stat"><span>Avaliação média</span><strong>{average}</strong><small>De 5 estrelas</small></div>
       <button className="stat stat-button" onClick={()=>setView("Metas")}><span>Meta anual</span><strong>{thisYear.length}/{booksGoal}</strong><small>{Math.min(100,Math.round(thisYear.length/booksGoal*100))}% da meta</small></button>
-    </section><section className="reading-summary" aria-label="Resumo da estante"><span>📖 Lendo agora: <strong>{reading.length}</strong></span><span>✨ Quero ler: <strong>{wishlisted.length}</strong></span><span>📚 Total na estante: <strong>{books.length}</strong></span></section><section className="section"><div className="section-head"><div><h2>Minha biblioteca</h2><p>Suas histórias em um só lugar.</p></div><button className="text-link" onClick={()=>setView("Minha biblioteca")}>Ver todos os livros →</button></div>{bookCards(books.slice(0,6))}</section>
+    </section><section className="reading-summary" aria-label="Resumo da estante"><span>📖 Lendo agora: <strong>{reading.length}</strong></span><span>✨ Quero ler: <strong>{wishlisted.length}</strong></span><span>📚 Total na estante: <strong>{books.length}</strong></span></section><section className="section"><div className="section-head"><div><h2>Minha biblioteca</h2><p>Suas histórias em um só lugar.</p></div><button className="text-link" onClick={()=>setView("Minha biblioteca")}>Ver todos os livros →</button></div>{bookCards(books.slice(0,6))}</section></div>
 </>}
     {view==="Minha biblioteca"&&<section className="section">
       <div className="shelf-simple"><div className="shelf-simple-head"><div><span className="section-kicker">✦ MINHAS COLEÇÕES</span><h2>Minhas estantes</h2></div><button type="button" className="primary" onClick={()=>setCreateShelfOpen(v=>!v)} aria-expanded={createShelfOpen}>{createShelfOpen?"Fechar":"＋ Criar estante"}</button></div>
@@ -479,6 +488,7 @@ export default function Dashboard({name}:{name:string}){
     {view==="Perfil"&&<section className="section lio-profile-page">
       <div className="profile-card lio-profile-overview"><div className="avatar">{displayName.charAt(0).toUpperCase()}</div><div><h2>{displayName}</h2><p>Seu espaço pessoal de leituras.</p></div></div>
       <section className="lio-profile-name-card" aria-labelledby="lio-profile-name-heading"><h3 id="lio-profile-name-heading">Meu nome no LIO</h3><p>Você pode atualizar o nome exibido no seu perfil sempre que quiser. Seu e-mail e seus livros não mudam.</p><form onSubmit={saveDisplayName}><label htmlFor="lio-display-name">Nome de exibição<input id="lio-display-name" type="text" autoComplete="name" maxLength={80} required value={draftName} onChange={event=>setDraftName(event.target.value)}/></label><button type="submit" className="primary" disabled={nameBusy||draftName.trim()===displayName}>{nameBusy?"Salvando…":"Salvar nome"}</button></form>{nameError&&<p role="alert" className="error">{nameError}</p>}{nameNotice&&<p role="status" className="lio-profile-name-success">{nameNotice}</p>}</section>
+      <div className="lio-mobile-replay"><button type="button" onClick={()=>window.dispatchEvent(new Event("lio:reopen-intro"))}>✦ Rever apresentação do aplicativo</button></div>
       <section className="lio-personalization" aria-labelledby="lio-personalization-heading">
         <div className="lio-personalization-header"><span className="lio-personalization-icon" aria-hidden="true">✦</span><div><h2 id="lio-personalization-heading">Personalização</h2><p>Deixe o LIO com a sua cara. Suas escolhas ficam salvas neste dispositivo.</p></div></div>
         <div className="lio-personalization-part"><h3>Aparência</h3><div className="lio-appearance-choices" role="group" aria-label="Escolher aparência">
