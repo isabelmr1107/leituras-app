@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   description:"Leia, organize e viva suas histórias com o LIO.",
   appleWebApp:{capable:true,statusBarStyle:"default",title:"LIO"},
   icons:{
-    icon:[{url:"/pwa/icon/192",type:"image/png",sizes:"192x192"}],
-    apple:[{url:"/pwa/icon/192",type:"image/png",sizes:"192x192"}]
+    icon:[{url:"/pwa/icon/192?v=2",type:"image/png",sizes:"192x192"}],
+    apple:[{url:"/pwa/icon/192?v=2",type:"image/png",sizes:"192x192"}]
   },
   verification:{google:"Hpq_0Rwz-C3Zmwzg6smfNPPPCBuZnK7BZV66ahPVNBg"}
 };
