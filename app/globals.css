@@ -1899,3 +1899,29 @@ html[data-palette="jardim"] .lio-schedule-track>span{
   .lio-book-overlay .modal{max-height:calc(100dvh - 20px)!important;border-radius:18px!important}
   .lio-book-overlay .modal-head h2{font-size:22px}
 }
+
+/* LIO PWA: painel de instalação, mantendo as paletas e os dois temas. */
+.lio-pwa-card{
+  display:flex;align-items:flex-start;gap:20px;
+  width:min(1050px,100%);margin:0 auto 30px;
+  padding:clamp(19px,3vw,30px);border-radius:24px;
+  border:1px solid var(--line);
+  background:linear-gradient(140deg,color-mix(in srgb,var(--lio-color-a) 9%,var(--card)),color-mix(in srgb,var(--lio-color-c) 7%,var(--card)));
+  box-shadow:0 12px 35px rgba(0,0,0,.09);
+}
+.lio-pwa-card[hidden]{display:none!important}
+.lio-pwa-icon{
+  position:relative;display:grid;place-items:center;flex-shrink:0;
+  width:76px;height:76px;border-radius:19px;
+  background:linear-gradient(135deg,var(--lio-color-a),var(--lio-color-b));
+  color:#fff;font:bold 37px/.9 Georgia,serif;letter-spacing:-.11em;
+  box-shadow:0 8px 27px color-mix(in srgb,var(--lio-color-a) 25%,transparent);
+}
+.lio-pwa-icon span{position:absolute;right:9px;top:9px;font-size:15px;letter-spacing:0;color:#b7e7df}
+.lio-pwa-copy{min-width:0;flex:1}
+.lio-pwa-copy h3{font-size:22px;margin:9px 0;color:var(--ink)}
+.lio-pwa-copy>p{font-size:13px;color:var(--muted);line-height:1.6;margin:0 0 15px}
+.lio-pwa-copy>.lio-pwa-steps{border-left:3px solid var(--lio-color-b);padding:10px 14px;background:color-mix(in srgb,var(--lio-color-a) 8%,var(--card));border-radius:0 10px 10px 0}
+.lio-pwa-copy>.lio-pwa-status{color:var(--lio-color-c);font-weight:750}
+.lio-pwa-copy button{padding:12px 20px;border-radius:12px}
+@media(max-width:550px){.lio-pwa-card{gap:12px}.lio-pwa-icon{width:53px;height:53px;border-radius:14px;font-size:27px}.lio-pwa-icon span{font-size:10px;right:5px;top:5px}.lio-pwa-copy h3{font-size:19px}}
