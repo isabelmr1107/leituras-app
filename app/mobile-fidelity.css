@@ -186,3 +186,10 @@
     background:#ffffff65;color:#694e88;font-size:12px;font-weight:750;
   }
 }
+
+/* Prevent the former dark dashboard backdrop and duplicate desktop header
+   from covering the dedicated light mobile home. */
+@media(max-width:767px){
+  html[data-theme] .shell.lio-home-shell::before{content:none!important;display:none!important}
+  html[data-theme] .shell.lio-home-shell .topbar{display:none!important}
+}
