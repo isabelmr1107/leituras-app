@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./mobile-app.css";
 import MobileIntro from "./components/mobile-intro";
 export const metadata: Metadata = {
   title:"LIO — sua biblioteca pessoal",
