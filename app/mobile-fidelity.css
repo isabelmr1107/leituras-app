@@ -159,3 +159,30 @@
   .lio-intro-overlay,.lio-intro-frame{border-top:0!important}
 }
 @media(min-width:768px){.lio-mobile-replay{display:none}}
+
+/* First screen of the original approved concept: full-bleed pastel LIO splash. */
+@media(max-width:767px){
+  .lio-intro-splash{background:#e8d8ff!important}
+  .lio-intro-splash-bg{
+    position:relative;display:grid;place-items:center;
+    width:100%;min-height:100dvh;overflow:hidden;
+    background:
+      radial-gradient(ellipse 82% 61% at 6% 11%,#dfbdff,transparent 83%),
+      radial-gradient(ellipse 73% 68% at 98% 10%,#baf1e8,transparent 82%),
+      radial-gradient(ellipse 77% 62% at 3% 92%,#a9cfff,transparent 80%),
+      radial-gradient(ellipse 70% 55% at 94% 92%,#ffcce4,transparent 80%),#e7dfff;
+  }
+  .lio-intro-splash-bg::before{
+    content:"";position:absolute;top:-26%;right:-32%;width:100vw;height:71vh;
+    border:1px solid rgba(255,255,255,.45);border-radius:33%;transform:rotate(32deg);
+  }
+  .lio-intro-splash-bg .lio-logo{
+    position:relative;z-index:1;width:min(63vw,260px);height:auto;color:#fff;
+    filter:drop-shadow(0 15px 18px #9e81bc38);
+  }
+  .lio-intro-splash-bg button{
+    position:absolute;bottom:calc(26px + env(safe-area-inset-bottom,0px));
+    right:24px;padding:10px 15px;border:0;border-radius:13px;
+    background:#ffffff65;color:#694e88;font-size:12px;font-weight:750;
+  }
+}
