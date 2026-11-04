@@ -1,4 +1,6 @@
 import {ImageResponse} from "next/og";
+import {readFile} from "node:fs/promises";
+import {join} from "node:path";
 
 export const runtime="nodejs";
 
@@ -8,9 +10,14 @@ export async function GET(request:Request,{params}:{params:Promise<{size:string}
   const size=Number(raw);
   if(size!==192&&size!==512)return new Response("Tamanho indisponível",{status:404});
   const maskable=new URL(request.url).searchParams.has("maskable");
-  const response=await fetch(new URL("/lio-original-icon.png",request.url),{cache:"force-cache"});
-  if(!response.ok)return new Response("Imagem indisponível",{status:503});
-  const data="data:image/png;base64,"+Buffer.from(await response.arrayBuffer()).toString("base64");
+  let artwork:Buffer;
+  try {artwork=await readFile(join(process.cwd(),"public","lio-original-icon.png"));}
+  catch{
+    const response=await fetch(new URL("/lio-original-icon.png",request.url),{cache:"force-cache"});
+    if(!response.ok)return new Response("Imagem indisponível",{status:503});
+    artwork=Buffer.from(await response.arrayBuffer());
+  }
+  const data="data:image/png;base64,"+artwork.toString("base64");
   return new ImageResponse(
     <div style={{
       display:"flex",alignItems:"center",justifyContent:"center",
