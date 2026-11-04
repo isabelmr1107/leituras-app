@@ -16,18 +16,25 @@ export default function MobileIntro(){
   const [enabled,setEnabled]=useState(false);
   const [page,setPage]=useState(0);
   const [isAuth,setIsAuth]=useState(false);
+  const [showSplash,setShowSplash]=useState(false);
   useEffect(()=>{
     if(!window.matchMedia("(max-width: 767px)").matches)return;
-    const reopen=()=>{setPage(0);setEnabled(true)};
+    const reopen=()=>{setPage(0);setShowSplash(true);setEnabled(true)};
     window.addEventListener("lio:reopen-intro",reopen);
     try {
       if(localStorage.getItem("lio-mobile-intro-v2")!=="done" || new URLSearchParams(window.location.search).get("apresentacao")==="1"){
         setIsAuth(["/login","/cadastro","/esqueci-senha"].some(p=>window.location.pathname.startsWith(p)));
+        setShowSplash(true);
         setEnabled(true);
       }
-    }catch{setEnabled(true)}
+    }catch{setShowSplash(true);setEnabled(true)}
     return ()=>window.removeEventListener("lio:reopen-intro",reopen);
   },[]);
+  useEffect(()=>{
+    if(!enabled||!showSplash)return;
+    const timer=setTimeout(()=>setShowSplash(false),1100);
+    return ()=>clearTimeout(timer);
+  },[enabled,showSplash]);
   useEffect(()=>{
     if(!enabled)return;
     const original=document.body.style.overflow;
@@ -39,6 +46,12 @@ export default function MobileIntro(){
     setEnabled(false);
   }
   if(!enabled)return null;
+  if(showSplash)return <div className="lio-intro-overlay lio-intro-splash" role="dialog" aria-modal="true" aria-label="LIO — sua biblioteca">
+    <div className="lio-intro-splash-bg">
+      <LioLogo title="LIO"/>
+      <button type="button" onClick={()=>setShowSplash(false)} aria-label="Continuar apresentação">Continuar →</button>
+    </div>
+  </div>;
   const slide=slides[page];
   const last=page===slides.length-1;
   return <div className="lio-intro-overlay" role="dialog" aria-modal="true" aria-label="Apresentação do LIO">
@@ -59,7 +72,7 @@ export default function MobileIntro(){
         <div className="lio-intro-dots" role="group" aria-label="Etapas da apresentação">
           {slides.map((_,i)=><button type="button" key={i} className={page===i?"active":""} aria-label={"Ir à apresentação "+(i+1)} aria-current={page===i?"step":undefined} onClick={()=>setPage(i)}/>)}
         </div>
-        <button type="button" className="lio-intro-cta" onClick={()=>last?finish():setPage(p=>Math.min(slides.length-1,p+1))}>{last?"Explorar o LIO":"Continuar"} <span aria-hidden="true">→</span></button>
+        <button type="button" className="lio-intro-cta" onClick={()=>last?finish():setPage(p=>Math.min(slides.length-1,p+1))}>{last?(isAuth?"Entrar":"Explorar o LIO"):"Continuar"} <span aria-hidden="true">→</span></button>
         {last&&isAuth&&<div className="lio-intro-auth-links"><Link href="/login" onClick={finish}>Entrar</Link><span>·</span><Link href="/cadastro" onClick={finish}>Criar conta</Link></div>}
       </div>
     </div>
