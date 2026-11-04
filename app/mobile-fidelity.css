@@ -1,0 +1,195 @@
+/* LIO MOBILE V2 — faithful pastel reference, without changes to desktop.
+   Light mobile surfaces, same real books and account, accessible bottom navigation. */
+.lio-ref-home{display:none}
+@media(max-width:767px){
+  html{background:#faf5fd!important}
+  html[data-theme] body{background:#faf5fd!important}
+  html[data-theme] .shell{
+    color:#322745!important;
+    background:
+      radial-gradient(ellipse 100% 38% at 10% 2%,#ecdffc 0%,transparent 90%),
+      radial-gradient(ellipse 80% 36% at 95% 0%,#e1f8f4 0%,transparent 88%),
+      radial-gradient(ellipse 100% 34% at 100% 96%,#f9e4f4 0%,transparent 90%),
+      #faf5fd!important;
+  }
+  html[data-theme] .shell>.content{
+    width:100%!important;max-width:560px!important;
+    padding:calc(25px + env(safe-area-inset-top,0px)) 18px calc(100px + env(safe-area-inset-bottom,0px))!important;
+    background:transparent!important;
+  }
+  .shell .lio-original-home{display:none!important}
+  .lio-ref-home{display:block;min-width:0;padding-bottom:16px}
+  .lio-home-shell>.menu-toggle{display:none!important}
+  .lio-ref-home-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .lio-ref-home-top .lio-logo{display:block;width:64px;height:47px;color:#a77acb;filter:drop-shadow(0 5px 7px #bba6d33b)}
+  .lio-ref-home-add-icon{
+    width:43px;height:43px;display:grid;place-items:center;
+    border:0!important;border-radius:50%!important;
+    background:linear-gradient(145deg,#e8c5f9,#ed9ecc)!important;color:#6d3989!important;
+    font-size:27px!important;box-shadow:0 4px 12px #d4b3de50;
+  }
+  .lio-ref-home-eyebrow{margin:0 0 9px;color:#dc69ab!important;font-size:10px;letter-spacing:.13em;font-weight:800}
+  .lio-ref-home>h1{font-size:clamp(27px,7vw,35px)!important;line-height:1.14!important;margin:0 0 7px!important;color:#352745!important;letter-spacing:-.05em!important}
+  .lio-ref-home-sub{font-size:13px!important;line-height:1.55;color:#81758a!important;margin:0 0 14px}
+  .lio-ref-home-quick{margin-bottom:18px}
+  .lio-ref-home-quick button{
+    border:0!important;border-radius:22px!important;
+    background:linear-gradient(105deg,#e67ab7,#bc91ea)!important;
+    color:#fff!important;padding:10px 16px!important;
+    font-weight:750;font-size:12px!important;box-shadow:0 9px 20px #df9fc82f;
+  }
+  .lio-ref-home-current{
+    padding:18px 16px 19px;border-radius:24px;
+    border:1px solid #ecd8f7;background:linear-gradient(120deg,#ffe6f0 0%,#f3e4ff 53%,#dcd0fa 100%);
+    box-shadow:0 12px 27px #cda4dc22;min-width:0;
+  }
+  .lio-ref-home-kicker{font-size:10px;font-weight:850;letter-spacing:.15em;color:#d76aa9}
+  .lio-ref-home-current-body{display:flex;align-items:center;gap:12px;margin-top:13px;min-width:0}
+  .lio-ref-home-cover{
+    width:79px;height:104px;flex:0 0 79px;
+    border-radius:12px;overflow:hidden;background:linear-gradient(160deg,#d9b5ef,#9a82d3 68%,#f3bbd6);
+    border:1px solid #ffffffb8;box-shadow:0 8px 17px #8f6fa934;
+  }
+  .lio-ref-home-cover img{width:100%;height:100%;object-fit:cover;display:block}
+  .lio-ref-home-cover>div{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;font-size:24px}
+  .lio-ref-home-cover>div span{font-size:25px}
+  .lio-ref-home-current-info{flex:1;min-width:0}
+  .lio-ref-home-current-info h2{
+    font-size:clamp(14px,4vw,19px)!important;line-height:1.22;
+    color:#342642!important;margin:0 0 5px;overflow-wrap:anywhere;
+  }
+  .lio-ref-home-current-info p{font-size:11px;line-height:1.4;color:#716482!important;margin:0 0 17px}
+  .lio-ref-home-readrow{display:flex;align-items:center;gap:7px}
+  .lio-ref-progress{height:6px;min-width:0;flex:1;border-radius:12px;background:#ffffffb9;overflow:hidden}
+  .lio-ref-progress>span{display:block;height:100%;border-radius:12px;background:linear-gradient(90deg,#e779b6,#ae8de3)}
+  .lio-ref-home-readrow small{color:#755b87;font-size:10px;font-weight:700}
+  .lio-ref-home-open{
+    flex:0 0 35px;width:35px;height:35px;display:grid;place-items:center;border:0!important;
+    border-radius:50%!important;color:#8150ad!important;background:#ffffffbd!important;font-size:18px;
+    box-shadow:0 5px 12px #9e83b22c;
+  }
+  .lio-ref-home-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:22px 0 12px}
+  .lio-ref-home-heading h2{font-size:18px!important;font-weight:800!important;color:#382943!important;margin:0!important}
+  .lio-ref-home-heading button{border:0;background:none;color:#805a9c;font-weight:700;font-size:11px;padding:6px 0}
+  .lio-ref-home-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+  .lio-ref-home-stats button{
+    display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;
+    padding:16px 4px 13px;border:1px solid #eee4f8!important;border-radius:17px!important;
+    background:linear-gradient(145deg,#f1e8ff,#f8f0ff)!important;color:#473056!important;
+  }
+  .lio-ref-home-stats button:nth-child(2){background:linear-gradient(145deg,#ffe9f4,#fff4f9)!important}
+  .lio-ref-home-stats button:nth-child(3){background:linear-gradient(145deg,#e0f5ed,#eefaf5)!important}
+  .lio-ref-home-stats span{font-size:22px;color:#9b6ed6}
+  .lio-ref-home-stats button:nth-child(2) span{color:#da65a7}
+  .lio-ref-home-stats button:nth-child(3) span{color:#79b69b}
+  .lio-ref-home-stats strong{font-size:20px;line-height:1;font-weight:850}
+  .lio-ref-home-stats small{font-size:10px;color:#85738f}
+  .lio-ref-home-links{display:flex;gap:10px;flex-wrap:wrap}
+  .lio-ref-home-links button{flex:1;min-width:125px;min-height:49px;padding:12px;background:#ffffffac;color:#664f80;border:1px solid #e9ddf5;border-radius:14px;font-size:12px;font-weight:700}
+  /* Match the reference's gentle bottom bar in both light and dark preference. */
+  html[data-theme] .lio-app-bottom-nav{
+    border-color:#eee4fa!important;
+    background:#fffafaef!important;
+    box-shadow:0 -8px 28px #9f89bc23!important;
+  }
+  html[data-theme] .lio-app-bottom-nav .lio-app-tab{color:#796f87!important}
+  html[data-theme] .lio-app-bottom-nav .lio-app-tab.active{color:#dc5aa9!important}
+  html[data-theme] .lio-app-bottom-nav .lio-app-tab.active .lio-app-tab-icon{
+    color:#d555a2!important;background:#fce5f4!important;
+  }
+  /* Other mobile tabs: soft pastel surfaces, preserve existing features and data. */
+  html[data-theme] .shell .topbar h1,
+  html[data-theme] .shell .section-head h2,
+  html[data-theme] .shell .section h2{color:#382b48!important}
+  html[data-theme] .shell .topbar .header-subtitle,
+  html[data-theme] .shell .section-head p{color:#81738f!important}
+  html[data-theme] .shell .shelf-simple,
+  html[data-theme] .shell .journal-composer,
+  html[data-theme] .shell .journal-timeline,
+  html[data-theme] .shell .goal-card,
+  html[data-theme] .shell .lio-profile-overview,
+  html[data-theme] .shell .profile-card{
+    background:#fffafef2!important;border-color:#e9dff4!important;
+    color:#42314f!important;box-shadow:0 8px 24px #a998bb19!important;
+  }
+  html[data-theme] .shell .shelf-grid:not(.shelf-list){grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+  html[data-theme] .shell .shelf-book{background:#fffaffef!important;border-color:#eddef4!important;color:#392a49!important;min-width:0!important;padding:9px!important}
+  html[data-theme] .shell .shelf-book .book-info h3{color:#3d2d4a!important;font-size:13px!important;overflow-wrap:anywhere}
+  html[data-theme] .shell .shelf-book .book-info p{color:#8a7992!important;font-size:11px!important}
+  html[data-theme] .shell .shelf-book .cover-wrap{border-radius:13px;overflow:hidden}
+  .lio-mobile-replay{display:block;margin:16px 0}
+  .lio-mobile-replay button{width:100%;padding:12px 16px;border-radius:15px;border:1px solid #deb9f0;background:#fff9ff;color:#865ba3;font-weight:700}
+  /* Onboarding illustration proportions and colors from first approved comp. */
+  .lio-intro-frame{
+    background:
+      radial-gradient(ellipse 100% 46% at 10% 7%,#e7d8ff,transparent 86%),
+      radial-gradient(ellipse 86% 53% at 96% 15%,#d4f7ed,transparent 85%),
+      radial-gradient(ellipse 105% 42% at 95% 98%,#f9dfec,transparent 84%),#fff9fd!important;
+  }
+  .lio-intro-art{height:clamp(195px,35dvh,300px)}
+  .lio-ref-open-book{width:min(91%,305px);height:auto;overflow:visible;filter:drop-shadow(0 14px 19px #ac90c044)}
+  .lio-ref-books{display:flex;align-items:center;justify-content:center;position:relative;width:245px;height:220px}
+  .lio-ref-books i{position:absolute;width:86px;height:164px;border-radius:13px;border:2px solid #ffffffaf;box-shadow:0 13px 20px #8b6ba234}
+  .lio-ref-books i:nth-child(1){left:28px;top:32px;transform:rotate(-14deg);background:linear-gradient(150deg,#bce6cc,#d2a2dc)}
+  .lio-ref-books i:nth-child(2){left:83px;top:16px;transform:rotate(-3deg);background:linear-gradient(145deg,#e66fb0,#f0aac9);z-index:2}
+  .lio-ref-books i:nth-child(3){left:141px;top:30px;transform:rotate(12deg);background:linear-gradient(145deg,#ab8be5,#ebaccb)}
+  .lio-ref-books span{position:absolute;z-index:3;color:#fff;font-size:34px;top:78px;left:109px}
+  .lio-ref-books b{position:absolute;z-index:3;color:#fff;font-size:25px;top:103px;left:43px}
+  .lio-ref-cards{width:270px;height:220px;position:relative}
+  .lio-ref-card{
+    position:absolute;display:flex;flex-direction:column;gap:6px;
+    background:linear-gradient(140deg,#ffffffec,#f4e8fc);
+    border:1px solid #fff;border-radius:16px;padding:14px;
+    box-shadow:0 14px 28px #a88ec33d;
+  }
+  .lio-ref-card-one{width:114px;height:143px;top:57px;left:6px;transform:rotate(-12deg)}
+  .lio-ref-card-two{width:132px;height:157px;top:36px;left:71px;z-index:2;align-items:center;justify-content:center}
+  .lio-ref-card-three{width:98px;height:130px;top:73px;right:3px;transform:rotate(13deg)}
+  .lio-ref-card-one span{color:#e778b2;font-size:29px}
+  .lio-ref-card-one b{border-radius:50%;background:#e27db8;color:#fff;padding:2px 5px;align-self:flex-start}
+  .lio-ref-card-two span{font-size:30px}
+  .lio-ref-card-two small{font-size:10px;color:#9575a6}
+  .lio-ref-card-two strong{font-size:12px;text-align:center;color:#51336f}
+  .lio-ref-card i{display:block;width:100%;height:7px;border-radius:9px;background:#e6d2f4}
+  .lio-ref-card-two i{height:9px;background:linear-gradient(90deg,#eb85b6 72%,#ead8f5 72%)}
+  .lio-ref-card-three span{font-size:28px;color:#b17cd4}
+  .lio-ref-ready{width:235px;height:235px;position:relative;display:grid;place-items:center;color:white;border-radius:55px;background:linear-gradient(140deg,#e5d0ff,#b7ebdf,#ffd2e4);box-shadow:0 14px 35px #ae8ec547}
+  .lio-ref-ready .lio-logo{width:200px;height:185px}
+  .lio-ref-ready span{position:absolute;right:24px;top:21px;font-size:29px}
+  .lio-intro-overlay,.lio-intro-frame{border-top:0!important}
+}
+@media(min-width:768px){.lio-mobile-replay{display:none}}
+
+/* First screen of the original approved concept: full-bleed pastel LIO splash. */
+@media(max-width:767px){
+  .lio-intro-splash{background:#e8d8ff!important}
+  .lio-intro-splash-bg{
+    position:relative;display:grid;place-items:center;
+    width:100%;min-height:100dvh;overflow:hidden;
+    background:
+      radial-gradient(ellipse 82% 61% at 6% 11%,#dfbdff,transparent 83%),
+      radial-gradient(ellipse 73% 68% at 98% 10%,#baf1e8,transparent 82%),
+      radial-gradient(ellipse 77% 62% at 3% 92%,#a9cfff,transparent 80%),
+      radial-gradient(ellipse 70% 55% at 94% 92%,#ffcce4,transparent 80%),#e7dfff;
+  }
+  .lio-intro-splash-bg::before{
+    content:"";position:absolute;top:-26%;right:-32%;width:100vw;height:71vh;
+    border:1px solid rgba(255,255,255,.45);border-radius:33%;transform:rotate(32deg);
+  }
+  .lio-intro-splash-bg .lio-logo{
+    position:relative;z-index:1;width:min(63vw,260px);height:auto;color:#fff;
+    filter:drop-shadow(0 15px 18px #9e81bc38);
+  }
+  .lio-intro-splash-bg button{
+    position:absolute;bottom:calc(26px + env(safe-area-inset-bottom,0px));
+    right:24px;padding:10px 15px;border:0;border-radius:13px;
+    background:#ffffff65;color:#694e88;font-size:12px;font-weight:750;
+  }
+}
+
+/* Prevent the former dark dashboard backdrop and duplicate desktop header
+   from covering the dedicated light mobile home. */
+@media(max-width:767px){
+  html[data-theme] .shell.lio-home-shell::before{content:none!important;display:none!important}
+  html[data-theme] .shell.lio-home-shell .topbar{display:none!important}
+}
