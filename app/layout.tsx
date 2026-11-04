@@ -1,6 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
-export const metadata: Metadata = { title:"LIO — sua biblioteca pessoal", description:"Leia, organize e viva suas histórias com o LIO.", verification: { google: "Hpq_0Rwz-C3Zmwzg6smfNPPPCBuZnK7BZV66ahPVNBg" } };
+export const metadata: Metadata = {
+  title:"LIO — sua biblioteca pessoal",
+  applicationName:"LIO",
+  description:"Leia, organize e viva suas histórias com o LIO.",
+  appleWebApp:{capable:true,statusBarStyle:"default",title:"LIO"},
+  icons:{
+    icon:[{url:"/pwa/icon/192",type:"image/png",sizes:"192x192"}],
+    apple:[{url:"/pwa/icon/192",type:"image/png",sizes:"192x192"}]
+  },
+  verification:{google:"Hpq_0Rwz-C3Zmwzg6smfNPPPCBuZnK7BZV66ahPVNBg"}
+};
+export const viewport: Viewport = {width:"device-width",initialScale:1,themeColor:"#10111b"};
 export default function RootLayout({children}:{children:React.ReactNode}) {
   return <html lang="pt-BR"><body>{children}</body></html>;
 }
