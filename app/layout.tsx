@@ -2,12 +2,13 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./mobile-app.css";
 import "./mobile-fidelity.css";
+import "./mobile-theme-fixes.css";
 import MobileIntro from "./components/mobile-intro";
 export const metadata: Metadata = {
   title:"LIO — sua biblioteca pessoal",
   applicationName:"LIO",
   description:"Leia, organize e viva suas histórias com o LIO.",
-  appleWebApp:{capable:true,statusBarStyle:"default",title:"LIO"},
+  appleWebApp:{capable:true,statusBarStyle:"black-translucent",title:"LIO"},
   icons:{
     icon:[{url:"/pwa/icon/192?v=2",type:"image/png",sizes:"192x192"}],
     apple:[{url:"/pwa/icon/192?v=2",type:"image/png",sizes:"192x192"}]

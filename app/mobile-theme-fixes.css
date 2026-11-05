@@ -1,0 +1,264 @@
+
+/* iPhone/PWA LIO: mobile-only theme fidelity, safe areas and app navigation.
+   The desktop styles are intentionally untouched. */
+.lio-mobile-top-actions{display:none}
+@media(max-width:767px){
+  html[data-theme="light"]{
+    --lio-app-bg:#faf6fc;
+    --lio-app-surface:#fffafe;
+    --lio-app-ink:#352943;
+    --lio-app-muted:#746882;
+    --lio-app-border:#e9dcf3;
+    --lio-app-shadow:rgba(110,82,141,.13);
+  }
+  html[data-theme="dark"]{
+    --lio-app-bg:#12101b;
+    --lio-app-surface:#211c2c;
+    --lio-app-ink:#f5efff;
+    --lio-app-muted:#c9bcd5;
+    --lio-app-border:#4c405c;
+    --lio-app-shadow:rgba(0,0,0,.26);
+  }
+  html,html body{
+    background:var(--lio-app-bg)!important;
+    color:var(--lio-app-ink)!important;
+    min-height:100%;
+  }
+  html[data-theme] .shell{
+    color:var(--lio-app-ink)!important;
+    background:
+      radial-gradient(ellipse 88% 45% at 0% 0%,color-mix(in srgb,var(--lio-color-a) 11%,transparent),transparent 84%),
+      radial-gradient(ellipse 80% 42% at 98% 6%,color-mix(in srgb,var(--lio-color-d) 12%,transparent),transparent 82%),
+      var(--lio-app-bg)!important;
+  }
+  html[data-theme="dark"] .shell{
+    background:
+      radial-gradient(ellipse 100% 47% at 0% 0%,color-mix(in srgb,var(--lio-color-a) 16%,transparent),transparent 86%),
+      radial-gradient(ellipse 85% 35% at 100% 0%,color-mix(in srgb,var(--lio-color-c) 9%,transparent),transparent 82%),
+      var(--lio-app-bg)!important;
+  }
+  html[data-theme] .shell>.content{
+    color:var(--lio-app-ink)!important;
+    background:transparent!important;
+    padding-top:calc(16px + env(safe-area-inset-top,0px))!important;
+  }
+  /* The system status bar is kept, while the page background continues behind it. */
+  html[data-theme] .lio-intro-overlay{
+    background:var(--lio-app-bg)!important;
+  }
+  html[data-theme="light"] .lio-intro-frame{
+    background:
+      radial-gradient(ellipse 100% 40% at 8% 6%,color-mix(in srgb,var(--lio-color-a) 19%,#fcf6ff),transparent 86%),
+      radial-gradient(ellipse 87% 55% at 95% 14%,color-mix(in srgb,var(--lio-color-d) 25%,#fefafe),transparent 85%),
+      radial-gradient(ellipse 100% 44% at 90% 99%,color-mix(in srgb,var(--lio-color-b) 16%,#fff7fd),transparent 84%),
+      var(--lio-app-bg)!important;
+  }
+  html[data-theme="dark"] .lio-intro-frame{
+    color:var(--lio-app-ink)!important;
+    background:
+      radial-gradient(ellipse 100% 40% at 7% 5%,color-mix(in srgb,var(--lio-color-a) 22%,#20182b),transparent 83%),
+      radial-gradient(ellipse 85% 47% at 95% 19%,color-mix(in srgb,var(--lio-color-c) 13%,#191b2c),transparent 84%),
+      #171420!important;
+  }
+  html[data-theme="dark"] .lio-intro-copy h1{color:#f9f3ff!important}
+  html[data-theme="dark"] .lio-intro-copy p{color:#d2c5df!important}
+  html[data-theme] .lio-intro-eyebrow{color:var(--lio-color-a)!important}
+  html[data-theme="dark"] .lio-intro-skip{color:#dfd1e9!important}
+  html[data-theme] .lio-intro-cta{
+    background:linear-gradient(110deg,var(--lio-color-a),var(--lio-color-b),var(--lio-color-c))!important;
+    color:#fff!important;
+  }
+  html[data-theme] .lio-intro-dots button.active{background:var(--lio-color-a)!important}
+  html[data-theme="dark"] .lio-intro-dots button:not(.active){background:#564861!important}
+  /* Keep the approved colorful splash image, including in dark mode. */
+  html[data-theme] .lio-intro-splash{background:transparent!important}
+  html[data-theme="dark"] .lio-intro-splash-bg{
+    background:
+      radial-gradient(ellipse 88% 59% at 6% 10%,color-mix(in srgb,var(--lio-color-a) 35%,transparent),transparent 83%),
+      radial-gradient(ellipse 80% 58% at 95% 10%,color-mix(in srgb,var(--lio-color-c) 22%,transparent),transparent 86%),
+      radial-gradient(ellipse 85% 62% at 95% 92%,color-mix(in srgb,var(--lio-color-b) 21%,transparent),transparent 88%),
+      #171321!important;
+  }
+  html[data-theme="dark"] .lio-intro-splash-bg button{
+    background:#ffffff18!important;
+    color:#f6ecff!important;
+  }
+  /* Top row: logo on Início; top-right profile shortcut elsewhere. */
+  .lio-mobile-top-actions{
+    display:flex;justify-content:flex-end;align-items:center;
+    min-height:43px;position:relative;z-index:4;
+    margin:0 0 7px;
+  }
+  .lio-home-shell .lio-mobile-top-actions{display:none}
+  .lio-ref-home-top{position:relative}
+  .lio-mobile-profile-link,.lio-ref-home-add-icon{
+    display:grid;place-items:center;
+    width:43px!important;height:43px!important;
+    padding:0!important;flex-shrink:0;border-radius:50%!important;
+    border:1px solid var(--lio-app-border)!important;
+    background:color-mix(in srgb,var(--lio-color-a) 15%,var(--lio-app-surface))!important;
+    color:var(--lio-color-a)!important;
+    box-shadow:0 5px 15px var(--lio-app-shadow)!important;
+  }
+  .lio-mobile-profile-link svg,.lio-ref-home-add-icon svg{width:22px;height:22px}
+  .lio-mobile-profile-link:focus-visible,.lio-ref-home-add-icon:focus-visible{
+    outline:2px solid var(--lio-color-a);outline-offset:3px;
+  }
+  .shell>.menu-toggle{display:none!important}
+  html[data-theme] .lio-app-bottom-nav{
+    background:color-mix(in srgb,var(--lio-app-surface) 94%,transparent)!important;
+    border-color:var(--lio-app-border)!important;
+    box-shadow:0 -9px 28px var(--lio-app-shadow)!important;
+  }
+  html[data-theme] .lio-app-bottom-nav .lio-app-tab{
+    color:var(--lio-app-muted)!important;
+  }
+  html[data-theme] .lio-app-bottom-nav .lio-app-tab.active{
+    color:var(--lio-color-a)!important;
+  }
+  html[data-theme] .lio-app-bottom-nav .lio-app-tab.active .lio-app-tab-icon{
+    color:var(--lio-color-a)!important;
+    background:color-mix(in srgb,var(--lio-color-a) 18%,var(--lio-app-surface))!important;
+  }
+  html[data-theme] .lio-ref-home-eyebrow,
+  html[data-theme] .lio-ref-home-kicker{color:var(--lio-color-a)!important}
+  html[data-theme] .lio-ref-home>h1,
+  html[data-theme] .lio-ref-home-heading h2,
+  html[data-theme] .lio-ref-home-current-info h2{
+    color:var(--lio-app-ink)!important;
+  }
+  html[data-theme] .lio-ref-home-sub,
+  html[data-theme] .lio-ref-home-current-info p,
+  html[data-theme] .lio-ref-home-readrow small,
+  html[data-theme] .lio-ref-home-stats small{color:var(--lio-app-muted)!important}
+  html[data-theme] .lio-ref-home-quick button{
+    background:linear-gradient(105deg,var(--lio-color-a),var(--lio-color-b))!important;
+  }
+  html[data-theme] .lio-ref-home-current{
+    background:linear-gradient(120deg,
+      color-mix(in srgb,var(--lio-color-a) 14%,var(--lio-app-surface)),
+      color-mix(in srgb,var(--lio-color-b) 10%,var(--lio-app-surface)),
+      color-mix(in srgb,var(--lio-color-c) 15%,var(--lio-app-surface)))!important;
+    border-color:var(--lio-app-border)!important;
+    box-shadow:0 12px 27px var(--lio-app-shadow)!important;
+  }
+  html[data-theme] .lio-ref-progress{background:color-mix(in srgb,var(--lio-app-muted) 25%,transparent)!important}
+  html[data-theme] .lio-ref-progress span{
+    background:linear-gradient(90deg,var(--lio-color-a),var(--lio-color-b))!important;
+  }
+  html[data-theme] .lio-ref-home-open{
+    color:var(--lio-color-a)!important;
+    background:var(--lio-app-surface)!important;
+  }
+  html[data-theme] .lio-ref-home-heading button{color:var(--lio-color-a)!important}
+  html[data-theme] .lio-ref-home-stats button{
+    color:var(--lio-app-ink)!important;
+    border-color:var(--lio-app-border)!important;
+    background:color-mix(in srgb,var(--lio-color-a) 9%,var(--lio-app-surface))!important;
+  }
+  html[data-theme] .lio-ref-home-stats button:nth-child(2){
+    background:color-mix(in srgb,var(--lio-color-b) 11%,var(--lio-app-surface))!important;
+  }
+  html[data-theme] .lio-ref-home-stats button:nth-child(3){
+    background:color-mix(in srgb,var(--lio-color-d) 12%,var(--lio-app-surface))!important;
+  }
+  html[data-theme] .lio-ref-home-stats span{color:var(--lio-color-a)!important}
+  html[data-theme] .lio-ref-home-stats button:nth-child(2) span{color:var(--lio-color-b)!important}
+  html[data-theme] .lio-ref-home-stats button:nth-child(3) span{color:var(--lio-color-c)!important}
+  html[data-theme] .lio-ref-home-links button{
+    background:var(--lio-app-surface)!important;
+    color:var(--lio-app-ink)!important;
+    border-color:var(--lio-app-border)!important;
+  }
+  html[data-theme] .shell .topbar h1,
+  html[data-theme] .shell .section-head h2,
+  html[data-theme] .shell .section h2{color:var(--lio-app-ink)!important}
+  html[data-theme] .shell .topbar .header-subtitle,
+  html[data-theme] .shell .section-head p{color:var(--lio-app-muted)!important}
+  html[data-theme] .shell .shelf-simple,
+  html[data-theme] .shell .journal-composer,
+  html[data-theme] .shell .journal-timeline,
+  html[data-theme] .shell .goal-card,
+  html[data-theme] .shell .lio-profile-overview,
+  html[data-theme] .shell .profile-card,
+  html[data-theme] .shell .lio-profile-name-card,
+  html[data-theme] .shell .lio-personalization{
+    background:var(--lio-app-surface)!important;
+    color:var(--lio-app-ink)!important;
+    border-color:var(--lio-app-border)!important;
+    box-shadow:0 8px 24px var(--lio-app-shadow)!important;
+  }
+  html[data-theme] .shell .shelf-book{
+    background:var(--lio-app-surface)!important;
+    color:var(--lio-app-ink)!important;
+    border-color:var(--lio-app-border)!important;
+  }
+  html[data-theme] .shell .shelf-book .book-info h3{color:var(--lio-app-ink)!important}
+  html[data-theme] .shell .shelf-book .book-info p{color:var(--lio-app-muted)!important}
+  html[data-theme="dark"] .shell :is(.journal-hero,.journal-entry,.journal-timeline,.lio-profile-name-card,.lio-profile-overview,.profile-card,.lio-pwa-card){
+    color:var(--lio-app-ink)!important;
+    border-color:var(--lio-app-border)!important;
+  }
+  html[data-theme="dark"] .shell :is(input,textarea,select){
+    background:#201b2d!important;
+    color:#f9f3ff!important;
+    border-color:#51445e!important;
+  }
+  html[data-theme="dark"] .shell :is(input,textarea)::placeholder{color:#b5a9c4!important}
+  html[data-theme="dark"] .shell .lio-profile-name-card p{color:var(--lio-app-muted)!important}
+  /* The auth flow is part of the app, so no giant mismatched desktop login art. */
+  html[data-theme] .lio-auth{
+    --lio-text:var(--lio-app-ink);
+    --lio-muted:var(--lio-app-muted);
+    --lio-field:var(--lio-app-surface);
+    --lio-border:var(--lio-app-border);
+    background:var(--lio-app-bg)!important;
+    color:var(--lio-app-ink)!important;
+  }
+  html[data-theme] .lio-auth-shell{display:block!important;min-height:100dvh}
+  html[data-theme] .lio-auth-visual{
+    min-height:0!important;max-height:none!important;height:148px!important;
+    background:
+      radial-gradient(ellipse 72% 82% at 0% 0%,color-mix(in srgb,var(--lio-color-a) 20%,transparent),transparent 88%),
+      radial-gradient(ellipse 88% 92% at 100% 5%,color-mix(in srgb,var(--lio-color-c) 17%,transparent),transparent 90%),
+      var(--lio-app-bg)!important;
+  }
+  .lio-auth-visual .lio-auth-art,
+  .lio-auth-visual .lio-auth-sparkles,
+  .lio-auth-visual .lio-auth-tagline{display:none!important}
+  html[data-theme] .lio-auth-visual-content{
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    flex-direction:column!important;gap:4px!important;
+  }
+  html[data-theme] .lio-auth-logo{width:92px!important;height:70px!important;opacity:.9!important;color:var(--lio-color-a)!important}
+  html[data-theme] .lio-auth-visual-content p{
+    color:var(--lio-app-muted)!important;font-size:12px!important;
+    text-align:center!important;margin:0!important;line-height:1.4!important;
+  }
+  html[data-theme] .lio-auth-content{
+    min-height:calc(100dvh - 148px)!important;
+    background:transparent!important;
+    padding:20px 24px calc(26px + env(safe-area-inset-bottom,0px))!important;
+  }
+  html[data-theme] .lio-auth-form{max-width:440px;margin:0 auto}
+  html[data-theme] .lio-auth-eyebrow{color:var(--lio-color-a)!important;letter-spacing:.15em!important;font-size:11px!important}
+  html[data-theme] .lio-auth-form h1{color:var(--lio-app-ink)!important;font-size:clamp(26px,7vw,34px)!important}
+  html[data-theme] .lio-auth-muted{color:var(--lio-app-muted)!important;font-size:14px!important;line-height:1.55!important}
+  html[data-theme] .lio-auth-fields{
+    background:var(--lio-app-surface)!important;
+    border-color:var(--lio-app-border)!important;
+    border-radius:22px!important;
+    padding:19px!important;
+    box-shadow:0 9px 30px var(--lio-app-shadow)!important;
+  }
+  html[data-theme] .lio-auth-fields :is(input,textarea,select){
+    background:color-mix(in srgb,var(--lio-app-surface) 95%,var(--lio-color-a) 5%)!important;
+    color:var(--lio-app-ink)!important;
+    border-color:var(--lio-app-border)!important;
+  }
+  html[data-theme] .lio-auth-fields label{color:var(--lio-app-ink)!important}
+  html[data-theme] .lio-auth-submit{
+    background:linear-gradient(105deg,var(--lio-color-a),var(--lio-color-b),var(--lio-color-c))!important;
+  }
+  html[data-theme] .lio-auth-link a,html[data-theme] .lio-auth-footer a{color:var(--lio-color-a)!important}
+}

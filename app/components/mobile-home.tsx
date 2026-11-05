@@ -6,16 +6,16 @@ type FeaturedBook={title:string;author:string;coverUrl:string|null;totalPages:nu
 type Props={
   name:string;count:number;read:number;goal:number;reading:number;
   featured:FeaturedBook|null;
-  onAdd:()=>void;onFeatured:()=>void;onShelf:()=>void;onDiary:()=>void;onGoals:()=>void;
+  onAdd:()=>void;onFeatured:()=>void;onShelf:()=>void;onDiary:()=>void;onGoals:()=>void;onProfile:()=>void;
 };
 
-export default function MobileHome({name,count,read,goal,reading,featured,onAdd,onFeatured,onShelf,onDiary,onGoals}:Props){
+export default function MobileHome({name,count,read,goal,reading,featured,onAdd,onFeatured,onShelf,onDiary,onGoals,onProfile}:Props){
  const pct=featured&&featured.totalPages>0?Math.min(100,Math.round(featured.currentPage/featured.totalPages*100)):0;
  const goalPct=goal>0?Math.min(100,Math.round(read/goal*100)):0;
  return <div className="lio-ref-home">
    <div className="lio-ref-home-top">
      <LioLogo title="LIO"/>
-     <button className="lio-ref-home-add-icon" type="button" aria-label="Adicionar livro" onClick={onAdd}>＋</button>
+     <button className="lio-ref-home-add-icon" type="button" aria-label="Abrir perfil" onClick={onProfile}><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg></button>
    </div>
    <p className="lio-ref-home-eyebrow">✦ SEU UNIVERSO DE HISTÓRIAS</p>
    <h1>Olá, {name.split(" ")[0]}!</h1>

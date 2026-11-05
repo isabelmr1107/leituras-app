@@ -30,6 +30,10 @@ export function applyLioPreferences(theme:LioThemeChoice,palette:LioPaletteId){
   const resolved=theme==="auto"?systemTheme():theme;
   document.documentElement.dataset.theme=resolved;
   document.documentElement.dataset.palette=palette;
+  // Match iOS browser/PWA status-bar surface to the active mobile theme.
+  const color=resolved==="dark"?"#12101b":"#faf6fc";
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta)meta.setAttribute("content",color);
 }
 export function saveLioPreferences(theme:LioThemeChoice,palette:LioPaletteId){
   applyLioPreferences(theme,palette);
