@@ -14,7 +14,7 @@ const inputStyle={width:"100%",minWidth:0};
 const panelStyle={border:"1px solid var(--line)",background:"var(--card)",borderRadius:18,padding:22};
 const buttonStyle={border:"1px solid var(--line)",background:"var(--card)",color:"var(--ink)",borderRadius:10,padding:"10px 14px",cursor:"pointer"};
 
-export default function ReadingPlanner({books,onProgress}:{books:Book[];onProgress:()=>Promise<void>}){
+export default function ReadingPlanner({books,onProgress,onQuickProgress}:{books:Book[];onProgress:()=>Promise<void>;onQuickProgress?:(bookId:string)=>void}){
   const [selected,setSelected]=useState("");
   const [plans,setPlans]=useState<PlanRecord[]>([]);
   const [sessions,setSessions]=useState<Session[]>([]);
@@ -126,7 +126,7 @@ export default function ReadingPlanner({books,onProgress}:{books:Book[];onProgre
               <h3>{book.title}</h3><p>{book.author}</p>
               <div className="lio-schedule-progress-line"><span>{book.currentPage} de {book.totalPages||"—"} páginas</span><strong>{percent}%</strong></div>
               <div className="lio-schedule-track" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label="Progresso do livro"><span style={{width:percent+"%"}}/></div>
-              <div className="lio-schedule-book-foot"><span>◷ Prazo: {deadlineText}</span><span>{remaining===0?"✓ Concluído":plan?(deadlineExpired?"Prazo vencido":days+" dias disponíveis"):"Defina sua meta abaixo"}</span></div>
+              <div className="lio-schedule-book-foot"><span>◷ Prazo: {deadlineText}</span><span>{remaining===0?"✓ Concluído":plan?(deadlineExpired?"Prazo vencido":days+" dias disponíveis"):"Defina sua meta abaixo"}</span></div>{onQuickProgress&&<button type="button" className="lio-schedule-quick-update" onClick={()=>onQuickProgress(book.id)}>＋ Atualizar páginas rapidamente</button>}
             </div>
           </div>}</>:<div className="lio-schedule-empty">Você ainda não tem livros cadastrados. Use o formulário no final desta página para adicionar seu primeiro livro.</div>}
         </section>
