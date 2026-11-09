@@ -10,17 +10,27 @@ export default function QuickReadingProgress({book,onClose,onSave}:Props){
   const [busy,setBusy]=useState(false);
   const [error,setError]=useState("");
   const input=useRef<HTMLInputElement>(null);
+  const dialog=useRef<HTMLElement>(null);
   const max=book.totalPages>0?book.totalPages:100000;
   const numeric=Number(value);
   const valid=value.trim()!==""&&Number.isInteger(numeric)&&numeric>=0&&numeric<=max;
   const percent=book.totalPages>0?Math.min(100,Math.round((valid?numeric:book.currentPage)/book.totalPages*100)):null;
   useEffect(()=>{
     const previous=document.body.style.overflow;
+    const previousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
     document.body.style.overflow="hidden";
-    const escape=(event:KeyboardEvent)=>{if(event.key==="Escape"&&!busy)onClose()};
-    document.addEventListener("keydown",escape);
+    const keyboard=(event:KeyboardEvent)=>{
+      if(event.key==="Escape"&&!busy){event.preventDefault();onClose();return;}
+      if(event.key!=="Tab"||!dialog.current)return;
+      const focusables=Array.from(dialog.current.querySelectorAll<HTMLElement>('button:not([disabled]),input:not([disabled])'));
+      if(!focusables.length)return;
+      const first=focusables[0],last=focusables[focusables.length-1];
+      if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+      else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+    };
+    document.addEventListener("keydown",keyboard);
     input.current?.focus();
-    return ()=>{document.body.style.overflow=previous;document.removeEventListener("keydown",escape)};
+    return ()=>{document.body.style.overflow=previous;document.removeEventListener("keydown",keyboard);previousFocus?.focus()};
   },[busy,onClose]);
   function adjust(n:number){const current=valid?numeric:book.currentPage;setValue(String(Math.max(0,Math.min(max,current+n))));setError("")}
   async function submit(event:React.FormEvent){
@@ -34,7 +44,7 @@ export default function QuickReadingProgress({book,onClose,onSave}:Props){
   }
   if(typeof document==="undefined")return null;
   return createPortal(<div className="lio-quick-backdrop" onMouseDown={()=>{if(!busy)onClose()}}>
-    <section className="lio-quick-dialog" role="dialog" aria-modal="true" aria-labelledby="lio-quick-title" aria-describedby="lio-quick-description" onMouseDown={event=>event.stopPropagation()}>
+    <section ref={dialog} className="lio-quick-dialog" role="dialog" aria-modal="true" aria-labelledby="lio-quick-title" aria-describedby="lio-quick-description" onMouseDown={event=>event.stopPropagation()}>
       <div className="lio-quick-heading"><span>✦ SUA LEITURA</span><button type="button" className="lio-quick-close" onClick={onClose} disabled={busy} aria-label="Fechar">×</button></div>
       <h2 id="lio-quick-title">Atualizar páginas</h2>
       <p id="lio-quick-description" className="lio-quick-desc">Registre onde você parou sem precisar editar a ficha inteira.</p>
