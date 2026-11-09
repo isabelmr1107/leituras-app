@@ -6,6 +6,7 @@ import LioLogo from "./components/lio-logo";
 import ReadingPlanner from "./components/reading-planner";
 import PwaInstall from "./components/pwa-install";
 import MobileHome from "./components/mobile-home";
+import HomeReadingHub from "./components/home-reading-hub";
 import ShareReading from "./components/share-reading";
 import {palettes,applyLioPreferences,getSavedPreferences,saveLioPreferences,systemTheme,type LioPaletteId,type LioThemeChoice} from "./components/lio-preferences";
 type Status="Quero ler"|"Lendo"|"Lido"|"Abandonado";
@@ -427,10 +428,18 @@ export default function Dashboard({name}:{name:string}){
       onFeatured={()=>featuredBook?openDetail(featuredBook):edit()}
       onShelf={()=>setView("Minha biblioteca")}
       onDiary={()=>setView("Diário")}
-      onGoals={()=>setView("Metas")} onProfile={()=>setView("Perfil")}/>
+      onGoals={()=>setView("Metas")} onProfile={()=>setView("Perfil")}
+      onEditFeatured={()=>featuredBook?edit(featuredBook):edit()} onSchedule={()=>setView("Cronograma")}/>
     <div className="lio-original-home">
     <section className="welcome-banner"><div className="welcome-copy"><span className="welcome-kicker">✦ SUA JORNADA LITERÁRIA</span><h2>{books.length?"Sua próxima aventura começa aqui.":"Toda grande história começa na primeira página."}</h2><p>{books.length?"Você tem "+books.length+" "+(books.length===1?"livro esperando por você.":"livros na estante. Continue sua história!"):"Crie sua biblioteca e transforme cada leitura em uma lembrança."}</p><div className="welcome-actions"><button className="welcome-button" onClick={()=>featuredBook?openDetail(featuredBook):edit()}>{featuredBook?"Ver minha próxima leitura":"Adicionar meu primeiro livro"} <span aria-hidden="true">↗</span></button><button className="welcome-link" onClick={()=>setView("Minha biblioteca")}>Explorar estante →</button></div></div><div className="welcome-illustration lio-floating-books" aria-hidden="true"><div className="lio-float-book lio-float-book-a"><span className="lio-float-spine"/><span className="lio-float-mark">✧</span></div><div className="lio-float-book lio-float-book-b"><span className="lio-float-spine"/><span className="lio-float-mark">✦</span></div><div className="lio-float-book lio-float-book-c"><span className="lio-float-spine"/><span className="lio-float-mark">✳</span></div></div></section>
-    {featuredBook&&<section className="featured-strip"><span className="featured-icon">📖</span><div><span className="featured-eyebrow">{featuredBook.status==="Lendo"?"CONTINUE LENDO":"DA SUA ESTANTE"}</span><strong>{featuredBook.title}</strong><small>{featuredBook.author}{featuredBook.totalPages?" · "+Math.round(featuredBook.currentPage/featuredBook.totalPages*100)+"% concluído":""}</small></div><button className="featured-action" onClick={()=>openDetail(featuredBook)}>Abrir livro <span aria-hidden="true">↗</span></button></section>}
+    <HomeReadingHub
+      reading={reading} featured={featuredBook||null} finished={thisYear.length}
+      goal={booksGoal} total={books.length} pagesTracked={trackedPages}
+      onAdd={()=>edit()} onEdit={book=>edit(books.find(b=>b.id===book.id))}
+      onOpen={book=>{const original=books.find(b=>b.id===book.id);if(original)openDetail(original)}}
+      onShelf={()=>setView("Minha biblioteca")} onDiary={()=>setView("Diário")}
+      onGoals={()=>setView("Metas")} onSchedule={()=>setView("Cronograma")}
+    />
     <section className="stats enhanced-stats">
       <button className="stat stat-button" onClick={()=>setView("Minha biblioteca")}><span>Livros lidos neste ano</span><strong>{thisYear.length}</strong><small>Ver biblioteca</small></button>
       <button className="stat stat-button" onClick={()=>setView("Diário")}><span>Páginas acompanhadas</span><strong>{trackedPages}</strong><small>{pages} registradas no diário</small></button>

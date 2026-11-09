@@ -1,0 +1,103 @@
+/* LIO reading hub — desktop layout, same account data used by the mobile home */
+.lio-desk-hub{display:none}
+@media(min-width:768px){
+ .lio-desk-hub{display:block;margin:24px 0 28px}
+ .lio-desk-hub *{box-sizing:border-box}
+ .lio-desk-hub button{font:inherit;cursor:pointer}
+ .lio-desk-hub-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin:0 0 17px}
+ .lio-desk-kicker{font-size:10px;letter-spacing:.15em;font-weight:850;color:var(--lio-color-a)}
+ .lio-desk-hub-heading h2{font-size:clamp(22px,2.3vw,28px);line-height:1.2;letter-spacing:-.035em;margin:8px 0;color:var(--text)}
+ .lio-desk-hub-heading p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+ .lio-desk-hub-add,.lio-desk-primary{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  min-height:39px;padding:10px 17px;border-radius:12px;border:0;color:#fff!important;
+  background:linear-gradient(110deg,var(--lio-color-a),var(--lio-color-b))!important;font-size:12px;font-weight:750!important;
+  box-shadow:0 9px 21px color-mix(in srgb,var(--lio-color-a) 20%,transparent)
+ }
+ .lio-desk-hub-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(260px,1fr);gap:16px;align-items:stretch}
+ .lio-desk-reading-card,.lio-desk-goal-card,.lio-desk-quick-card{
+  border:1px solid var(--line);border-radius:23px;overflow:hidden;
+  box-shadow:0 13px 27px rgba(26,17,54,.06);
+  background:color-mix(in srgb,var(--card) 94%,var(--lio-color-a) 6%);color:var(--text)
+ }
+ .lio-desk-reading-card{min-width:0;padding:20px 22px}
+ .lio-desk-card-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:19px}
+ .lio-desk-card-top>span,.lio-desk-card-top-title{font-size:10px;letter-spacing:.12em;font-weight:850;color:var(--lio-color-a)}
+ .lio-desk-card-top small{color:var(--muted);font-size:11px}
+ .lio-desk-focus{display:flex;align-items:flex-start;gap:21px;min-width:0}
+ .lio-desk-cover{flex:0 0 115px;width:115px;height:162px;display:block;overflow:hidden;
+  padding:0;border:0;border-radius:12px;background:linear-gradient(145deg,var(--lio-color-b),var(--lio-color-a));
+  box-shadow:9px 11px 23px rgba(21,14,42,.19)}
+ .lio-desk-cover img{width:100%;height:100%;object-fit:cover;display:block}
+ .lio-desk-cover-fallback{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  height:100%;padding:12px;color:#fff;font-size:13px;line-height:1.35;text-align:center;overflow-wrap:anywhere}
+ .lio-desk-cover-fallback>span{font-size:23px}
+ .lio-desk-focus-info{flex:1;min-width:0}
+ .lio-desk-state{display:inline-block;padding:5px 9px;border-radius:99px;
+  color:var(--lio-color-a);background:color-mix(in srgb,var(--lio-color-a) 13%,var(--card));
+  font-size:10px;font-weight:800}
+ .lio-desk-focus-info h3{margin:9px 0 4px;font-size:clamp(17px,1.6vw,23px);line-height:1.26;letter-spacing:-.025em;color:var(--text);overflow-wrap:anywhere}
+ .lio-desk-focus-info>p{margin:0 0 14px;font-size:12px;color:var(--muted)}
+ .lio-desk-progress-block{margin:16px 0}
+ .lio-desk-progress-text{display:flex;justify-content:space-between;gap:9px;margin-bottom:7px;font-size:11px;color:var(--muted)}
+ .lio-desk-progress-text strong{color:var(--lio-color-a)}
+ .lio-desk-track{height:8px;border-radius:99px;overflow:hidden;background:color-mix(in srgb,var(--lio-color-a) 12%,var(--card))}
+ .lio-desk-track>span{display:block;height:100%;border-radius:inherit;background:linear-gradient(95deg,var(--lio-color-a),var(--lio-color-b),var(--lio-color-c));transition:width .35s ease}
+ .lio-desk-focus-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+ .lio-desk-secondary{min-height:39px;padding:9px 14px;border-radius:12px;
+  color:var(--text);background:var(--card);border:1px solid var(--line);font-size:12px!important;font-weight:700!important}
+ .lio-desk-page-hint{font-size:12px!important;color:var(--muted)}
+ .lio-desk-other-reads{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  margin-top:20px;padding-top:14px;border-top:1px solid var(--line)}
+ .lio-desk-other-reads>span{font-size:11px;color:var(--muted)}
+ .lio-desk-other-reads>div{display:flex;gap:7px;flex:1;min-width:0}
+ .lio-desk-other-reads button{display:flex;align-items:center;gap:7px;max-width:160px;
+  min-width:0;padding:4px 7px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+ .lio-desk-other-reads img{width:23px;height:32px;object-fit:cover;border-radius:4px}
+ .lio-desk-other-reads button span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
+ .lio-desk-empty{display:flex;align-items:center;text-align:center;flex-direction:column;gap:9px;padding:14px 8px}
+ .lio-desk-empty>span{font-size:32px}.lio-desk-empty h3{margin:0;font-size:18px;color:var(--text)}
+ .lio-desk-empty p{font-size:12px;color:var(--muted);margin:0 0 7px}
+ .lio-desk-side{display:grid;gap:16px;min-width:0}
+ .lio-desk-goal-card{padding:20px 22px;background:linear-gradient(130deg,
+   color-mix(in srgb,var(--lio-color-a) 12%,var(--card)),
+   color-mix(in srgb,var(--lio-color-d) 9%,var(--card)))}
+ .lio-desk-card-top button{font-size:11px;border:0;padding:4px;background:transparent;color:var(--lio-color-a);font-weight:750}
+ .lio-desk-goal-numbers{display:flex;align-items:baseline;gap:13px;margin:1px 0 12px}
+ .lio-desk-goal-numbers>strong{font-size:35px;letter-spacing:-.055em;line-height:1;color:var(--text)}
+ .lio-desk-goal-numbers small{font-size:17px;color:var(--muted)}
+ .lio-desk-goal-numbers>span{font-size:11px;color:var(--muted)}
+ .lio-desk-goal-card>p{font-size:11px;color:var(--muted);margin:9px 0 0}
+ .lio-desk-quick-card{padding:18px 18px 14px}
+ .lio-desk-quick-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:13px}
+ .lio-desk-quick-links button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  padding:12px 5px;border:1px solid var(--line);border-radius:13px;
+  background:color-mix(in srgb,var(--lio-color-a) 6%,var(--card));color:var(--text);min-width:0}
+ .lio-desk-quick-links button:hover,.lio-desk-quick-links button:focus-visible{border-color:var(--lio-color-a)}
+ .lio-desk-quick-links button>span{color:var(--lio-color-a);font-size:23px}
+ .lio-desk-quick-links strong{font-size:11px;text-align:center}
+ .lio-desk-quick-links small{color:var(--muted);font-size:9px;text-align:center}
+ .lio-desk-page-count{margin:14px 0 0;color:var(--muted);font-size:11px}
+}
+@media(min-width:768px) and (max-width:1080px){
+ .lio-desk-hub-grid{grid-template-columns:minmax(0,1fr)}
+ .lio-desk-side{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+}
+@media(min-width:768px) and (max-width:920px){
+ .lio-desk-side{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){.lio-desk-track>span{transition:none}}
+/* Same quick progress update workflow in the installed phone app. */
+@media(max-width:767px){
+ .lio-ref-home-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 0}
+ .lio-ref-home-actions button{flex:1;min-width:118px;min-height:39px;border-radius:12px;padding:8px 11px;
+  border:1px solid var(--lio-app-border);font-size:11px;font-weight:750}
+ .lio-ref-home-actions .lio-ref-edit{background:linear-gradient(105deg,var(--lio-color-a),var(--lio-color-b));
+  border:0;color:#fff}
+ .lio-ref-home-actions .lio-ref-open{background:var(--lio-app-surface);color:var(--lio-app-ink)}
+ .lio-ref-home-cover img{object-fit:cover}
+ .lio-ref-home-readrow small{white-space:nowrap}
+ .lio-ref-home-shortcut{display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;min-height:43px;margin:12px 0 0;border:1px solid var(--lio-app-border);
+  border-radius:13px;background:var(--lio-app-surface);color:var(--lio-color-a);font-weight:750;font-size:12px}
+}

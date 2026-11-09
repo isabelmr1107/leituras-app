@@ -7,9 +7,10 @@ type Props={
   name:string;count:number;read:number;goal:number;reading:number;
   featured:FeaturedBook|null;
   onAdd:()=>void;onFeatured:()=>void;onShelf:()=>void;onDiary:()=>void;onGoals:()=>void;onProfile:()=>void;
+  onEditFeatured:()=>void;onSchedule:()=>void;
 };
 
-export default function MobileHome({name,count,read,goal,reading,featured,onAdd,onFeatured,onShelf,onDiary,onGoals,onProfile}:Props){
+export default function MobileHome({name,count,read,goal,reading,featured,onAdd,onFeatured,onShelf,onDiary,onGoals,onProfile,onEditFeatured,onSchedule}:Props){
  const pct=featured&&featured.totalPages>0?Math.min(100,Math.round(featured.currentPage/featured.totalPages*100)):0;
  const goalPct=goal>0?Math.min(100,Math.round(read/goal*100)):0;
  return <div className="lio-ref-home">
@@ -37,6 +38,7 @@ export default function MobileHome({name,count,read,goal,reading,featured,onAdd,
        </div>
        <button type="button" className="lio-ref-home-open" aria-label={featured?"Abrir "+featured.title:"Adicionar sua primeira leitura"} onClick={featured?onFeatured:onAdd}>➜</button>
      </div>
+    {featured&&<div className="lio-ref-home-actions"><button type="button" className="lio-ref-edit" onClick={onEditFeatured}>✎ Atualizar páginas</button><button type="button" className="lio-ref-open" onClick={onFeatured}>Abrir detalhes</button></div>}
    </section>
    <div className="lio-ref-home-heading"><h2>Minha jornada</h2><button type="button" onClick={onGoals}>Ver metas →</button></div>
    <div className="lio-ref-home-stats">
@@ -46,5 +48,6 @@ export default function MobileHome({name,count,read,goal,reading,featured,onAdd,
    </div>
    <div className="lio-ref-home-heading"><h2>Minha biblioteca</h2><button type="button" onClick={onShelf}>Ver estante →</button></div>
    <div className="lio-ref-home-links"><button type="button" onClick={onShelf}>📚 Explorar livros</button><button type="button" onClick={onDiary}>✎ Abrir diário</button></div>
+   <button type="button" className="lio-ref-home-shortcut" onClick={onSchedule}>▦ Organizar meu cronograma →</button>
  </div>;
 }
