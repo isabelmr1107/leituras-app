@@ -1,0 +1,59 @@
+.lio-quick-backdrop{position:fixed;inset:0;z-index:5000;display:grid;place-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));background:rgba(16,13,28,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.lio-quick-dialog{box-sizing:border-box;width:min(100%,440px);max-height:min(88dvh,700px);overflow-y:auto;border-radius:25px;padding:22px;border:1px solid var(--line);background:var(--card);color:var(--text);box-shadow:0 28px 78px rgba(11,9,24,.36);color-scheme:light}
+html[data-theme="dark"] .lio-quick-dialog{color-scheme:dark}
+.lio-quick-dialog *{box-sizing:border-box}
+.lio-quick-dialog button,.lio-quick-dialog input{font:inherit}
+.lio-quick-heading{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.lio-quick-heading>span{font-size:10px;letter-spacing:.18em;font-weight:850;color:var(--lio-color-a)}
+.lio-quick-close{border:1px solid var(--line);width:34px;height:34px;border-radius:50%;background:transparent;color:var(--text);cursor:pointer;font-size:23px!important;line-height:1}
+.lio-quick-dialog h2{color:var(--text);font-size:clamp(22px,4vw,28px);margin:12px 0 7px;letter-spacing:-.035em}
+.lio-quick-desc{font-size:13px;line-height:1.5;color:var(--muted);margin:0 0 18px}
+.lio-quick-book{display:flex;gap:12px;align-items:center;background:color-mix(in srgb,var(--lio-color-a) 10%,var(--card));border:1px solid color-mix(in srgb,var(--lio-color-a) 15%,var(--line));padding:11px;border-radius:13px}
+.lio-quick-book>span{font-size:23px}.lio-quick-book div{display:grid;gap:4px;min-width:0}
+.lio-quick-book strong{color:var(--text);font-size:14px;overflow-wrap:anywhere}
+.lio-quick-book small{color:var(--muted);font-size:11px}
+.lio-quick-label{display:block;color:var(--text);font-size:13px;font-weight:700;margin:19px 0 8px}
+.lio-quick-input-line{display:grid;grid-template-columns:43px minmax(0,1fr) 43px;gap:9px}
+.lio-quick-input-line input{min-width:0;width:100%;height:51px!important;text-align:center!important;border-radius:12px!important;background:var(--card)!important;color:var(--text)!important;border:1px solid var(--line)!important;font-size:22px!important;font-weight:750!important}
+.lio-quick-input-line button{border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--lio-color-a) 12%,var(--card));color:var(--text);font-size:23px;cursor:pointer}
+.lio-quick-steps{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:11px}
+.lio-quick-steps>span{font-size:11px;color:var(--muted);margin-right:auto}
+.lio-quick-steps button{font-size:11px;border-radius:99px;padding:7px 10px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+.lio-quick-progress{margin:18px 0 0}
+.lio-quick-progress-label{display:flex;justify-content:space-between;gap:6px;font-size:12px;color:var(--muted);margin-bottom:9px}
+.lio-quick-progress-label strong{color:var(--lio-color-a)}
+.lio-quick-track{height:9px;border-radius:99px;background:color-mix(in srgb,var(--lio-color-a) 14%,var(--card));overflow:hidden}
+.lio-quick-track>span{display:block;height:100%;background:linear-gradient(105deg,var(--lio-color-a),var(--lio-color-b),var(--lio-color-c));border-radius:inherit}
+.lio-quick-hint{font-size:11px;line-height:1.5;color:var(--muted);margin:16px 0}
+.lio-quick-error{font-size:12px;color:#d95375;margin:8px 0}
+.lio-quick-actions{display:flex;gap:10px;justify-content:stretch;margin-top:18px}
+.lio-quick-actions button{min-height:44px;border-radius:12px;flex:1;cursor:pointer;font-size:12px;font-weight:750}
+.lio-quick-cancel{border:1px solid var(--line);background:var(--card);color:var(--text)}
+.lio-quick-save{border:0;color:#fff;background:linear-gradient(105deg,var(--lio-color-a),var(--lio-color-b))}
+.lio-quick-save:disabled{opacity:.48;cursor:not-allowed}
+.lio-quick-notice{padding:11px 15px;border:1px solid color-mix(in srgb,var(--lio-color-c) 45%,var(--line));border-radius:12px;background:color-mix(in srgb,var(--lio-color-c) 13%,var(--card));color:var(--text);font-size:13px}
+.lio-quick-book-link,.lio-detail-quick,.lio-schedule-quick-update{border:1px solid color-mix(in srgb,var(--lio-color-a) 30%,var(--line));border-radius:10px;padding:7px 10px;background:color-mix(in srgb,var(--lio-color-a) 9%,var(--card));color:var(--text);font-size:11px;font-weight:750;cursor:pointer}
+.lio-book-bottom .lio-quick-book-link{white-space:nowrap}
+.lio-category-filter,.lio-journal-tools label{display:flex;flex-direction:column;gap:4px;min-width:145px;font-size:11px;font-weight:700;color:var(--muted)}
+.lio-category-filter select,.lio-journal-tools select{width:100%;min-width:0;height:40px;padding:7px 11px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.lio-library-result-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.lio-clear-filters,.lio-journal-tools>button{padding:7px 11px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:11px;cursor:pointer}
+.lio-journal-tools{display:flex;align-items:end;flex-wrap:wrap;gap:12px;margin:14px 0}
+.lio-journal-tools>span{margin-left:auto;font-size:12px;color:var(--muted)}
+.lio-schedule-quick-update{margin-top:12px;background:color-mix(in srgb,var(--lio-color-a) 14%,var(--card))}
+.lio-goal-note{font-size:12px;color:var(--muted)}
+.lio-quick-dialog :focus-visible,.lio-clear-filters:focus-visible,.lio-quick-book-link:focus-visible,.lio-category-filter select:focus-visible,.lio-journal-tools select:focus-visible{outline:2px solid var(--lio-color-a);outline-offset:3px}
+@media(max-width:767px){
+ html[data-theme] .lio-quick-dialog{background:var(--lio-app-surface)!important;color:var(--lio-app-ink)!important;border-color:var(--lio-app-border)!important;border-radius:24px;padding:18px}
+ html[data-theme] .lio-quick-dialog h2,html[data-theme] .lio-quick-book strong,html[data-theme] .lio-quick-label{color:var(--lio-app-ink)!important}
+ html[data-theme] .lio-quick-book{background:color-mix(in srgb,var(--lio-color-a) 10%,var(--lio-app-surface))!important}
+ html[data-theme] .lio-quick-input-line input{background:var(--lio-app-surface)!important;color:var(--lio-app-ink)!important;border-color:var(--lio-app-border)!important}
+ html[data-theme] .lio-quick-input-line button{color:var(--lio-app-ink)}
+ .lio-category-filter{flex:1;min-width:calc(50% - 8px)}
+ .lio-journal-tools>span{margin-left:0}
+ .lio-book-bottom .lio-quick-book-link{font-size:10px;padding:6px 8px}
+ .lio-quick-steps>span{width:100%}
+ .lio-quick-dialog{max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 24px)}
+}
+@media(max-width:400px){.lio-quick-actions{flex-wrap:wrap}.lio-quick-actions button{min-width:100%}.lio-quick-steps button{flex:1}}
+@media(prefers-reduced-motion:reduce){.lio-quick-track>span{transition:none}}
