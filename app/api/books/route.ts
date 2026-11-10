@@ -14,9 +14,11 @@ export async function POST(request:Request){
   const parsed=bookSchema.safeParse(payload);
   if(!parsed.success)return Response.json({error:"Livro inválido",details:parsed.error.flatten()},{status:400});
   const {startedAt,finishedAt,...data}=parsed.data;
+  const complete=data.totalPages>0&&data.currentPage===data.totalPages;
+  const status=complete?"Lido":data.status;
   const date=(value?:string|null)=>value?new Date(value+"T12:00:00.000Z"):null;
-  const book=await prisma.book.create({data:{...data,coverUrl:data.coverUrl||null,userId:session.user.id,
-    startedAt:date(startedAt),finishedAt:data.status==="Lido"?(date(finishedAt)||new Date()):null}});
+  const book=await prisma.book.create({data:{...data,status,coverUrl:data.coverUrl||null,userId:session.user.id,
+    startedAt:date(startedAt)||((status==="Lido"||status==="Lendo")?new Date():null),finishedAt:status==="Lido"?(date(finishedAt)||new Date()):null}});
   try{await addToCatalog({...data,publisher:typeof payload?.publisher==="string"?payload.publisher:null,isbn:typeof payload?.isbn==="string"?payload.isbn:null});}catch(error){console.error("Falha ao indexar livro no catálogo",error);}
   return Response.json(book,{status:201});
 }

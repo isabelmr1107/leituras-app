@@ -20,7 +20,13 @@ export async function PATCH(request:Request,context:Context){
       if(currentPage===book.currentPage)return {kind:"ok" as const,book,pagesAdded:0};
       const changed=await tx.book.updateMany({
         where:{id,userId:session.user.id,currentPage:book.currentPage},
-        data:{currentPage,...(book.status==="Quero ler"&&currentPage>0?{status:"Lendo" as const,startedAt:book.startedAt??new Date()}:{})}
+        data:{currentPage,...(book.totalPages>0&&currentPage===book.totalPages
+          ?{status:"Lido" as const,startedAt:book.startedAt??new Date(),finishedAt:book.status==="Lido"?book.finishedAt??new Date():new Date()}
+          :book.status==="Lido"&&currentPage<book.currentPage
+            ?{status:"Lendo" as const,finishedAt:null}
+            :book.status==="Quero ler"&&currentPage>0
+              ?{status:"Lendo" as const,startedAt:book.startedAt??new Date()}
+              :{})}
       });
       if(!changed.count)throw new Error("PAGE_CONFLICT");
       const pagesAdded=Math.max(0,currentPage-book.currentPage);

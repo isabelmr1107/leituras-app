@@ -12,10 +12,12 @@ export async function PATCH(request: Request, context: Context) {
   if (!exists) return Response.json({ error: "Livro não encontrado." }, { status: 404 });
   const {startedAt,finishedAt,...data}=parsed.data;
   const date=(value:string|null|undefined,previous:Date|null)=>value===undefined?previous:value?new Date(value+"T12:00:00.000Z"):null;
+  const completed=data.totalPages>0&&data.currentPage===data.totalPages;
+  const nextStatus=completed?"Lido":data.status;
   const book = await prisma.book.update({ where: { id }, data: {
-    ...data, coverUrl: data.coverUrl || null,
-    startedAt: data.status==="Lendo" ? (date(startedAt,exists.startedAt)||new Date()) : date(startedAt,exists.startedAt),
-    finishedAt: data.status==="Lido" ? (date(finishedAt,exists.finishedAt)||new Date()) : null
+    ...data, status:nextStatus, coverUrl: data.coverUrl || null,
+    startedAt: (nextStatus==="Lendo"||nextStatus==="Lido") ? (date(startedAt,exists.startedAt)||new Date()) : date(startedAt,exists.startedAt),
+    finishedAt: nextStatus==="Lido" ? (date(finishedAt,exists.finishedAt)||new Date()) : null
   } });
   return Response.json(book);
 }

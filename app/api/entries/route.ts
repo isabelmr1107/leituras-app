@@ -21,9 +21,27 @@ export async function POST(request: Request) {
   const book = await prisma.book.findFirst({ where: { id: parsed.data.bookId, userId: session.user.id } });
   if (!book) return Response.json({ error: "Livro não encontrado." }, { status: 404 });
   const entry = await prisma.$transaction(async tx => {
-    const created = await tx.readingEntry.create({ data: parsed.data });
-    if (parsed.data.kind === "Sessão") {
-      await tx.book.update({ where: { id: book.id }, data: { currentPage: Math.min(book.totalPages || 100000, book.currentPage + parsed.data.pagesRead) } });
+    const current=await tx.book.findFirst({where:{id:book.id,userId:session.user.id}});
+    if(!current)throw new Error("Livro não encontrado.");
+    let actualPages=parsed.data.pagesRead;
+    if(parsed.data.kind==="Sessão"){
+      const max=current.totalPages||100000;
+      actualPages=Math.max(0,Math.min(parsed.data.pagesRead,max-current.currentPage));
+      if(actualPages<=0)throw new Error("Este livro já está na última página. Atualize a ficha para continuar.");
+    }
+    const created=await tx.readingEntry.create({data:{...parsed.data,pagesRead:actualPages}});
+    if(parsed.data.kind==="Sessão"){
+      const nextPage=current.currentPage+actualPages;
+      const complete=current.totalPages>0&&nextPage===current.totalPages;
+      const updated=await tx.book.updateMany({
+        where:{id:current.id,userId:session.user.id,currentPage:current.currentPage},
+        data:{
+          currentPage:nextPage,
+          ...(complete?{status:"Lido" as const,startedAt:current.startedAt??new Date(),finishedAt:current.status==="Lido"?current.finishedAt??new Date():new Date()}
+           :current.status==="Quero ler"?{status:"Lendo" as const,startedAt:current.startedAt??new Date()}:{})
+        }
+      });
+      if(!updated.count)throw new Error("Outra sessão alterou o progresso. Tente novamente.");
     }
     return created;
   });
