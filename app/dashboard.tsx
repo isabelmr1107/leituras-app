@@ -55,7 +55,6 @@ export default function Dashboard({name}:{name:string}){
   const [open,setOpen]=useState(false);
   const [detailId,setDetailId]=useState<string|null>(null);
   const [quickBookId,setQuickBookId]=useState<string|null>(null);
-  const [quickNotice,setQuickNotice]=useState("");
   const [categoryFilter,setCategoryFilter]=useState("Todas");
   const [diaryBookFilter,setDiaryBookFilter]=useState("");
   const [detailKind,setDetailKind]=useState<"Nota"|"Resenha"|"Citação">("Resenha");
@@ -269,7 +268,7 @@ export default function Dashboard({name}:{name:string}){
   const maxFinishedPages=Math.max(1,...monthlyFinishedPages);
   const average=read.filter(b=>b.rating).length?(read.filter(b=>b.rating).reduce((n,b)=>n+b.rating,0)/read.filter(b=>b.rating).length).toFixed(1):"—";
   function openDetail(book:Book){setDetailId(book.id);setDetailText("");setDetailKind("Resenha");setError("");}
-  function openQuickProgress(book:Book){setDetailId(null);setOpen(false);setQuickNotice("");setQuickBookId(book.id);}
+  function openQuickProgress(book:Book){setDetailId(null);setOpen(false);setQuickBookId(book.id);}
   async function saveQuickProgress(currentPage:number,expectedPage:number){
     if(!quickBookId)throw new Error("Escolha um livro para continuar.");
     let response:Response;
@@ -279,8 +278,7 @@ export default function Dashboard({name}:{name:string}){
     const result=await response.json().catch(()=>({}));
     if(!response.ok)throw new Error(result.error||"Não foi possível salvar o progresso.");
     setBooks(prev=>prev.map(book=>book.id===quickBookId?result.book:book));
-    try{await refresh()}catch{setQuickNotice("Progresso salvo! Atualize a página para carregar os registros.");return;}
-    setQuickNotice("Páginas atualizadas com sucesso! ✦");
+    try{await refresh()}catch{/* O progresso foi salvo; a próxima atualização da tela recarrega os registros. */}
   }
   function rateBook(book:Book,star:number){
     // Primeiro toque na estrela = inteira. Segundo toque na mesma = meia.
@@ -467,7 +465,7 @@ export default function Dashboard({name}:{name:string}){
       </button>)}
     </nav>
     <div className="mobile-nav" aria-label="Navegação alternativa">{navItems.map(item=><button key={item.name} className={view===item.name?"filter active":"filter"} onClick={()=>setView(item.name)}><span className="mobile-nav-icon" aria-hidden="true">{navIcon(item.icon)}</span> {item.label}</button>)}</div>
-    {error&&!open&&<p className="error" role="alert">{error}</p>}{quickNotice&&<p role="status" className="lio-quick-notice">{quickNotice}</p>}{loading&&<p>Carregando sua estante…</p>}
+    {error&&!open&&<p className="error" role="alert">{error}</p>}{loading&&<p>Carregando sua estante…</p>}
     {view==="Cronograma"&&<ReadingPlanner books={books} onProgress={refresh} onQuickProgress={id=>{const book=books.find(item=>item.id===id);if(book)openQuickProgress(book)}}/>}
     {view==="Dashboard"&&<>
     <MobileHome name={displayName} count={books.length} read={thisYear.length} goal={booksGoal} reading={reading.length}
