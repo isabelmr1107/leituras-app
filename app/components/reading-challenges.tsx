@@ -35,8 +35,11 @@ export default function ReadingChallenges({books,entries}:Props){
     if(!dates.has(cursor))cursor=previousDay(cursor);
     let streak=0;
     while(dates.has(cursor)&&streak<=sessions.length){streak++;cursor=previousDay(cursor);}
+    const orderedDays=Array.from(dates).sort();
+    let bestStreak=0,run=0,previous="";
+    for(const day of orderedDays){run=previous&&previousDay(day)===previous?run+1:1;bestStreak=Math.max(bestStreak,run);previous=day;}
     return {
-      streak,days:dates.size,monthDays,monthPages,monthBooks,finishedBooks,
+      streak,bestStreak,days:dates.size,monthDays,monthPages,monthBooks,finishedBooks,
       allPages:sessions.reduce((sum,e)=>sum+e.pagesRead,0),
       sessionCount:sessions.length,
       label:new Intl.DateTimeFormat("pt-BR",{month:"long",year:"numeric"}).format(now),
@@ -54,7 +57,7 @@ export default function ReadingChallenges({books,entries}:Props){
     {id:"pages",icon:"📚",name:"100 páginas",description:"Registrar 100 páginas",unlocked:data.allPages>=100},
     {id:"firstbook",icon:"🏅",name:"Livro finalizado",description:"Concluir o primeiro livro",unlocked:data.finishedBooks>=1},
     {id:"fivebooks",icon:"🏆",name:"Colecionador de histórias",description:"Concluir 5 livros",unlocked:data.finishedBooks>=5},
-    {id:"streak",icon:"🔥",name:"Três dias seguidos",description:"Manter 3 dias consecutivos de leitura",unlocked:data.streak>=3}
+    {id:"streak",icon:"🔥",name:"Três dias seguidos",description:"Manter 3 dias consecutivos de leitura",unlocked:data.bestStreak>=3}
   ];
   const completed=challenges.filter(c=>c.value>=c.target).length;
   const unlocked=medals.filter(m=>m.unlocked).length;
