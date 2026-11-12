@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
+import "./profile-compact.css";
 import { createPortal } from "react-dom";
 import LioLogo from "./components/lio-logo";
 import ReadingPlanner from "./components/reading-planner";
@@ -19,12 +20,19 @@ type View="Dashboard"|"Minha biblioteca"|"Diário"|"Metas"|"Cronograma"|"Perfil"
 type BookSuggestion={title:string;author:string;totalPages:number|null;category:string;coverUrl:string|null;publisher:string;source:string;isbn?:string};
 const months=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
 const blank={title:"",author:"",category:"",coverUrl:"",status:"Quero ler" as Status,rating:0,totalPages:0,currentPage:0,startedAt:"",finishedAt:""};
-export default function Dashboard({name}:{name:string}){
+export default function Dashboard({name,email}:{name:string;email:string}){
   const [displayName,setDisplayName]=useState(name);
   const [draftName,setDraftName]=useState(name);
   const [nameBusy,setNameBusy]=useState(false);
   const [nameNotice,setNameNotice]=useState("");
   const [nameError,setNameError]=useState("");
+  const [accountSettingsOpen,setAccountSettingsOpen]=useState(false);
+  const [currentPassword,setCurrentPassword]=useState("");
+  const [newPassword,setNewPassword]=useState("");
+  const [confirmPassword,setConfirmPassword]=useState("");
+  const [passwordBusy,setPasswordBusy]=useState(false);
+  const [passwordMessage,setPasswordMessage]=useState("");
+  const [passwordError,setPasswordError]=useState("");
   const [books,setBooks]=useState<Book[]>([]);
   const [entries,setEntries]=useState<Entry[]>([]);
   const [view,setView]=useState<View>("Dashboard");
@@ -107,6 +115,26 @@ export default function Dashboard({name}:{name:string}){
       setDisplayName(data.name);setDraftName(data.name);setNameNotice("Seu nome foi atualizado!");
     }catch(error){setNameError(error instanceof Error?error.message:"Erro ao salvar.");}
     finally{setNameBusy(false)}
+  }
+  async function changePassword(event:React.FormEvent){
+    event.preventDefault();
+    setPasswordError("");setPasswordMessage("");
+    if(newPassword.length<12||newPassword.length>128){setPasswordError("A nova senha precisa ter de 12 a 128 caracteres.");return;}
+    if(newPassword!==confirmPassword){setPasswordError("As senhas novas não coincidem.");return;}
+    if(currentPassword===newPassword){setPasswordError("Escolha uma senha diferente da atual.");return;}
+    setPasswordBusy(true);
+    try{
+      const response=await fetch("/api/profile/password",{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({currentPassword,newPassword})
+      });
+      const result=await response.json();
+      if(!response.ok)throw new Error(result.error||"Não foi possível alterar a senha.");
+      setCurrentPassword("");setNewPassword("");setConfirmPassword("");
+      setPasswordMessage("Senha alterada! Use a nova senha no próximo login.");
+    }catch(error){
+      setPasswordError(error instanceof Error?error.message:"Não foi possível alterar a senha.");
+    }finally{setPasswordBusy(false);}
   }
   useEffect(()=>{
     const saved=getSavedPreferences();
@@ -546,8 +574,25 @@ export default function Dashboard({name}:{name:string}){
       </section>
     </section>}
     {view==="Perfil"&&<section className="section lio-profile-page">
-      <div className="profile-card lio-profile-overview"><div className="avatar">{displayName.charAt(0).toUpperCase()}</div><div><h2>{displayName}</h2><p>Seu espaço pessoal de leituras.</p></div></div>
-      <section className="lio-profile-name-card" aria-labelledby="lio-profile-name-heading"><h3 id="lio-profile-name-heading">Meu nome no LIO</h3><p>Você pode atualizar o nome exibido no seu perfil sempre que quiser. Seu e-mail e seus livros não mudam.</p><form onSubmit={saveDisplayName}><label htmlFor="lio-display-name">Nome de exibição<input id="lio-display-name" type="text" autoComplete="name" maxLength={80} required value={draftName} onChange={event=>setDraftName(event.target.value)}/></label><button type="submit" className="primary" disabled={nameBusy||draftName.trim()===displayName}>{nameBusy?"Salvando…":"Salvar nome"}</button></form>{nameError&&<p role="alert" className="error">{nameError}</p>}{nameNotice&&<p role="status" className="lio-profile-name-success">{nameNotice}</p>}</section>
+      <div className="profile-card lio-profile-overview"><div className="avatar">{displayName.charAt(0).toUpperCase()}</div><div className="lio-profile-intro"><h2>{displayName}</h2><p>Seu espaço pessoal de leituras.</p></div><button className="lio-profile-gear" type="button" aria-label={accountSettingsOpen?"Fechar configurações da conta":"Abrir configurações da conta"} title="Configurações da conta" aria-controls="lio-account-settings" aria-expanded={accountSettingsOpen} onClick={()=>{setAccountSettingsOpen(v=>!v);setPasswordError("");setPasswordMessage("");}}><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="M19.4 15a1.9 1.9 0 0 0 .38 2.1l.04.04-2.67 2.68-.05-.05a1.9 1.9 0 0 0-2.1-.38 1.9 1.9 0 0 0-1.14 1.76V21.2h-3.8v-.07A1.9 1.9 0 0 0 8.9 19.4a1.9 1.9 0 0 0-2.1.38l-.05.05-2.68-2.68.05-.05a1.9 1.9 0 0 0 .38-2.1 1.9 1.9 0 0 0-1.76-1.15H2.7v-3.8h.07a1.9 1.9 0 0 0 1.76-1.15 1.9 1.9 0 0 0-.38-2.1l-.05-.05 2.68-2.68.05.05a1.9 1.9 0 0 0 2.1.38A1.9 1.9 0 0 0 10.07 2.8V2.7h3.8v.07A1.9 1.9 0 0 0 15 4.53a1.9 1.9 0 0 0 2.1-.38l.05-.05 2.67 2.68-.04.05A1.9 1.9 0 0 0 19.4 8.9a1.9 1.9 0 0 0 1.76 1.15h.14v3.8h-.14A1.9 1.9 0 0 0 19.4 15Z"/></svg></button></div>
+      {accountSettingsOpen&&<section id="lio-account-settings" className="lio-profile-name-card lio-account-settings" aria-label="Configurações da conta">
+        <div className="lio-account-header"><div><h3>Configurações da conta</h3><p>Atualize seu nome e sua senha com segurança.</p></div><button type="button" className="lio-account-close" onClick={()=>setAccountSettingsOpen(false)} aria-label="Fechar configurações">×</button></div>
+        <div className="lio-account-email"><span>E-mail da conta</span><strong>{email||"E-mail indisponível"}</strong></div>
+        <div className="lio-account-divider"/>
+        <h4>Nome de exibição</h4>
+        <form onSubmit={saveDisplayName}><label htmlFor="lio-display-name">Como você aparece no LIO<input id="lio-display-name" type="text" autoComplete="name" maxLength={80} required value={draftName} onChange={event=>setDraftName(event.target.value)}/></label><button type="submit" className="primary" disabled={nameBusy||draftName.trim()===displayName}>{nameBusy?"Salvando…":"Salvar nome"}</button></form>
+        {nameError&&<p role="alert" className="error">{nameError}</p>}{nameNotice&&<p role="status" className="lio-profile-name-success">{nameNotice}</p>}
+        <div className="lio-account-divider"/>
+        <h4>Alterar senha</h4>
+        <p className="lio-account-help">Para sua segurança, informe a senha atual. A nova precisa ter pelo menos 12 caracteres.</p>
+        <form className="lio-password-change-form" onSubmit={changePassword}>
+          <label htmlFor="lio-current-password">Senha atual<input id="lio-current-password" type="password" autoComplete="current-password" required maxLength={128} value={currentPassword} onChange={event=>setCurrentPassword(event.target.value)}/></label>
+          <label htmlFor="lio-new-password">Nova senha<input id="lio-new-password" type="password" autoComplete="new-password" minLength={12} maxLength={128} required value={newPassword} onChange={event=>setNewPassword(event.target.value)}/></label>
+          <label htmlFor="lio-confirm-password">Confirmar nova senha<input id="lio-confirm-password" type="password" autoComplete="new-password" minLength={12} maxLength={128} required value={confirmPassword} onChange={event=>setConfirmPassword(event.target.value)}/></label>
+          <button type="submit" className="primary" disabled={passwordBusy}>{passwordBusy?"Alterando…":"Alterar senha"}</button>
+        </form>
+        {passwordError&&<p role="alert" className="error">{passwordError}</p>}{passwordMessage&&<p role="status" className="lio-profile-name-success">{passwordMessage}</p>}
+      </section>}
       <div className="lio-mobile-replay"><button type="button" onClick={()=>window.dispatchEvent(new Event("lio:reopen-intro"))}>✦ Rever apresentação do aplicativo</button></div>
       <section className="lio-personalization" aria-labelledby="lio-personalization-heading">
         <div className="lio-personalization-header"><span className="lio-personalization-icon" aria-hidden="true">✦</span><div><h2 id="lio-personalization-heading">Personalização</h2><p>Deixe o LIO com a sua cara. Suas escolhas ficam salvas neste dispositivo.</p></div></div>

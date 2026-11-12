@@ -8,5 +8,5 @@ export default async function Home() {
   const adminEmail = process.env.LIO_ADMIN_EMAIL?.trim().toLowerCase();
   const account=await prisma.user.findUnique({where:{id:session.user.id},select:{name:true,email:true}});
   if (adminEmail && account?.email.toLowerCase() === adminEmail) redirect("/admin");
-  return <Dashboard name={account?.name || session.user.name || "Leitor(a)"} />;
+  return <Dashboard name={account?.name || session.user.name || "Leitor(a)"} email={account?.email || session.user.email || ""} />;
 }
