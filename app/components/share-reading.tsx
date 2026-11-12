@@ -100,6 +100,57 @@ function drawLioMark(ctx:CanvasRenderingContext2D,x:number,y:number,width:number
  ctx.beginPath();ctx.moveTo(195.7,206.2);ctx.lineTo(227.9,206.2);ctx.moveTo(195.7,374.1);ctx.lineTo(227.9,374.1);ctx.stroke();
  ctx.restore();
 }
+
+/** Real Gaussian-like blur, independent of CanvasRenderingContext2D.filter.
+ * Three separable running-average passes are efficient even on iPhone Safari.
+ * Unlike tiny-thumbnail upscaling, pixels are blended continuously, not blocky.
+ */
+function blurImagePixels(image:ImageData,radius:number):ImageData{
+ const w=image.width,h=image.height,size=(radius*2+1);
+ let source=image.data;
+ for(let pass=0;pass<3;pass++){
+  const horizontal=new Uint8ClampedArray(source.length);
+  const vertical=new Uint8ClampedArray(source.length);
+  for(let y=0;y<h;y++){
+   const row=y*w*4;
+   let red=0,green=0,blue=0;
+   for(let k=-radius;k<=radius;k++){
+    const i=row+Math.max(0,Math.min(w-1,k))*4;
+    red+=source[i];green+=source[i+1];blue+=source[i+2];
+   }
+   for(let x=0;x<w;x++){
+    const i=row+x*4;
+    horizontal[i]=red/size;horizontal[i+1]=green/size;horizontal[i+2]=blue/size;horizontal[i+3]=255;
+    const leaving=row+Math.max(0,x-radius)*4;
+    const entering=row+Math.min(w-1,x+radius+1)*4;
+    red+=source[entering]-source[leaving];
+    green+=source[entering+1]-source[leaving+1];
+    blue+=source[entering+2]-source[leaving+2];
+   }
+  }
+  for(let x=0;x<w;x++){
+   let red=0,green=0,blue=0;
+   for(let k=-radius;k<=radius;k++){
+    const i=(Math.max(0,Math.min(h-1,k))*w+x)*4;
+    red+=horizontal[i];green+=horizontal[i+1];blue+=horizontal[i+2];
+   }
+   for(let y=0;y<h;y++){
+    const i=(y*w+x)*4;
+    vertical[i]=red/size;vertical[i+1]=green/size;vertical[i+2]=blue/size;vertical[i+3]=255;
+    const leaving=(Math.max(0,y-radius)*w+x)*4;
+    const entering=(Math.min(h-1,y+radius+1)*w+x)*4;
+    red+=horizontal[entering]-horizontal[leaving];
+    green+=horizontal[entering+1]-horizontal[leaving+1];
+    blue+=horizontal[entering+2]-horizontal[leaving+2];
+   }
+  }
+  source=vertical;
+ }
+ const result=new ImageData(w,h);
+ result.data.set(source);
+ return result;
+}
+
 function drawCard(book:ShareBook,format:Format,layout:Layout,backgroundStyle:BackgroundStyle,cover:HTMLImageElement|null):HTMLCanvasElement{
  const canvas=document.createElement("canvas");canvas.width=1080;canvas.height=format==="story"?1920:1350;
  const ctx=canvas.getContext("2d");if(!ctx)throw new Error("Não foi possível preparar a imagem.");
@@ -109,48 +160,42 @@ function drawCard(book:ShareBook,format:Format,layout:Layout,backgroundStyle:Bac
  const coverColors=extractCoverColors(cover,selected.colors);
  createCoverGradient(ctx,w,h,coverColors);
  if(backgroundStyle==="cover"&&cover?.naturalWidth&&cover.naturalHeight){
-  // A versão anterior usava apenas 14x25 pixels e deixava blocos aparentes.
-  // Preservamos resolução intermediária e duas passagens suaves.
-  const stageA=document.createElement("canvas");
-  stageA.width=format==="story"?240:240;
-  stageA.height=format==="story"?426:300;
-  const stageACtx=stageA.getContext("2d");
-  if(stageACtx){
-   const scale=Math.max(stageA.width/cover.naturalWidth,stageA.height/cover.naturalHeight);
-   const dw=cover.naturalWidth*scale,dh=cover.naturalHeight*scale;
-   stageACtx.imageSmoothingEnabled=true;
-   stageACtx.imageSmoothingQuality="high";
-   stageACtx.drawImage(cover,(stageA.width-dw)/2,(stageA.height-dh)/2,dw,dh);
-   const stageB=document.createElement("canvas");
-   stageB.width=format==="story"?120:120;
-   stageB.height=format==="story"?213:150;
-   const stageBCtx=stageB.getContext("2d");
-   if(stageBCtx){
-    stageBCtx.imageSmoothingEnabled=true;
-    stageBCtx.imageSmoothingQuality="high";
-    stageBCtx.drawImage(stageA,0,0,stageB.width,stageB.height);
-    ctx.save();
-    ctx.imageSmoothingEnabled=true;
-    ctx.imageSmoothingQuality="high";
-    ctx.filter="blur(35px) saturate(.82)";
-    ctx.drawImage(stageB,-90,-90,w+180,h+180);
-    ctx.restore();
-    // Uma camada adicional devolve transições macias mesmo se ctx.filter
-    // não for implementado no navegador do usuário.
-    ctx.save();
-    ctx.globalAlpha=.28;
-    ctx.imageSmoothingEnabled=true;
-    ctx.imageSmoothingQuality="high";
-    ctx.filter="blur(24px)";
-    ctx.drawImage(stageA,-55,-55,w+110,h+110);
-    ctx.restore();
+  // Desfoque calculado diretamente nos pixels: não depende de ctx.filter,
+  // que não funciona de modo consistente ao exportar Canvas no iPhone.
+  // A imagem permanece relativamente grande antes de ser ampliada.
+  const blurredCanvas=document.createElement("canvas");
+  blurredCanvas.width=360;
+  blurredCanvas.height=format==="story"?640:450;
+  const blurredCtx=blurredCanvas.getContext("2d",{willReadFrequently:true});
+  if(blurredCtx){
+   const bw=blurredCanvas.width,bh=blurredCanvas.height;
+   blurredCtx.imageSmoothingEnabled=true;
+   blurredCtx.imageSmoothingQuality="high";
+   blurredCtx.fillStyle=rgb(coverColors[0]);
+   blurredCtx.fillRect(0,0,bw,bh);
+   const scale=Math.max(bw/cover.naturalWidth,bh/cover.naturalHeight);
+   const cw=cover.naturalWidth*scale,ch=cover.naturalHeight*scale;
+   blurredCtx.drawImage(cover,(bw-cw)/2,(bh-ch)/2,cw,ch);
+   try{
+    const pixels=blurredCtx.getImageData(0,0,bw,bh);
+    blurredCtx.putImageData(blurImagePixels(pixels,27),0,0);
+   }catch{
+    // Em casos raros de CORS a capa é substituída pelo degradê existente.
+    blurredCtx.clearRect(0,0,bw,bh);
+    const fallback=blurredCtx.createLinearGradient(0,0,bw,bh);
+    fallback.addColorStop(0,rgb(coverColors[0]));
+    fallback.addColorStop(1,rgb(coverColors[2]));
+    blurredCtx.fillStyle=fallback;blurredCtx.fillRect(0,0,bw,bh);
    }
+   ctx.save();
+   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
+   ctx.drawImage(blurredCanvas,0,0,w,h);
+   ctx.restore();
   }
-  // Véu suave para melhorar a legibilidade sem esconder as cores da capa.
   const veil=ctx.createLinearGradient(0,0,w,h);
-  veil.addColorStop(0,rgb(coverColors[0],.22));
-  veil.addColorStop(.55,"rgba(245,240,239,.20)");
-  veil.addColorStop(1,rgb(coverColors[2],.25));
+  veil.addColorStop(0,rgb(coverColors[0],.20));
+  veil.addColorStop(.55,"rgba(247,241,238,.16)");
+  veil.addColorStop(1,rgb(coverColors[2],.22));
   ctx.fillStyle=veil;ctx.fillRect(0,0,w,h);
  }
  // Camada para tornar a logo visível nos dois fundos sem uma faixa de texto.
