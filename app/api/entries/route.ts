@@ -11,7 +11,7 @@ export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return Response.json({ error: "Não autorizado" }, { status: 401 });
   const entries = await prisma.readingEntry.findMany({ where: { kind: { not: "Plano" }, book: { userId: session.user.id } }, include: { book: { select: { title: true } } }, orderBy: { createdAt: "desc" }, take: 300 });
-  return Response.json(entries);
+  // Para registros textuais, pagesRead guarda a página capturada no momento da escrita.\n  // 0 nos registros anteriores indica que não existe um marco de página conhecido.\n  return Response.json(entries.map(entry=>({\n    ...entry,\n    pageAtNote: entry.kind!=="Sessão"&&entry.kind!=="Plano"&&entry.pagesRead>0?entry.pagesRead:null\n  })));
 }
 export async function POST(request: Request) {
   const session = await auth();
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       actualPages=Math.max(0,Math.min(parsed.data.pagesRead,max-current.currentPage));
       if(actualPages<=0)throw new Error("Este livro já está na última página. Atualize a ficha para continuar.");
     }
-    const created=await tx.readingEntry.create({data:{...parsed.data,pagesRead:actualPages}});
+    // Em notas/resenhas/citações salvamos o marcador do livro, nunca um número fornecido pelo cliente.\n    // Reutilizamos pagesRead apenas nesses tipos; sessões mantêm seu significado original.\n    const savedPages=parsed.data.kind==="Sessão"?actualPages:current.currentPage;\n    const created=await tx.readingEntry.create({data:{...parsed.data,pagesRead:savedPages}});
     if(parsed.data.kind==="Sessão"){
       const nextPage=current.currentPage+actualPages;
       const complete=current.totalPages>0&&nextPage===current.totalPages;
