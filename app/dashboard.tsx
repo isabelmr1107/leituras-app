@@ -8,6 +8,7 @@ import PwaInstall from "./components/pwa-install";
 import MobileHome from "./components/mobile-home";
 import QuickReadingProgress from "./components/quick-reading-progress";
 import HomeReadingHub from "./components/home-reading-hub";
+import ReadingChallenges from "./components/reading-challenges";
 import ShareReading from "./components/share-reading";
 import {palettes,applyLioPreferences,getSavedPreferences,saveLioPreferences,systemTheme,type LioPaletteId,type LioThemeChoice} from "./components/lio-preferences";
 type Status="Quero ler"|"Lendo"|"Lido"|"Abandonado";
@@ -510,6 +511,7 @@ export default function Dashboard({name}:{name:string}){
 </div>}<p>{e.kind==="Sessão"?e.pagesRead+" páginas acompanhadas":e.content}</p><div className="journal-entry-foot"><span>✦ Minha memória literária</span><button className="secondary-button" type="button" disabled={busy} onClick={()=>removeEntry(e.id)}>Excluir</button></div></article>)}</div>}</div></div>
     </section>}
     {view==="Metas"&&<section className="section lio-goals-page">
+      <ReadingChallenges books={books} entries={entries} />
       <div className="goal-card"><p className="eyebrow">META DE {year}</p><h2>Ler {booksGoal} livros</h2><strong className="goal-number">{thisYear.length}/{booksGoal}</strong><div className="progress" role="progressbar" aria-label={"Progresso da meta de "+year} aria-valuenow={Math.min(100,Math.round(thisYear.length/booksGoal*100))} aria-valuemin={0} aria-valuemax={100}><span style={{width:Math.min(100,thisYear.length/booksGoal*100)+"%"}}/></div><p>{thisYear.length>=booksGoal?"Sua meta foi alcançada! ✨":Math.max(0,booksGoal-thisYear.length)+" livros restantes para sua meta."}</p><p className="lio-goal-note">Você escolhe seu próprio ritmo. Esta meta é apenas uma referência para sua jornada.</p><form onSubmit={saveGoal} className="goal-form">
         <label>Minha meta anual de livros
           <input type="text" inputMode="numeric" pattern="[0-9]*" maxLength={4} required value={draftGoal} onChange={e=>setDraftGoal(e.target.value.replace(/\D/g,"").replace(/^0+(?=\d)/,""))}/>
