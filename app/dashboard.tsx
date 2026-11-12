@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
 import "./profile-compact.css";
+import "./custom-palette.css";
 import { createPortal } from "react-dom";
 import LioLogo from "./components/lio-logo";
 import ReadingPlanner from "./components/reading-planner";
@@ -11,7 +12,7 @@ import QuickReadingProgress from "./components/quick-reading-progress";
 import HomeReadingHub from "./components/home-reading-hub";
 import ReadingChallenges from "./components/reading-challenges";
 import ShareReading from "./components/share-reading";
-import {palettes,applyLioPreferences,getSavedPreferences,saveLioPreferences,systemTheme,type LioPaletteId,type LioThemeChoice} from "./components/lio-preferences";
+import {palettes,applyLioPreferences,getSavedPreferences,saveLioPreferences,systemTheme,normalizeHex,DEFAULT_CUSTOM_COLORS,type LioPaletteId,type LioThemeChoice,type LioPaletteColors} from "./components/lio-preferences";
 type Status="Quero ler"|"Lendo"|"Lido"|"Abandonado";
 type Book={id:string;title:string;author:string;category:string|null;coverUrl:string|null;status:Status;rating:number;favorite:boolean;totalPages:number;currentPage:number;sortOrder:number;createdAt:string;startedAt:string|null;finishedAt:string|null};
 type Entry={id:string;bookId:string;kind:string;content:string;pagesRead:number;pageAtNote:number|null;createdAt:string;book:{id?:string;title:string}};
@@ -20,7 +21,7 @@ type View="Dashboard"|"Minha biblioteca"|"Diário"|"Metas"|"Cronograma"|"Perfil"
 type BookSuggestion={title:string;author:string;totalPages:number|null;category:string;coverUrl:string|null;publisher:string;source:string;isbn?:string};
 const months=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
 const blank={title:"",author:"",category:"",coverUrl:"",status:"Quero ler" as Status,rating:0,totalPages:0,currentPage:0,startedAt:"",finishedAt:""};
-export default function Dashboard({name,email}:{name:string;email:string}){
+export default function Dashboard({name,email,accountId}:{name:string;email:string;accountId:string}){
   const [displayName,setDisplayName]=useState(name);
   const [draftName,setDraftName]=useState(name);
   const [nameBusy,setNameBusy]=useState(false);
@@ -54,6 +55,8 @@ export default function Dashboard({name,email}:{name:string;email:string}){
   const [shelfMode,setShelfMode]=useState<"grid"|"list">("grid");
   const [themeChoice,setThemeChoice]=useState<LioThemeChoice>("dark");
   const [palette,setPalette]=useState<LioPaletteId>("aurora");
+  const [customColors,setCustomColors]=useState<LioPaletteColors>([...DEFAULT_CUSTOM_COLORS]);
+  const [customHexDrafts,setCustomHexDrafts]=useState<LioPaletteColors>([...DEFAULT_CUSTOM_COLORS]);
   const [preferencesLoaded,setPreferencesLoaded]=useState(false);
   const [shelves,setShelves]=useState<Shelf[]>([]);
   const [activeShelf,setActiveShelf]=useState<string>("all");
@@ -137,20 +140,43 @@ export default function Dashboard({name,email}:{name:string;email:string}){
     }finally{setPasswordBusy(false);}
   }
   useEffect(()=>{
-    const saved=getSavedPreferences();
-    setThemeChoice(saved.theme);setPalette(saved.palette);applyLioPreferences(saved.theme,saved.palette);setPreferencesLoaded(true);
-  },[]);
+    const saved=getSavedPreferences(accountId);
+    setThemeChoice(saved.theme);setPalette(saved.palette);
+    setCustomColors(saved.customColors);setCustomHexDrafts(saved.customColors);
+    applyLioPreferences(saved.theme,saved.palette,saved.customColors);
+    setPreferencesLoaded(true);
+  },[accountId]);
   useEffect(()=>{
     if(!preferencesLoaded)return;
-    saveLioPreferences(themeChoice,palette);
-  },[themeChoice,palette,preferencesLoaded]);
+    saveLioPreferences(themeChoice,palette,customColors,accountId);
+  },[themeChoice,palette,customColors,preferencesLoaded,accountId]);
   useEffect(()=>{
     if(themeChoice!=="auto")return;
     const media=window.matchMedia("(prefers-color-scheme: dark)");
-    const sync=()=>applyLioPreferences("auto",palette);
+    const sync=()=>applyLioPreferences("auto",palette,customColors);
     media.addEventListener("change",sync);
     return ()=>media.removeEventListener("change",sync);
-  },[themeChoice,palette]);
+  },[themeChoice,palette,customColors]);
+  function changeCustomColor(index:number,raw:string){
+    const hex=normalizeHex(raw);
+    if(!hex)return;
+    const updated=customColors.map((color,i)=>i===index?hex:color) as LioPaletteColors;
+    setCustomColors(updated);
+    setCustomHexDrafts(updated);
+    setPalette("personalizada");
+  }
+  function changeHexDraft(index:number,raw:string){
+    const next=customHexDrafts.map((color,i)=>i===index?raw:color) as LioPaletteColors;
+    setCustomHexDrafts(next);
+    const hex=normalizeHex(raw);
+    if(hex){
+      setCustomColors(colors=>colors.map((color,i)=>i===index?hex:color) as LioPaletteColors);
+      setPalette("personalizada");
+    }
+  }
+  function finishHexEdit(index:number){
+    setCustomHexDrafts(current=>current.map((color,i)=>i===index?customColors[i]:color) as LioPaletteColors);
+  }
   useEffect(()=>{
     try{const saved=localStorage.getItem("lio-diary-layout");if(saved==="scroll"||saved==="grid")setDiaryLayout(saved)}catch{}
     setDiaryLayoutLoaded(true);
@@ -611,7 +637,7 @@ export default function Dashboard({name,email}:{name:string;email:string}){
     <PwaInstall visible={view==="Perfil"}/>
     </section>
     {quickBook&&<QuickReadingProgress key={quickBook.id} book={quickBook} onClose={()=>setQuickBookId(null)} onSave={saveQuickProgress}/>}
-    {detailBook&&<div className="overlay book-detail-overlay" onMouseDown={()=>setDetailId(null)}><section className="book-detail-modal" role="dialog" aria-modal="true" aria-label={"Detalhes de "+detailBook.title} onMouseDown={e=>e.stopPropagation()}><div className="book-detail-top"><span className="section-kicker">✦ MINHA FICHA DE LEITURA</span><button className="close" type="button" onClick={()=>setDetailId(null)} aria-label="Fechar detalhes">×</button></div><div className="book-detail-intro"><div className="book-detail-cover">{detailBook.coverUrl?<img src={detailBook.coverUrl} alt={"Capa de "+detailBook.title}/>:<div className="cover-fallback">{detailBook.title}</div>}</div><div className="book-detail-summary"><span className="badge">{detailBook.status}</span><h2>{detailBook.title}</h2><p>{detailBook.author}</p><div className="book-detail-metadata"><span>{detailBook.category||"Sem categoria"}</span><span>{detailBook.totalPages?detailBook.totalPages+" páginas":"Páginas não informadas"}</span><span>{detailBook.totalPages?Math.round(detailBook.currentPage/detailBook.totalPages*100)+"% lido":"Progresso não informado"}</span>{detailBook.finishedAt&&<span>Concluído em {new Date(detailBook.finishedAt).toLocaleDateString("pt-BR",{timeZone:"UTC"})}</span>}</div><h3>Minha avaliação</h3><div className="half-star-rating">{ratingStars(detailBook)}</div><div className="detail-actions"><button type="button" className={"secondary-button lio-detail-favorite"+(detailBook.favorite?" is-favorite":"")} aria-pressed={!!detailBook.favorite} onClick={()=>void toggleFavorite(detailBook)}>{detailBook.favorite?"♥ Favoritado":"♡ Favoritar"}</button><button type="button" className="secondary-button lio-detail-quick" onClick={()=>openQuickProgress(detailBook)}>＋ Atualizar páginas</button><button type="button" className="secondary-button" onClick={()=>{setDetailId(null);edit(detailBook);}}><span aria-hidden="true">✎ </span>Editar</button><button type="button" className="secondary-button" onClick={()=>{setDetailId(null);setEntryForm({...entryForm,bookId:detailBook.id});setView("Diário");}}>Abrir diário</button><button type="button" className="secondary-button lio-detail-delete" onClick={()=>void removeBook(detailBook.id)} aria-label={"Excluir "+detailBook.title}>🗑 Excluir livro</button></div><ShareReading key={detailBook.id} book={detailBook}/></div></div><div className="detail-writing"><h3>Escreva sobre este livro</h3><form onSubmit={saveDetailEntry}><select value={detailKind} onChange={e=>setDetailKind(e.target.value as "Nota"|"Resenha"|"Citação")}>{["Resenha","Nota","Citação"].map(k=><option key={k}>{k}</option>)}</select><textarea rows={4} maxLength={5000} required placeholder="Guarde sua opinião, seus pensamentos ou uma frase marcante…" value={detailText} onChange={e=>setDetailText(e.target.value)}/><div className="lio-note-page-preview">Progresso que será registrado: <strong>{detailBook.totalPages>0?Math.min(100,Math.round(detailBook.currentPage/detailBook.totalPages*100))+"%":"total de páginas não informado"}</strong>{detailBook.totalPages>0&&<div className="lio-note-progress-track"><span style={{width:Math.min(100,Math.round(detailBook.currentPage/detailBook.totalPages*100))+"%"}}/></div>}</div><button className="primary" type="submit" disabled={busy||!detailText.trim()}>Salvar texto</button></form></div><div className="detail-memories"><h3>Minhas anotações ({detailEntries.length})</h3>{detailEntries.length?detailEntries.map(e=><article key={e.id}><span className="journal-entry-tag">{e.kind}</span>{e.kind!=="Sessão"&&e.pageAtNote!==null&&(books.find(b=>b.id===e.bookId)?.totalPages||0)>0&&<div className="lio-note-progress" aria-label={`Leitura em ${Math.min(100,Math.round((e.pageAtNote/(books.find(b=>b.id===e.bookId)?.totalPages||1))*100))}% ao registrar a anotação`}>
+    {detailBook&&<div className="overlay book-detail-overlay" onMouseDown={()=>setDetailId(null)}><section className="book-detail-modal" role="dialog" aria-modal="true" aria-label={"Detalhes de "+detailBook.title} onMouseDown={e=>e.stopPropagation()}><div className="book-detail-top"><span className="section-kicker">✦ MINHA FICHA DE LEITURA</span><button className="close" type="button" onClick={()=>setDetailId(null)} aria-label="Fechar detalhes">×</button></div><div className="book-detail-intro"><div className="book-detail-cover">{detailBook.coverUrl?<img src={detailBook.coverUrl} alt={"Capa de "+detailBook.title}/>:<div className="cover-fallback">{detailBook.title}</div>}</div><div className="book-detail-summary"><span className="badge">{detailBook.status}</span><h2>{detailBook.title}</h2><p>{detailBook.author}</p><div className="book-detail-metadata"><span>{detailBook.category||"Sem categoria"}</span><span>{detailBook.totalPages?detailBook.totalPages+" páginas":"Páginas não informadas"}</span><span>{detailBook.totalPages?Math.round(detailBook.currentPage/detailBook.totalPages*100)+"% lido":"Progresso não informado"}</span>{detailBook.finishedAt&&<span>Concluído em {new Date(detailBook.finishedAt).toLocaleDateString("pt-BR",{timeZone:"UTC"})}</span>}</div><h3>Minha avaliação</h3><div className="half-star-rating">{ratingStars(detailBook)}</div><div className="detail-actions"><button type="button" className={"secondary-button lio-detail-favorite"+(detailBook.favorite?" is-favorite":"")} aria-pressed={!!detailBook.favorite} onClick={()=>void toggleFavorite(detailBook)}>{detailBook.favorite?"♥ Favoritado":"♡ Favoritar"}</button><button type="button" className="secondary-button lio-detail-quick" onClick={()=>openQuickProgress(detailBook)}>＋ Atualizar páginas</button><button type="button" className="secondary-button" onClick={()=>{setDetailId(null);edit(detailBook);}}><span aria-hidden="true">✎ </span>Editar</button><button type="button" className="secondary-button" onClick={()=>{setDetailId(null);setEntryForm({...entryForm,bookId:detailBook.id});setView("Diário");}}>Abrir diário</button><button type="button" className="secondary-button lio-detail-delete" onClick={()=>void removeBook(detailBook.id)} aria-label={"Excluir "+detailBook.title}>🗑 Excluir livro</button></div><ShareReading key={detailBook.id} book={detailBook} accountId={accountId}/></div></div><div className="detail-writing"><h3>Escreva sobre este livro</h3><form onSubmit={saveDetailEntry}><select value={detailKind} onChange={e=>setDetailKind(e.target.value as "Nota"|"Resenha"|"Citação")}>{["Resenha","Nota","Citação"].map(k=><option key={k}>{k}</option>)}</select><textarea rows={4} maxLength={5000} required placeholder="Guarde sua opinião, seus pensamentos ou uma frase marcante…" value={detailText} onChange={e=>setDetailText(e.target.value)}/><div className="lio-note-page-preview">Progresso que será registrado: <strong>{detailBook.totalPages>0?Math.min(100,Math.round(detailBook.currentPage/detailBook.totalPages*100))+"%":"total de páginas não informado"}</strong>{detailBook.totalPages>0&&<div className="lio-note-progress-track"><span style={{width:Math.min(100,Math.round(detailBook.currentPage/detailBook.totalPages*100))+"%"}}/></div>}</div><button className="primary" type="submit" disabled={busy||!detailText.trim()}>Salvar texto</button></form></div><div className="detail-memories"><h3>Minhas anotações ({detailEntries.length})</h3>{detailEntries.length?detailEntries.map(e=><article key={e.id}><span className="journal-entry-tag">{e.kind}</span>{e.kind!=="Sessão"&&e.pageAtNote!==null&&(books.find(b=>b.id===e.bookId)?.totalPages||0)>0&&<div className="lio-note-progress" aria-label={`Leitura em ${Math.min(100,Math.round((e.pageAtNote/(books.find(b=>b.id===e.bookId)?.totalPages||1))*100))}% ao registrar a anotação`}>
   <div className="lio-note-progress-top"><span>Progresso quando escreveu</span><strong>{Math.min(100,Math.round((e.pageAtNote/(books.find(b=>b.id===e.bookId)?.totalPages||1))*100))}%</strong></div>
   <div className="lio-note-progress-track" role="progressbar" aria-label="Porcentagem lida ao registrar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.min(100,Math.round((e.pageAtNote/(books.find(b=>b.id===e.bookId)?.totalPages||1))*100))}><span style={{width:Math.min(100,Math.round((e.pageAtNote/(books.find(b=>b.id===e.bookId)?.totalPages||1))*100))+"%"}}/></div>
 </div>}<p>{e.kind==="Sessão"?e.pagesRead+" páginas acompanhadas":e.content}</p><small>{new Date(e.createdAt).toLocaleDateString("pt-BR")}</small><button type="button" className="secondary-button" disabled={busy} onClick={()=>removeEntry(e.id)}>Excluir</button></article>):<p className="auth-muted">Nenhuma anotação ainda. Comece escrevendo acima.</p>}</div>{error&&<p className="error" role="alert">{error}</p>}</section></div>}
