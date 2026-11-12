@@ -627,9 +627,25 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
         </div><p className="lio-preferences-description">No modo automático, a aparência acompanha o tema do seu dispositivo.</p></div>
         <div className="lio-personalization-part"><h3>Paleta de cores</h3><p className="lio-preferences-description">As cores mudam os destaques e detalhes translúcidos, mantendo o vidro e a legibilidade nos dois temas.</p>
         <div className="lio-palette-grid" role="group" aria-label="Escolher paleta de cores">{palettes.map(item=><button type="button" key={item.id} className={"lio-palette-choice"+(palette===item.id?" selected":"")} onClick={()=>setPalette(item.id)} aria-pressed={palette===item.id} aria-label={"Paleta "+item.name}>
-          <span className="lio-palette-swatch" aria-hidden="true">{item.colors.map((color,index)=><span key={index} style={{backgroundColor:color}}/>)}</span>
-          <span className="lio-palette-name">{item.name}{palette===item.id&&<span aria-hidden="true" className="lio-palette-selected-mark">✓</span>}</span>
-        </button>)}</div></div>
+          <span className="lio-palette-swatch" aria-hidden="true">{(item.id==="personalizada"?customColors:item.colors).map((color,index)=><span key={index} style={{backgroundColor:color}}/>)}</span>
+          <span className="lio-palette-name">{item.id==="personalizada"?"✦ ":null}{item.name}{palette===item.id&&<span aria-hidden="true" className="lio-palette-selected-mark">✓</span>}</span>
+        </button>)}</div>
+        {palette==="personalizada"&&<section className="lio-custom-palette-editor" aria-labelledby="lio-custom-palette-title">
+          <div className="lio-custom-palette-header"><div><h4 id="lio-custom-palette-title">Sua paleta de quatro cores</h4><p>Escolha qualquer cor no espectro ou digite o código HEX. As mudanças aparecem no LIO imediatamente.</p></div><button type="button" className="lio-custom-reset" onClick={()=>{const defaults=[...DEFAULT_CUSTOM_COLORS] as LioPaletteColors;setCustomColors(defaults);setCustomHexDrafts(defaults);}}>Restaurar estas cores</button></div>
+          <div className="lio-custom-color-preview" aria-label="Prévia das quatro cores escolhidas">{customColors.map((color,index)=><span key={index} style={{backgroundColor:color}}/>)}</div>
+          <div className="lio-custom-color-controls">
+            {customColors.map((color,index)=><label className="lio-custom-color-field" key={index}>
+              <span>{["Cor principal","Cor secundária","Destaques","Detalhes"][index]}</span>
+              <span className="lio-custom-picker-row"><input type="color" value={color} onChange={event=>changeCustomColor(index,event.target.value)} aria-label={"Selecionar "+["cor principal","cor secundária","destaques","detalhes"][index]+" no espectro"}/><input type="text" value={customHexDrafts[index]} maxLength={7} spellCheck={false} autoCapitalize="characters" onChange={event=>changeHexDraft(index,event.target.value)} onBlur={()=>finishHexEdit(index)} aria-label={"Código hexadecimal da "+["cor principal","cor secundária","cor de destaques","cor de detalhes"][index]} aria-invalid={!normalizeHex(customHexDrafts[index])}/></span>
+            </label>)}
+          </div>
+          <div className="lio-custom-palette-preview-card" aria-label="Prévia de uma ficha do LIO">
+            <div className="lio-custom-palette-preview-title"><span>✦ Sua biblioteca</span><span>Minha leitura</span></div>
+            <div className="lio-custom-palette-preview-bar"><span/></div>
+            <div className="lio-custom-palette-preview-dots">{customColors.map((color,index)=><span key={index} style={{backgroundColor:color}}/>)}</div>
+          </div>
+          <p className="lio-custom-palette-note">Salva automaticamente para esta conta neste dispositivo. O texto do aplicativo mantém contraste nos modos claro e escuro.</p>
+        </section>}</div>
         <div className="lio-personalization-footer"><span>As alterações são aplicadas e salvas automaticamente.</span><button type="button" className="lio-reset-appearance" onClick={()=>{setPalette("aurora");setThemeChoice("dark")}}>Restaurar aparência padrão</button></div>
       </section>
       <button className="secondary-button lio-logout" onClick={()=>signOut({callbackUrl:"/login"})}>Sair da conta</button>
