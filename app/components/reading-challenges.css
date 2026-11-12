@@ -1,0 +1,29 @@
+/* LIO — desafios e conquistas. Sem alterar estilos do aplicativo mobile. */
+.lio-challenges{margin:28px 0 36px;width:100%;color:var(--ink)}
+.lio-challenges-header{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:30px}
+.lio-challenges-header h2{margin:6px 0 8px;font-size:clamp(22px,3vw,29px);letter-spacing:-.035em}
+.lio-challenges-header p:not(.eyebrow){color:var(--muted);margin:0;font-size:14px}
+.lio-streak-card{flex:0 0 auto;min-width:156px;display:flex;flex-direction:column;align-items:center;gap:5px;padding:16px 22px;border:1px solid var(--line);border-radius:19px;background:var(--card);box-shadow:0 10px 30px #3426380b}
+.lio-streak-card>span{font-size:29px}.lio-streak-card strong{font-size:24px;line-height:1.1}.lio-streak-card small{color:var(--muted);font-size:12px}
+.lio-challenge-section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:20px 0 13px}
+.lio-challenge-section-head h3{font-size:19px;letter-spacing:-.03em;margin:0}
+.lio-challenge-section-head>span{font-size:12px;color:var(--muted)}
+.lio-challenge-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:32px}
+.lio-challenge-card,.lio-medal{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;min-width:0}
+.lio-challenge-top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.lio-challenge-symbol{font-size:28px}.lio-challenge-state{font-size:10px;border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:5px 8px}
+.lio-challenge-state.complete{background:color-mix(in srgb,var(--lio-color-c,#90c6a5) 17%,var(--card));border-color:transparent;color:var(--ink)}
+.lio-challenge-card h4{margin:15px 0 8px;font-size:16px}.lio-challenge-card p{font-size:12px;line-height:1.5;color:var(--muted);min-height:38px}
+.lio-challenge-count{display:flex;justify-content:space-between;align-items:end;gap:8px;margin:17px 0 10px}
+.lio-challenge-count strong{font-size:21px;font-variant-numeric:tabular-nums}.lio-challenge-count small{color:var(--muted);font-size:11px}
+.lio-challenge-track{height:9px;border-radius:99px;overflow:hidden;background:color-mix(in srgb,var(--lio-color-a,#a688c4) 14%,var(--card))}
+.lio-challenge-track>span{display:block;height:100%;border-radius:99px;background:linear-gradient(100deg,var(--lio-color-a,#a688c4),var(--lio-color-b,#e2a8c9))}
+.lio-medal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.lio-medal{display:flex;flex-direction:column;align-items:center;text-align:center;gap:7px;padding:20px 14px}
+.lio-medal-icon{font-size:30px;display:grid;place-items:center;width:64px;height:64px;border-radius:20px;background:color-mix(in srgb,var(--lio-color-a,#a688c4) 12%,var(--card))}
+.lio-medal strong{font-size:13px}.lio-medal small{font-size:11px;line-height:1.4;color:var(--muted);min-height:31px}
+.lio-medal-status{margin-top:5px;font-size:10px;font-weight:750;color:var(--lio-color-a,var(--accent))}
+.lio-medal.is-locked{opacity:.62}.lio-medal.is-locked .lio-medal-status{color:var(--muted)}
+.lio-challenges-note{font-size:12px;line-height:1.6;color:var(--muted);margin-top:17px}
+@media(max-width:920px){.lio-challenge-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lio-medal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.lio-challenges-header{align-items:stretch;flex-direction:column}.lio-streak-card{width:100%;flex-direction:row;justify-content:center;min-width:0}.lio-challenge-grid{grid-template-columns:1fr}.lio-medal-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.lio-medal{padding:15px 9px}.lio-challenge-section-head{align-items:start;flex-direction:column;gap:4px}}
