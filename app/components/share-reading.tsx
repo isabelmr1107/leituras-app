@@ -109,8 +109,8 @@ function drawCard(book:ShareBook,format:Format,layout:Layout,backgroundStyle:Bac
  const coverColors=extractCoverColors(cover,selected.colors);
  createCoverGradient(ctx,w,h,coverColors);
  if(backgroundStyle==="cover"&&cover?.naturalWidth&&cover.naturalHeight){
-  ctx.save();ctx.filter="blur(30px) saturate(.75)";
-  const scale=Math.max(w/cover.naturalWidth,h/cover.naturalHeight)*1.09;
+  ctx.save();ctx.filter="blur(105px) saturate(.78)";
+  const scale=Math.max(w/cover.naturalWidth,h/cover.naturalHeight)*1.35;
   const cw=cover.naturalWidth*scale,ch=cover.naturalHeight*scale;
   ctx.drawImage(cover,(w-cw)/2,(h-ch)/2,cw,ch);ctx.restore();
   ctx.fillStyle="rgba(26,22,26,.24)";ctx.fillRect(0,0,w,h);
