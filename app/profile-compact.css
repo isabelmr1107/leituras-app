@@ -1,0 +1,34 @@
+/* LIO — perfil compacto: acesso à conta por engrenagem e paletas pequenas. */
+.lio-profile-page .lio-profile-overview{display:flex;align-items:center;gap:20px}
+.lio-profile-page .lio-profile-intro{min-width:0;flex:1}
+.lio-profile-page .lio-profile-gear{margin-left:auto;flex:0 0 auto;display:grid;place-items:center;width:48px;height:48px;min-width:48px;padding:0;border:1px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--card) 70%,transparent);color:var(--ink);cursor:pointer;box-shadow:0 6px 24px rgba(33,22,56,.06);transition:transform .16s ease,border-color .16s ease,background .16s ease}
+.lio-profile-page .lio-profile-gear:hover{transform:rotate(24deg);border-color:var(--lio-color-b);background:color-mix(in srgb,var(--lio-color-a) 13%,var(--card))}
+.lio-profile-page .lio-profile-gear:focus-visible,.lio-account-close:focus-visible{outline:3px solid var(--lio-color-b);outline-offset:2px}
+.lio-account-settings{animation:lio-account-open .2s ease-out;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+@keyframes lio-account-open{from{opacity:.4;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.lio-account-header{display:flex;align-items:start;justify-content:space-between;gap:16px}
+.lio-account-header h3{margin:0 0 6px!important}
+.lio-account-header p,.lio-account-help{font-size:13px;line-height:1.5;color:var(--muted);margin:0 0 16px}
+.lio-account-close{flex:0 0 auto;border:1px solid var(--line);background:color-mix(in srgb,var(--card) 68%,transparent);color:var(--ink);border-radius:50%;width:35px;height:35px;font-size:22px;cursor:pointer}
+.lio-account-email{display:flex;flex-direction:column;gap:6px;padding:13px 15px;background:color-mix(in srgb,var(--lio-color-a) 7%,var(--card));border:1px solid var(--line);border-radius:14px;overflow-wrap:anywhere}
+.lio-account-email span{font-size:11px;color:var(--muted);font-weight:650}
+.lio-account-email strong{font-size:14px;color:var(--ink);font-weight:650}
+.lio-account-divider{height:1px;background:var(--line);margin:22px 0}
+.lio-account-settings h4{margin:0 0 12px;font-size:16px;color:var(--ink)}
+.lio-account-settings .lio-password-change-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end}
+.lio-account-settings .lio-password-change-form label{min-width:0;font-size:12px}
+.lio-account-settings .lio-password-change-form input{width:100%}
+.lio-account-settings .lio-password-change-form button{min-height:45px;justify-self:start;grid-column:1 / -1}
+.lio-account-settings .lio-account-help{margin-bottom:12px}
+/* As nove paletas são mantidas mas deixam de ser cards grandes. */
+.lio-profile-page .lio-palette-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.lio-profile-page .lio-palette-choice{display:flex;flex-direction:column;justify-content:center;gap:7px;min-width:0;padding:8px!important;border:1px solid var(--line);border-radius:13px;box-shadow:none!important;transition:border-color .15s ease,background .15s ease}
+.lio-profile-page .lio-palette-choice.selected{border:2px solid var(--lio-color-b);padding:7px!important;background:color-mix(in srgb,var(--lio-color-a) 7%,var(--card))}
+.lio-profile-page .lio-palette-choice:hover{transform:none;border-color:var(--lio-color-b)}
+.lio-profile-page .lio-palette-swatch{height:19px;min-height:19px;border-radius:7px}
+.lio-profile-page .lio-palette-name{display:flex;justify-content:space-between;gap:4px;min-width:0;font-size:11px;line-height:1.25;font-weight:700}
+.lio-profile-page .lio-palette-selected-mark{font-size:12px}
+@media(max-width:950px){.lio-profile-page .lio-palette-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.lio-account-settings .lio-password-change-form{grid-template-columns:1fr}.lio-account-settings .lio-password-change-form button{grid-column:auto;width:100%}.lio-profile-page .lio-profile-overview{gap:11px}.lio-profile-page .lio-profile-gear{width:44px;height:44px;min-width:44px;border-radius:13px}}
+@media(max-width:340px){.lio-profile-page .lio-palette-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.lio-account-settings{animation:none}.lio-profile-page .lio-profile-gear{transition:none}.lio-profile-page .lio-profile-gear:hover{transform:none}}
