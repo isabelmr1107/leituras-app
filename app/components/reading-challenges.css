@@ -27,10 +27,10 @@
 .lio-challenges .lio-medal.is-locked{opacity:.78}
 .lio-challenges .lio-medal.is-locked .lio-medal-symbol{filter:saturate(.55)}
 .lio-medal-art{position:relative;display:block;flex:0 0 auto;width:104px;height:104px;max-width:100%;isolation:isolate}
-.lio-medal-ring{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+ .lio-medal-ring{position:absolute;z-index:1;inset:0;width:100%;height:100%;overflow:visible}
 .lio-medal-ring-track{fill:none;stroke:color-mix(in srgb,var(--lio-app-ink,var(--ink)) 12%,transparent);stroke-width:8;stroke-linecap:round;stroke-dasharray:11 4}
 .lio-medal-ring-value{fill:none;stroke:var(--lio-medal-accent);stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dasharray .35s ease}
-.lio-medal-symbol{position:absolute;z-index:-1;inset:17px;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle at 35% 22%,rgba(255,255,255,.6),transparent 75%),color-mix(in srgb,var(--lio-medal-accent) 26%,var(--lio-app-surface,var(--card)));box-shadow:inset 0 1px 5px rgba(255,255,255,.24);font-size:32px;line-height:1}
+.lio-medal-symbol{position:absolute;z-index:0;inset:17px;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle at 35% 22%,rgba(255,255,255,.6),transparent 75%),color-mix(in srgb,var(--lio-medal-accent) 26%,var(--lio-app-surface,var(--card)));box-shadow:inset 0 1px 5px rgba(255,255,255,.24);font-size:32px;line-height:1}
 .lio-medal-count{position:absolute;z-index:2;left:50%;bottom:2px;transform:translateX(-50%);padding:4px 11px;min-width:45px;max-width:92%;border-radius:8px;background:color-mix(in srgb,var(--lio-medal-accent) 76%,var(--lio-app-ink,var(--ink)));color:#fff;box-shadow:0 3px 11px rgba(38,25,55,.14);font-size:13px;line-height:1.1;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
 .lio-medal-name{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%;font-size:12px;font-weight:720;line-height:1.35;min-height:32px}
 .lio-challenges-note{font-size:12px;line-height:1.6;color:var(--muted);margin-top:17px}
