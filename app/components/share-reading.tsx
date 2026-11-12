@@ -1,6 +1,6 @@
 "use client";
 import {useState} from "react";
-import {getSavedPreferences,palettes} from "./lio-preferences";
+import {getSavedPreferences,getPaletteColors} from "./lio-preferences";
 
 type ShareBook={title:string;author:string;status:string;rating:number;currentPage:number;totalPages:number;coverUrl?:string|null};
 type Format="story"|"post";
@@ -151,13 +151,14 @@ function blurImagePixels(image:ImageData,radius:number):ImageData{
  return result;
 }
 
-function drawCard(book:ShareBook,format:Format,layout:Layout,backgroundStyle:BackgroundStyle,cover:HTMLImageElement|null):HTMLCanvasElement{
+function drawCard(book:ShareBook,format:Format,layout:Layout,backgroundStyle:BackgroundStyle,cover:HTMLImageElement|null,accountId:string):HTMLCanvasElement{
  const canvas=document.createElement("canvas");canvas.width=1080;canvas.height=format==="story"?1920:1350;
  const ctx=canvas.getContext("2d");if(!ctx)throw new Error("Não foi possível preparar a imagem.");
  const w=canvas.width,h=canvas.height;
- const selected=palettes.find(p=>p.id===getSavedPreferences().palette)??palettes[0];
- const palette=selected.colors.map(hexRGB);
- const coverColors=extractCoverColors(cover,selected.colors);
+ const saved=getSavedPreferences(accountId);
+ const activeColors=getPaletteColors(saved.palette,saved.customColors);
+ const palette=activeColors.map(hexRGB);
+ const coverColors=extractCoverColors(cover,activeColors);
  createCoverGradient(ctx,w,h,coverColors);
  if(backgroundStyle==="cover"&&cover?.naturalWidth&&cover.naturalHeight){
   // Desfoque calculado diretamente nos pixels: não depende de ctx.filter,
@@ -257,7 +258,7 @@ function drawCard(book:ShareBook,format:Format,layout:Layout,backgroundStyle:Bac
  return canvas;
 }
 
-export default function ShareReading({book}:{book:ShareBook}){
+export default function ShareReading({book,accountId}:{book:ShareBook;accountId:string}){
  const [open,setOpen]=useState(false),[format,setFormat]=useState<Format>("story"),[layout,setLayout]=useState<Layout>("card"),[backgroundStyle,setBackgroundStyle]=useState<BackgroundStyle>("gradient"),[busy,setBusy]=useState(false),[message,setMessage]=useState("");
  async function loadCover(url?:string|null):Promise<HTMLImageElement|null>{
   if(!url || !/^https:\/\//i.test(url))return null;
@@ -271,7 +272,7 @@ export default function ShareReading({book}:{book:ShareBook}){
  async function generate(){
   setBusy(true);setMessage("");
   try{
-   const cover=await loadCover(book.coverUrl);const canvas=drawCard(book,format,layout,backgroundStyle,cover);const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/png"));
+   const cover=await loadCover(book.coverUrl);const canvas=drawCard(book,format,layout,backgroundStyle,cover,accountId);const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/png"));
    if(!blob)throw new Error("Não foi possível gerar o card.");
    const filename="lio-"+layout+"-"+(format==="story"?"story":"publicacao")+".png";
    const file=new File([blob],filename,{type:"image/png"});

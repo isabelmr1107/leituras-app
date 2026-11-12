@@ -1,0 +1,51 @@
+/* Personalizada — décima paleta do LIO. Usa os tokens existentes do app. */
+.lio-profile-page .lio-palette-choice[aria-label="Paleta Personalizada"]{
+  border-style:dashed;
+}
+.lio-profile-page .lio-palette-choice[aria-label="Paleta Personalizada"].selected{
+  border-style:solid;
+}
+.lio-custom-palette-editor{
+  margin-top:16px;
+  padding:clamp(15px,2.5vw,22px);
+  border:1px solid color-mix(in srgb,var(--lio-color-a) 26%,var(--line));
+  background:linear-gradient(145deg,color-mix(in srgb,var(--card) 86%,transparent),color-mix(in srgb,var(--lio-color-a) 8%,var(--card)));
+  border-radius:20px;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.lio-custom-palette-header{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.lio-custom-palette-header h4{font:750 17px/1.3 system-ui,sans-serif;color:var(--ink);margin:0 0 6px}
+.lio-custom-palette-header p{color:var(--muted);font:400 12px/1.5 system-ui,sans-serif;max-width:580px;margin:0}
+.lio-custom-reset{flex:0 0 auto;border:1px solid var(--line);border-radius:10px;background:color-mix(in srgb,var(--card) 82%,transparent);color:var(--ink);padding:9px 11px;font-size:11px;cursor:pointer}
+.lio-custom-reset:hover{border-color:var(--lio-color-a)}
+.lio-custom-color-preview{height:47px;display:flex;gap:0;overflow:hidden;border-radius:12px;border:1px solid color-mix(in srgb,var(--ink) 8%,transparent);box-shadow:0 7px 17px rgba(18,15,28,.08);margin-bottom:16px}
+.lio-custom-color-preview span{flex:1;transition:background-color .12s}
+.lio-custom-color-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.lio-custom-color-field{display:flex;flex-direction:column;gap:7px;min-width:0;margin:0!important;font:700 12px system-ui,sans-serif;color:var(--ink)}
+.lio-custom-picker-row{display:flex;align-items:center;gap:8px;min-width:0;border:1px solid var(--line);border-radius:13px;padding:7px;background:color-mix(in srgb,var(--card) 87%,transparent)}
+.lio-custom-picker-row input[type="color"]{flex:0 0 auto;appearance:auto!important;width:42px!important;height:42px!important;min-width:42px;padding:2px!important;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:transparent}
+.lio-custom-picker-row input[type="text"]{min-width:0!important;flex:1;width:100%!important;margin:0!important;padding:8px 5px!important;border:0!important;background:transparent!important;color:var(--ink)!important;outline:none!important;font:650 12px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace!important;box-shadow:none!important;text-transform:uppercase}
+.lio-custom-picker-row:focus-within{border-color:var(--lio-color-b);outline:2px solid color-mix(in srgb,var(--lio-color-b) 23%,transparent)}
+.lio-custom-picker-row input[aria-invalid="true"]{text-decoration:underline wavy #d84c63}
+.lio-custom-palette-preview-card{margin-top:16px;border:1px solid color-mix(in srgb,var(--lio-color-a) 20%,var(--line));border-radius:16px;background:color-mix(in srgb,var(--lio-color-a) 9%,var(--card));padding:16px;color:var(--ink)}
+.lio-custom-palette-preview-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;font:750 13px system-ui,sans-serif}
+.lio-custom-palette-preview-title span+span{font:500 11px system-ui,sans-serif;color:var(--muted)}
+.lio-custom-palette-preview-bar{height:9px;border-radius:999px;background:color-mix(in srgb,var(--lio-color-d) 40%,var(--card));overflow:hidden}
+.lio-custom-palette-preview-bar span{display:block;height:100%;width:63%;border-radius:inherit;background:linear-gradient(90deg,var(--lio-color-a),var(--lio-color-b),var(--lio-color-c))}
+.lio-custom-palette-preview-dots{display:flex;gap:7px;margin-top:13px}
+.lio-custom-palette-preview-dots span{height:13px;width:13px;border:1px solid color-mix(in srgb,var(--ink) 11%,transparent);border-radius:50%}
+.lio-custom-palette-note{color:var(--muted);font-size:11px;line-height:1.55;margin:14px 0 0}
+html[data-palette="personalizada"] .primary:not(.lio-auth-submit),
+html[data-palette="personalizada"] .primary.add-book-button,
+html[data-palette="personalizada"] .welcome-button,
+html[data-palette="personalizada"] .filter.active,
+html[data-palette="personalizada"] .mobile-nav .filter.active,
+html[data-palette="personalizada"] .view-switch button.active,
+html[data-palette="personalizada"] .custom-shelf-tabs button.active{
+ color:var(--lio-custom-on-accent,#fff)!important;
+}
+@media(max-width:980px){.lio-custom-color-controls{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.lio-custom-palette-header{flex-direction:column}.lio-custom-reset{align-self:flex-start}.lio-custom-color-controls{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:370px){.lio-custom-color-controls{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.lio-custom-color-preview span{transition:none}}
