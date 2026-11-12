@@ -105,3 +105,8 @@ html[data-theme="dark"] .lio-quick-dialog{color-scheme:dark}
 /* Microfeedback do registro de páginas: check apenas no botão por um instante. */
 .lio-quick-save.is-saved{background:color-mix(in srgb,var(--lio-color-c) 60%,var(--lio-color-b))!important;color:#fff!important;opacity:1!important;transition:background-color .2s ease}
 .lio-quick-check{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;width:21px;height:21px;margin-right:5px;border-radius:50%;background:#ffffff33;color:#fff;font-size:14px;font-weight:850}
+
+
+/* LIO — marcador automático de página nas notas, citações e resenhas. */
+.lio-note-page-preview{margin:9px 0 13px!important;font-size:12px!important;line-height:1.5!important;color:var(--muted)!important}
+.lio-note-page-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;margin:8px 0;padding:5px 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--lio-color-a,#9970ae) 27%,var(--line));background:color-mix(in srgb,var(--lio-color-a,#9970ae) 11%,var(--card));color:var(--ink);font-size:11px;font-weight:750;line-height:1.4}
