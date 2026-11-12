@@ -105,3 +105,18 @@ html[data-theme="dark"] .lio-quick-dialog{color-scheme:dark}
 /* Microfeedback do registro de páginas: check apenas no botão por um instante. */
 .lio-quick-save.is-saved{background:color-mix(in srgb,var(--lio-color-c) 60%,var(--lio-color-b))!important;color:#fff!important;opacity:1!important;transition:background-color .2s ease}
 .lio-quick-check{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;width:21px;height:21px;margin-right:5px;border-radius:50%;background:#ffffff33;color:#fff;font-size:14px;font-weight:850}
+
+
+/* LIO — marcador automático de página nas notas, citações e resenhas. */
+.lio-note-page-preview{margin:9px 0 13px!important;font-size:12px!important;line-height:1.5!important;color:var(--muted)!important}
+.lio-note-page-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;margin:8px 0;padding:5px 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--lio-color-a,#9970ae) 27%,var(--line));background:color-mix(in srgb,var(--lio-color-a,#9970ae) 11%,var(--card));color:var(--ink);font-size:11px;font-weight:750;line-height:1.4}
+
+/* Progresso visual ao registrar uma memória de leitura. */
+.lio-note-progress{width:100%;min-width:0;margin:10px 0 13px;padding:12px;border-radius:13px;background:color-mix(in srgb,var(--lio-color-a,#9970ae) 7%,var(--card));border:1px solid var(--line)}
+.lio-note-progress-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-size:11px;color:var(--muted)}
+.lio-note-progress-top strong{font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums}
+.lio-note-progress-track{height:8px;width:100%;overflow:hidden;border-radius:999px;background:color-mix(in srgb,var(--lio-color-a,#9970ae) 17%,var(--card))}
+.lio-note-progress-track>span{height:100%;display:block;border-radius:inherit;background:linear-gradient(90deg,var(--lio-color-a,#9970ae),var(--lio-color-b,#d5a1c8))}
+.lio-note-page-preview{display:block}
+.lio-note-page-preview strong{color:var(--ink)}
+.lio-note-page-preview .lio-note-progress-track{margin-top:7px}
