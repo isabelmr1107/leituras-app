@@ -18,12 +18,43 @@
 .lio-challenge-count strong{font-size:21px;font-variant-numeric:tabular-nums}.lio-challenge-count small{color:var(--muted);font-size:11px}
 .lio-challenge-track{height:9px;border-radius:99px;overflow:hidden;background:color-mix(in srgb,var(--lio-color-a,#a688c4) 14%,var(--card))}
 .lio-challenge-track>span{display:block;height:100%;border-radius:99px;background:linear-gradient(100deg,var(--lio-color-a,#a688c4),var(--lio-color-b,#e2a8c9))}
-.lio-medal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.lio-medal{display:flex;flex-direction:column;align-items:center;text-align:center;gap:7px;padding:20px 14px}
-.lio-medal-icon{font-size:30px;display:grid;place-items:center;width:64px;height:64px;border-radius:20px;background:color-mix(in srgb,var(--lio-color-a,#a688c4) 12%,var(--card))}
-.lio-medal strong{font-size:13px}.lio-medal small{font-size:11px;line-height:1.4;color:var(--muted);min-height:31px}
-.lio-medal-status{margin-top:5px;font-size:10px;font-weight:750;color:var(--lio-color-a,var(--accent))}
-.lio-medal.is-locked{opacity:.62}.lio-medal.is-locked .lio-medal-status{color:var(--muted)}
+/* Medalhas circulares compactas, inspiradas nos anéis de progresso da referência. */
+.lio-medal-hint{margin:0 0 13px;color:var(--muted);font-size:12px;line-height:1.5}
+.lio-medal-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:10px}
+.lio-challenges .lio-medal{appearance:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:start;gap:8px;min-width:0;min-height:152px;margin:0;padding:14px 7px 12px;border-radius:20px;border:1px solid color-mix(in srgb,var(--lio-medal-accent) 23%,var(--line));background:linear-gradient(145deg,color-mix(in srgb,var(--lio-app-surface,var(--card)) 69%,transparent),color-mix(in srgb,var(--lio-medal-accent) 9%,transparent));backdrop-filter:blur(16px) saturate(130%);-webkit-backdrop-filter:blur(16px) saturate(130%);color:var(--lio-app-ink,var(--ink));box-shadow:0 10px 24px rgba(48,30,69,.045),inset 0 1px 0 rgba(255,255,255,.32);font:inherit;text-align:center;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.lio-challenges .lio-medal:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--lio-medal-accent) 59%,var(--line));box-shadow:0 14px 30px rgba(50,34,67,.11)}
+.lio-challenges .lio-medal:focus-visible{outline:3px solid var(--lio-medal-accent);outline-offset:3px}
+.lio-challenges .lio-medal.is-locked{opacity:.78}
+.lio-challenges .lio-medal.is-locked .lio-medal-symbol{filter:saturate(.55)}
+.lio-medal-art{position:relative;display:block;flex:0 0 auto;width:104px;height:104px;max-width:100%;isolation:isolate}
+ .lio-medal-ring{position:absolute;z-index:1;inset:0;width:100%;height:100%;overflow:visible}
+.lio-medal-ring-track{fill:none;stroke:color-mix(in srgb,var(--lio-app-ink,var(--ink)) 12%,transparent);stroke-width:8;stroke-linecap:round;stroke-dasharray:11 4}
+.lio-medal-ring-value{fill:none;stroke:var(--lio-medal-accent);stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dasharray .35s ease}
+.lio-medal-symbol{position:absolute;z-index:0;inset:17px;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle at 35% 22%,rgba(255,255,255,.6),transparent 75%),color-mix(in srgb,var(--lio-medal-accent) 26%,var(--lio-app-surface,var(--card)));box-shadow:inset 0 1px 5px rgba(255,255,255,.24);font-size:32px;line-height:1}
+.lio-medal-count{position:absolute;z-index:2;left:50%;bottom:2px;transform:translateX(-50%);padding:4px 11px;min-width:45px;max-width:92%;border-radius:8px;background:color-mix(in srgb,var(--lio-medal-accent) 76%,var(--lio-app-ink,var(--ink)));color:#fff;box-shadow:0 3px 11px rgba(38,25,55,.14);font-size:13px;line-height:1.1;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.lio-medal-name{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%;font-size:12px;font-weight:720;line-height:1.35;min-height:32px}
 .lio-challenges-note{font-size:12px;line-height:1.6;color:var(--muted);margin-top:17px}
-@media(max-width:920px){.lio-challenge-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lio-medal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.lio-challenges-header{align-items:stretch;flex-direction:column}.lio-streak-card{width:100%;flex-direction:row;justify-content:center;min-width:0}.lio-challenge-grid{grid-template-columns:1fr}.lio-medal-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.lio-medal{padding:15px 9px}.lio-challenge-section-head{align-items:start;flex-direction:column;gap:4px}}
+/* Caixa de detalhes: superfície de vidro que respeita as paletas e o modo escuro do LIO. */
+.lio-medal-backdrop{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(27,20,43,.32);backdrop-filter:blur(9px) saturate(115%);-webkit-backdrop-filter:blur(9px) saturate(115%)}
+.lio-medal-dialog{position:relative;width:min(100%,390px);max-height:min(92dvh,680px);overflow-y:auto;padding:26px 27px 24px;border:1px solid color-mix(in srgb,var(--lio-medal-accent) 37%,var(--line));border-radius:26px;background:linear-gradient(142deg,color-mix(in srgb,var(--lio-app-surface,var(--card,#fff)) 86%,transparent),color-mix(in srgb,var(--lio-medal-accent) 18%,var(--lio-app-surface,var(--card,#fff))));backdrop-filter:blur(35px) saturate(160%);-webkit-backdrop-filter:blur(35px) saturate(160%);box-shadow:0 26px 90px rgba(25,16,41,.24),inset 0 1px 0 rgba(255,255,255,.45);color:var(--lio-app-ink,var(--ink,#2a2343));text-align:center;outline:none}
+.lio-medal-dialog-close{position:absolute;top:12px;right:13px;z-index:2;display:grid;place-items:center;width:35px;height:35px;padding:0;border:1px solid var(--line);border-radius:50%;background:color-mix(in srgb,var(--lio-app-surface,var(--card)) 69%,transparent);color:inherit;font-size:23px;line-height:1;cursor:pointer}
+.lio-medal-dialog-art{position:relative;width:136px;height:136px;margin:6px auto 18px;isolation:isolate}
+.lio-medal-dialog-art .lio-medal-ring-track,.lio-medal-dialog-art .lio-medal-ring-value{stroke-width:6}
+.lio-medal-dialog-art .lio-medal-symbol{inset:21px;font-size:48px}
+.lio-medal-dialog-eyebrow{color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.14em}
+.lio-medal-dialog h3{margin:8px 0 9px;font-size:clamp(20px,4vw,25px);line-height:1.15;letter-spacing:-.03em;color:inherit}
+.lio-medal-dialog>p{margin:0 0 23px;font-size:14px;line-height:1.55;color:var(--muted)}
+.lio-medal-dialog-progress{padding:14px 15px;border-radius:15px;border:1px solid color-mix(in srgb,var(--lio-medal-accent) 18%,var(--line));background:color-mix(in srgb,var(--lio-app-surface,var(--card)) 53%,transparent);text-align:left}
+.lio-medal-dialog-progress-label{display:flex;justify-content:space-between;align-items:center;gap:9px;margin-bottom:11px;font-size:12px}
+.lio-medal-dialog-progress-label>span{color:var(--muted)}.lio-medal-dialog-progress-label>strong{color:inherit;font-variant-numeric:tabular-nums}
+.lio-medal-dialog-progress-track{height:9px;overflow:hidden;border-radius:20px;background:color-mix(in srgb,var(--lio-medal-accent) 21%,var(--lio-app-surface,var(--card)))}
+.lio-medal-dialog-progress-track>span{display:block;height:100%;border-radius:inherit;background:var(--lio-medal-accent)}
+.lio-medal-dialog-state{margin:18px 0 19px;font-size:13px;font-weight:680;color:var(--lio-app-ink,var(--ink))}
+.lio-medal-dialog-state.complete{color:color-mix(in srgb,var(--lio-medal-accent) 68%,var(--lio-app-ink,var(--ink)))}
+.lio-medal-dialog-done{display:block;width:100%;padding:12px 17px;border:0;border-radius:13px;background:color-mix(in srgb,var(--lio-medal-accent) 70%,var(--lio-app-ink,var(--ink)));color:#fff;font:inherit;font-size:13px;font-weight:750;cursor:pointer}
+.lio-medal-dialog button:focus-visible{outline:3px solid var(--lio-medal-accent);outline-offset:3px}
+@media(max-width:1100px){.lio-medal-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:920px){.lio-challenge-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.lio-challenges-header{align-items:stretch;flex-direction:column}.lio-streak-card{width:100%;flex-direction:row;justify-content:center;min-width:0}.lio-challenge-grid{grid-template-columns:1fr}.lio-medal-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.lio-challenges .lio-medal{padding:10px 4px 8px;min-height:137px;border-radius:16px}.lio-medal-art{width:90px;height:90px}.lio-medal-symbol{inset:16px;font-size:26px}.lio-medal-name{font-size:11px}.lio-challenge-section-head{align-items:start;flex-direction:column;gap:4px}.lio-medal-dialog{padding:25px 22px 22px}}
+@media(max-width:350px){.lio-medal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.lio-challenges .lio-medal,.lio-medal-ring-value{transition:none}.lio-challenges .lio-medal:hover{transform:none}}

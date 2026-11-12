@@ -1,11 +1,56 @@
 "use client";
 
-import {useMemo} from "react";
+import {useEffect,useMemo,useRef,useState,type CSSProperties} from "react";
+import {createPortal} from "react-dom";
 import "./reading-challenges.css";
 
 type Book = {id:string;status:string;finishedAt:string|null};
 type Entry = {id:string;kind:string;pagesRead:number;createdAt:string};
 type Props = {books:Book[];entries:Entry[]};
+type Medal = {id:string;icon:string;name:string;description:string;value:number;target:number;unit:string;accent:string};
+
+function MedalDetails({medal,onClose}:{medal:Medal;onClose:()=>void}){
+  const dialog=useRef<HTMLDivElement>(null);
+  useEffect(()=>{
+    const previousOverflow=document.body.style.overflow;
+    const previousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
+    document.body.style.overflow="hidden";
+    dialog.current?.focus();
+    function handleKey(event:KeyboardEvent){
+      if(event.key==="Escape"){event.preventDefault();onClose();}
+      if(event.key==="Tab"&&dialog.current){
+        const controls=Array.from(dialog.current.querySelectorAll<HTMLButtonElement>("button:not([disabled])"));
+        if(!controls.length)return;
+        const first=controls[0],last=controls[controls.length-1];
+        if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+        else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+      }
+    }
+    document.addEventListener("keydown",handleKey);
+    return ()=>{document.body.style.overflow=previousOverflow;document.removeEventListener("keydown",handleKey);previousFocus?.focus();};
+  },[onClose]);
+  const percent=progress(medal.value,medal.target);
+  const completed=medal.value>=medal.target;
+  const style={"--lio-medal-accent":medal.accent} as CSSProperties;
+  return <div className="lio-medal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
+    <div ref={dialog} tabIndex={-1} className="lio-medal-dialog" style={style} role="dialog" aria-modal="true" aria-labelledby="lio-medal-detail-title" aria-describedby="lio-medal-detail-description">
+      <button type="button" className="lio-medal-dialog-close" aria-label="Fechar detalhes da medalha" onClick={onClose}>×</button>
+      <div className="lio-medal-dialog-art" aria-hidden="true">
+        <svg viewBox="0 0 120 120" className="lio-medal-ring"><circle className="lio-medal-ring-track" cx="60" cy="60" r="50"/><circle className="lio-medal-ring-value" cx="60" cy="60" r="50" pathLength={100} strokeDasharray={percent+" 100"}/></svg>
+        <span className="lio-medal-symbol">{medal.icon}</span>
+      </div>
+      <span className="lio-medal-dialog-eyebrow">✦ CONQUISTAS LIO</span>
+      <h3 id="lio-medal-detail-title">{medal.name}</h3>
+      <p id="lio-medal-detail-description">{medal.description}</p>
+      <div className="lio-medal-dialog-progress">
+        <div className="lio-medal-dialog-progress-label"><span>Seu progresso</span><strong>{Math.min(medal.value,medal.target)} de {medal.target} {medal.unit}</strong></div>
+        <div className="lio-medal-dialog-progress-track" role="progressbar" aria-label={"Progresso da conquista "+medal.name} aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}><span style={{width:percent+"%"}}/></div>
+      </div>
+      <div className={"lio-medal-dialog-state"+(completed?" complete":"")}>{completed?"✓ Medalha conquistada!":"Faltam "+Math.max(0,medal.target-medal.value)+" "+medal.unit+" para conquistar"}</div>
+      <button type="button" className="lio-medal-dialog-done" onClick={onClose}>Entendi</button>
+    </div>
+  </div>;
+}
 
 function dayKey(value:Date):string {
   const year=value.getFullYear();
@@ -51,16 +96,18 @@ export default function ReadingChallenges({books,entries}:Props){
     {id:"pages",symbol:"📖",name:"Páginas que contam",description:"Registre 100 páginas de leitura neste mês.",value:data.monthPages,target:100,unit:"páginas"},
     {id:"book",symbol:"✨",name:"Capítulo concluído",description:"Conclua 1 livro neste mês.",value:data.monthBooks,target:1,unit:"livro"}
   ];
-  const medals=[
-    {id:"first",icon:"🌱",name:"Primeiro passo",description:"Registrar a primeira sessão",unlocked:data.sessionCount>=1},
-    {id:"days",icon:"🌟",name:"Leitor constante",description:"Ler em 7 dias diferentes",unlocked:data.days>=7},
-    {id:"pages",icon:"📚",name:"100 páginas",description:"Registrar 100 páginas",unlocked:data.allPages>=100},
-    {id:"firstbook",icon:"🏅",name:"Livro finalizado",description:"Concluir o primeiro livro",unlocked:data.finishedBooks>=1},
-    {id:"fivebooks",icon:"🏆",name:"Colecionador de histórias",description:"Concluir 5 livros",unlocked:data.finishedBooks>=5},
-    {id:"streak",icon:"🔥",name:"Três dias seguidos",description:"Manter 3 dias consecutivos de leitura",unlocked:data.bestStreak>=3}
+  const medals:Medal[]=[
+    {id:"first",icon:"🌱",name:"Primeiro passo",description:"Registrar a primeira sessão de leitura.",value:data.sessionCount,target:1,unit:"sessão",accent:"#8abf9b"},
+    {id:"days",icon:"✨",name:"Leitor constante",description:"Ler e registrar sessões em 7 dias diferentes.",value:data.days,target:7,unit:"dias",accent:"#c1a1df"},
+    {id:"pages",icon:"📚",name:"100 páginas",description:"Registrar 100 páginas lidas.",value:data.allPages,target:100,unit:"páginas",accent:"#70b8ba"},
+    {id:"firstbook",icon:"🏅",name:"Livro finalizado",description:"Concluir o primeiro livro.",value:data.finishedBooks,target:1,unit:"livro",accent:"#e8b478"},
+    {id:"fivebooks",icon:"🏆",name:"Colecionador de histórias",description:"Concluir 5 livros.",value:data.finishedBooks,target:5,unit:"livros",accent:"#de9ab9"},
+    {id:"streak",icon:"🔥",name:"Três dias seguidos",description:"Registrar leituras em 3 dias consecutivos.",value:data.bestStreak,target:3,unit:"dias",accent:"#df9f83"}
   ];
+  const [selectedMedalId,setSelectedMedalId]=useState<string|null>(null);
+  const selectedMedal=medals.find(m=>m.id===selectedMedalId);
   const completed=challenges.filter(c=>c.value>=c.target).length;
-  const unlocked=medals.filter(m=>m.unlocked).length;
+  const unlocked=medals.filter(m=>m.value>=m.target).length;
   return <section className="lio-challenges" aria-labelledby="lio-challenges-heading">
     <div className="lio-challenges-header">
       <div>
@@ -93,13 +140,23 @@ export default function ReadingChallenges({books,entries}:Props){
       <h3>Suas medalhas</h3>
       <span>{unlocked} de {medals.length} desbloqueadas</span>
     </div>
-    <div className="lio-medal-grid">
-      {medals.map(m=><article key={m.id} className={"lio-medal"+(m.unlocked?" is-unlocked":" is-locked")}>
-        <span className="lio-medal-icon" aria-hidden="true">{m.unlocked?m.icon:"🔒"}</span>
-        <strong>{m.name}</strong><small>{m.description}</small>
-        <span className="lio-medal-status">{m.unlocked?"Conquistada":"A conquistar"}</span>
-      </article>)}
+    <p className="lio-medal-hint">Toque em uma medalha para ver os detalhes e acompanhar seu progresso.</p>
+    <div className="lio-medal-grid" aria-label="Medalhas de leitura">
+      {medals.map(m=>{
+        const percent=progress(m.value,m.target);
+        const unlocked=m.value>=m.target;
+        const style={"--lio-medal-accent":m.accent} as CSSProperties;
+        return <button type="button" key={m.id} className={"lio-medal"+(unlocked?" is-unlocked":" is-locked")} style={style} onClick={()=>setSelectedMedalId(m.id)} aria-label={m.name+", "+Math.min(m.value,m.target)+" de "+m.target+". Ver detalhes."}>
+          <span className="lio-medal-art" aria-hidden="true">
+            <svg viewBox="0 0 120 120" className="lio-medal-ring"><circle className="lio-medal-ring-track" cx="60" cy="60" r="50"/><circle className="lio-medal-ring-value" cx="60" cy="60" r="50" pathLength={100} strokeDasharray={percent+" 100"}/></svg>
+            <span className="lio-medal-symbol">{m.icon}</span>
+            <span className="lio-medal-count">{Math.min(m.value,m.target)}/{m.target}</span>
+          </span>
+          <span className="lio-medal-name">{m.name}</span>
+        </button>;
+      })}
     </div>
+    {selectedMedal&&typeof document!=="undefined"&&createPortal(<MedalDetails medal={selectedMedal} onClose={()=>setSelectedMedalId(null)}/>,document.body)}
     <p className="lio-challenges-note">Os desafios mensais reiniciam a cada mês. Suas medalhas são calculadas a partir dos livros e registros de leitura existentes; nada é alterado na sua estante. {data.limited?"O diário disponibiliza os 300 registros mais recentes; conquistas baseadas em sessões antigas podem não aparecer.":""}</p>
   </section>;
 }
