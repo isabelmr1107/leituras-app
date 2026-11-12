@@ -109,30 +109,48 @@ function drawCard(book:ShareBook,format:Format,layout:Layout,backgroundStyle:Bac
  const coverColors=extractCoverColors(cover,selected.colors);
  createCoverGradient(ctx,w,h,coverColors);
  if(backgroundStyle==="cover"&&cover?.naturalWidth&&cover.naturalHeight){
-  // Desfoque real também em navegadores sem suporte confiável a ctx.filter.
-  // A redução drástica de resolução destrói detalhes de letras e galhos da capa,
-  // e a ampliação com interpolação dá um fundo suave sem afetar a capa principal.
-  const tiny=document.createElement("canvas");
-  tiny.width=14;tiny.height=format==="story"?25:18;
-  const tinyCtx=tiny.getContext("2d");
-  if(tinyCtx){
-   const scale=Math.max(tiny.width/cover.naturalWidth,tiny.height/cover.naturalHeight);
+  // A versão anterior usava apenas 14x25 pixels e deixava blocos aparentes.
+  // Preservamos resolução intermediária e duas passagens suaves.
+  const stageA=document.createElement("canvas");
+  stageA.width=format==="story"?240:240;
+  stageA.height=format==="story"?426:300;
+  const stageACtx=stageA.getContext("2d");
+  if(stageACtx){
+   const scale=Math.max(stageA.width/cover.naturalWidth,stageA.height/cover.naturalHeight);
    const dw=cover.naturalWidth*scale,dh=cover.naturalHeight*scale;
-   tinyCtx.imageSmoothingEnabled=true;
-   tinyCtx.imageSmoothingQuality="high";
-   tinyCtx.drawImage(cover,(tiny.width-dw)/2,(tiny.height-dh)/2,dw,dh);
-   ctx.save();
-   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
-   // O filtro é uma camada extra, não o único responsável pelo blur.
-   ctx.filter="blur(48px)";
-   ctx.drawImage(tiny,-90,-90,w+180,h+180);
-   ctx.restore();
+   stageACtx.imageSmoothingEnabled=true;
+   stageACtx.imageSmoothingQuality="high";
+   stageACtx.drawImage(cover,(stageA.width-dw)/2,(stageA.height-dh)/2,dw,dh);
+   const stageB=document.createElement("canvas");
+   stageB.width=format==="story"?120:120;
+   stageB.height=format==="story"?213:150;
+   const stageBCtx=stageB.getContext("2d");
+   if(stageBCtx){
+    stageBCtx.imageSmoothingEnabled=true;
+    stageBCtx.imageSmoothingQuality="high";
+    stageBCtx.drawImage(stageA,0,0,stageB.width,stageB.height);
+    ctx.save();
+    ctx.imageSmoothingEnabled=true;
+    ctx.imageSmoothingQuality="high";
+    ctx.filter="blur(35px) saturate(.82)";
+    ctx.drawImage(stageB,-90,-90,w+180,h+180);
+    ctx.restore();
+    // Uma camada adicional devolve transições macias mesmo se ctx.filter
+    // não for implementado no navegador do usuário.
+    ctx.save();
+    ctx.globalAlpha=.28;
+    ctx.imageSmoothingEnabled=true;
+    ctx.imageSmoothingQuality="high";
+    ctx.filter="blur(24px)";
+    ctx.drawImage(stageA,-55,-55,w+110,h+110);
+    ctx.restore();
+   }
   }
-  // Véu derivado das cores da capa para melhorar a leitura do card.
+  // Véu suave para melhorar a legibilidade sem esconder as cores da capa.
   const veil=ctx.createLinearGradient(0,0,w,h);
-  veil.addColorStop(0,rgb(coverColors[0],.28));
-  veil.addColorStop(.55,"rgba(27,22,32,.28)");
-  veil.addColorStop(1,rgb(coverColors[2],.34));
+  veil.addColorStop(0,rgb(coverColors[0],.22));
+  veil.addColorStop(.55,"rgba(245,240,239,.20)");
+  veil.addColorStop(1,rgb(coverColors[2],.25));
   ctx.fillStyle=veil;ctx.fillRect(0,0,w,h);
  }
  // Camada para tornar a logo visível nos dois fundos sem uma faixa de texto.
