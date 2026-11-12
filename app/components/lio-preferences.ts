@@ -29,7 +29,7 @@ export function normalizeHex(value:string):string|null{
 export function validateCustomColors(value:unknown):LioPaletteColors|null{
  if(!Array.isArray(value)||value.length!==4)return null;
  const values=value.map(v=>typeof v==="string"?normalizeHex(v):null);
- return values.every(Boolean)?values as LioPaletteColors:null;
+ return values.every(Boolean)?values as unknown as LioPaletteColors:null;
 }
 export function getPaletteColors(palette:LioPaletteId,customColors:LioPaletteColors=DEFAULT_CUSTOM_COLORS):LioPaletteColors{
  return palette==="personalizada"?customColors:(palettes.find(item=>item.id===palette)?.colors??palettes[0].colors);
