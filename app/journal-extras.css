@@ -1,0 +1,52 @@
+/* Journal extras: honors every LIO palette and both color themes. No ruled lines. */
+.lio-journal-extras{margin:24px 0 27px;border:1px solid color-mix(in srgb,var(--lio-color-a) 21%,var(--line));border-radius:25px;background:linear-gradient(125deg,color-mix(in srgb,var(--card) 94%,transparent),color-mix(in srgb,var(--lio-color-b) 7%,var(--card)));padding:clamp(17px,2.7vw,29px);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.lio-journal-extras-top{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:20px}
+.lio-journal-extras-top h3{font-size:clamp(21px,2.9vw,27px);margin:8px 0;color:var(--ink)}
+.lio-journal-extras-top p{font-size:13px;color:var(--muted);line-height:1.5;margin:0}
+.lio-journal-export-pdf{display:flex;align-items:center;gap:9px;border-radius:14px;border:1px solid color-mix(in srgb,var(--lio-color-a) 27%,var(--line));background:color-mix(in srgb,var(--lio-color-a) 13%,var(--card));color:var(--ink);font:750 13px system-ui,sans-serif;padding:13px 15px;cursor:pointer}
+.lio-journal-export-pdf:hover{border-color:var(--lio-color-b)}
+.lio-journal-export-pdf:disabled{opacity:.65;cursor:wait}
+.lio-journal-extras-tabs{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 20px}
+.lio-journal-extras-tabs button{border:1px solid var(--line);background:color-mix(in srgb,var(--card) 75%,transparent);padding:10px 15px;border-radius:12px;color:var(--ink);font-size:13px;font-weight:700;cursor:pointer}
+.lio-journal-extras-tabs button.active{border-color:var(--lio-color-b);background:color-mix(in srgb,var(--lio-color-b) 16%,var(--card))}
+.lio-journal-extra-error{border:1px solid #b85872;color:var(--ink);background:color-mix(in srgb,#d75d7b 12%,var(--card));padding:12px;border-radius:12px}
+.lio-journal-export-notice{font-size:12px;color:var(--muted);margin:0 0 12px}
+.lio-journal-extra-muted{font-size:13px;color:var(--muted);line-height:1.5;padding:8px 0}
+.lio-journal-quote-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;color:var(--muted);font-size:12px}
+.lio-journal-quote-tools label{display:flex;align-items:center;gap:9px;font-size:12px}
+.lio-journal-quote-tools select{padding:8px 11px;min-height:38px;border:1px solid var(--line);border-radius:10px;background:color-mix(in srgb,var(--card) 88%,transparent);color:var(--ink);font-size:12px}
+.lio-journal-quote-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.lio-journal-quote-card{display:flex;flex-direction:column;min-width:0;border:1px solid color-mix(in srgb,var(--lio-color-a) 18%,var(--line));background:color-mix(in srgb,var(--card) 89%,transparent);border-radius:18px;padding:19px;box-shadow:0 10px 25px rgba(25,17,42,.035)}
+.lio-journal-quote-card-top{display:flex;align-items:center;gap:11px;margin-bottom:10px}
+.lio-journal-quote-mark{font:800 60px/1 Georgia,serif;color:var(--lio-color-a);height:41px}
+.lio-journal-quote-card-top div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.lio-journal-quote-card-top strong{font-size:14px;color:var(--ink);overflow-wrap:anywhere}
+.lio-journal-quote-card-top small{font-size:11px;color:var(--muted)}
+.lio-journal-quote-card blockquote{color:var(--ink);font:italic 17px/1.55 Georgia,serif;margin:14px 0 16px;white-space:pre-wrap;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:7;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+.lio-journal-quote-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--line);padding-top:13px;flex-wrap:wrap}
+.lio-journal-quote-footer small{font-size:11px;color:var(--muted)}
+.lio-journal-quote-footer button,.lio-journal-more{border:1px solid color-mix(in srgb,var(--lio-color-a) 27%,var(--line));border-radius:10px;background:color-mix(in srgb,var(--lio-color-a) 11%,var(--card));padding:8px 10px;font-weight:700;font-size:12px;color:var(--ink);cursor:pointer}
+.lio-journal-quote-footer button:disabled{opacity:.6;cursor:wait}
+.lio-journal-more{display:block;margin:18px auto 0}
+.lio-journal-calendar-section{max-width:750px;margin:0 auto}
+.lio-journal-calendar-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:5px 0 18px}
+.lio-journal-calendar-head h4{font-size:17px;text-transform:capitalize;color:var(--ink);margin:0}
+.lio-journal-calendar-head button{display:grid;place-items:center;width:39px;height:39px;background:color-mix(in srgb,var(--card) 75%,transparent);border:1px solid var(--line);border-radius:12px;font-size:24px;color:var(--ink);cursor:pointer}
+.lio-journal-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.lio-journal-calendar-weekday{font-size:11px;font-weight:750;text-align:center;color:var(--muted);padding:8px 0}
+.lio-journal-calendar-grid button{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;min-height:50px;background:color-mix(in srgb,var(--card) 85%,transparent);border:1px solid var(--line);border-radius:10px;color:var(--ink);cursor:pointer;font:700 12px system-ui,sans-serif}
+.lio-journal-calendar-grid button.has-notes{background:color-mix(in srgb,var(--lio-color-c) 13%,var(--card));border-color:color-mix(in srgb,var(--lio-color-b) 31%,var(--line))}
+.lio-journal-calendar-grid button.selected{outline:2px solid var(--lio-color-b);outline-offset:0;background:color-mix(in srgb,var(--lio-color-a) 20%,var(--card))}
+.lio-journal-calendar-dot{width:6px;height:6px;border-radius:50%;background:var(--lio-color-b)}
+.lio-journal-calendar-results{margin-top:15px;padding:16px;border:1px solid var(--line);border-radius:15px;background:color-mix(in srgb,var(--card) 82%,transparent)}
+.lio-journal-calendar-results-title{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:12px;flex-wrap:wrap}
+.lio-journal-calendar-results-title strong{color:var(--ink);font-size:14px;text-transform:capitalize}
+.lio-journal-calendar-results-title button{border:0;background:transparent;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:12px}
+.lio-journal-calendar-results article{border-top:1px solid var(--line);padding:12px 0}
+.lio-journal-calendar-results article span{font-size:10px;text-transform:uppercase;font-weight:750;color:var(--muted)}
+.lio-journal-calendar-results h5{margin:6px 0;font-size:14px;color:var(--ink)}
+.lio-journal-calendar-results article small{font-size:11px;color:var(--muted)}
+.lio-journal-calendar-results p{font-size:12px;line-height:1.6;color:var(--ink);margin:6px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.lio-journal-extras button:focus-visible{outline:3px solid var(--lio-color-b);outline-offset:2px}
+@media(max-width:710px){.lio-journal-quote-gallery{grid-template-columns:1fr}.lio-journal-extras-top{align-items:flex-start}.lio-journal-export-pdf{width:100%;justify-content:center}}
+@media(max-width:380px){.lio-journal-extras-tabs button{flex:1 1 auto;padding:9px 8px;font-size:11px}.lio-journal-calendar-grid{gap:3px}.lio-journal-calendar-grid button{min-height:43px}.lio-journal-calendar-weekday{font-size:9px}}
