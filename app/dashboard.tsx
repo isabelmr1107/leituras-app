@@ -3,6 +3,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
 import "./profile-compact.css";
 import "./custom-palette.css";
+import "./journal-notebook.css";
+import JournalTextEditor from "./components/journal-text-editor";
+import JournalFormattedText from "./components/journal-formatted-text";
+import {type JournalMood} from "../lib/journal-content";
 import { createPortal } from "react-dom";
 import LioLogo from "./components/lio-logo";
 import ReadingPlanner from "./components/reading-planner";
@@ -15,7 +19,15 @@ import ShareReading from "./components/share-reading";
 import {palettes,applyLioPreferences,getSavedPreferences,saveLioPreferences,systemTheme,normalizeHex,DEFAULT_CUSTOM_COLORS,type LioPaletteId,type LioThemeChoice,type LioPaletteColors} from "./components/lio-preferences";
 type Status="Quero ler"|"Lendo"|"Lido"|"Abandonado";
 type Book={id:string;title:string;author:string;category:string|null;coverUrl:string|null;status:Status;rating:number;favorite:boolean;totalPages:number;currentPage:number;sortOrder:number;createdAt:string;startedAt:string|null;finishedAt:string|null};
-type Entry={id:string;bookId:string;kind:string;content:string;pagesRead:number;pageAtNote:number|null;createdAt:string;book:{id?:string;title:string}};
+type Entry={id:string;bookId:string;kind:string;content:string;title?:string;mood?:JournalMood|null;pagesRead:number;pageAtNote:number|null;createdAt:string;book:{id?:string;title:string}};
+const diaryMoods:{id:JournalMood;label:string;emoji:string}[]=[
+{id:"feliz",label:"Feliz",emoji:"☀️"},
+{id:"emocionada",label:"Emocionada",emoji:"💗"},
+{id:"surpresa",label:"Surpresa",emoji:"✨"},
+{id:"triste",label:"Triste",emoji:"🌧️"},
+{id:"intrigada",label:"Intrigada",emoji:"🪄"},
+{id:"aconchegada",label:"Aconchegada",emoji:"☕"}
+];
 type Shelf={id:string;name:string;bookIds:string[]};
 type View="Dashboard"|"Minha biblioteca"|"Diário"|"Metas"|"Cronograma"|"Perfil";
 type BookSuggestion={title:string;author:string;totalPages:number|null;category:string;coverUrl:string|null;publisher:string;source:string;isbn?:string};
@@ -77,7 +89,10 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
   const [diaryLayout,setDiaryLayout]=useState<"scroll"|"grid">("scroll");
   const [diaryLayoutLoaded,setDiaryLayoutLoaded]=useState(false);
   const [form,setForm]=useState(blank);
-  const [entryForm,setEntryForm]=useState({bookId:"",kind:"Nota",content:"",pagesRead:0});
+  const [entryForm,setEntryForm]=useState<{bookId:string;kind:string;content:string;pagesRead:number;title:string;mood:JournalMood|null}>({bookId:"",kind:"Nota",content:"",pagesRead:0,title:"",mood:null});
+  const [editingEntryId,setEditingEntryId]=useState<string|null>(null);
+  const [editingEntryForm,setEditingEntryForm]=useState<{kind:"Nota"|"Resenha"|"Citação";content:string;title:string;mood:JournalMood|null}>({kind:"Nota",content:"",title:"",mood:null});
+  const [entrySaveMessage,setEntrySaveMessage]=useState("");
   const [error,setError]=useState("");
   const [busy,setBusy]=useState(false);
   const [coverBusy,setCoverBusy]=useState(false);
@@ -453,8 +468,27 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
     try{
       const res=await fetch("/api/entries",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(entryForm)});
       if(!res.ok)throw new Error("Verifique o livro e os dados da anotação.");
-      setEntryForm({bookId:"",kind:"Nota",content:"",pagesRead:0});await refresh();
+      setEntryForm({bookId:"",kind:"Nota",content:"",pagesRead:0,title:"",mood:null});setEntrySaveMessage("Sua lembrança foi guardada!");await refresh();
     }catch(e){setError(e instanceof Error?e.message:"Erro");}finally{setBusy(false);}
+  }
+  function startEditEntry(entry:Entry){
+    if(entry.kind==="Sessão")return;
+    setEditingEntryId(entry.id);
+    setEditingEntryForm({kind:entry.kind as "Nota"|"Resenha"|"Citação",content:entry.content,title:entry.title||"",mood:entry.mood||null});
+    setEntrySaveMessage("");setError("");
+  }
+  async function saveEditedEntry(event:React.FormEvent){
+    event.preventDefault();if(!editingEntryId)return;
+    setBusy(true);setError("");setEntrySaveMessage("");
+    try{
+      const res=await fetch("/api/entries",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:editingEntryId,...editingEntryForm})});
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok)throw new Error(data.error||"Não foi possível salvar a anotação.");
+      setEditingEntryId(null);
+      setEntrySaveMessage("Anotação atualizada com sucesso!");
+      await refresh();
+    }catch(error){setError(error instanceof Error?error.message:"Erro ao salvar a anotação.");}
+    finally{setBusy(false);}
   }
   async function removeEntry(id:string){
     if(!confirm("Excluir este registro do diário? Esta ação não pode ser desfeita."))return;
