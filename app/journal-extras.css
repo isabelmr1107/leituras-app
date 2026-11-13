@@ -74,3 +74,17 @@
 .lio-journal-share-options button:disabled{opacity:.65;cursor:progress}
 .lio-journal-share-error{max-width:230px;display:block;color:var(--ink);background:color-mix(in srgb,#d85d75 11%,var(--card));border:1px solid var(--line);border-radius:9px;padding:7px;font:12px/1.4 system-ui,sans-serif}
 @media(max-width:700px){.lio-journal-hero-tools{width:100%;margin:0;justify-content:flex-start}.lio-notebook-hero>div:first-child{flex-basis:100%}.lio-notebook-hero .journal-hero-art{right:12px;top:12px;opacity:.15}.lio-journal-hero-button{font-size:11px;padding:9px 11px}.lio-journal-entry-top-actions{gap:5px}.lio-journal-share-icon{width:32px;height:32px}}
+
+/* The diary statistics and secondary actions share the bottom row.
+ * Keep the decorative quotation mark unobstructed at the upper right. */
+.lio-notebook-hero .lio-journal-hero-heading{flex:0 0 100%;width:100%;min-width:0;padding-right:clamp(60px,12vw,165px);z-index:1}
+.lio-notebook-hero .lio-journal-stats-row{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:15px;flex:0 0 100%;width:100%;flex-wrap:wrap}
+.lio-notebook-hero .lio-journal-stats-row .journal-stats{margin:0;flex:0 1 auto}
+.lio-notebook-hero .lio-journal-stats-row .lio-journal-hero-tools{margin-left:auto;align-self:center;width:auto;justify-content:flex-end}
+.lio-notebook-hero .journal-hero-art{right:30px;top:8px;opacity:.42;z-index:0!important}
+@media(max-width:720px){
+ .lio-notebook-hero .lio-journal-hero-heading{padding-right:40px}
+ .lio-notebook-hero .lio-journal-stats-row{align-items:flex-start;gap:14px}
+ .lio-notebook-hero .lio-journal-stats-row .lio-journal-hero-tools{margin-left:0;justify-content:flex-start;width:100%}
+ .lio-notebook-hero .journal-hero-art{right:10px;top:8px;opacity:.3}
+}
