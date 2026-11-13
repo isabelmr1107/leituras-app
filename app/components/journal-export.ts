@@ -146,6 +146,7 @@ export async function downloadJournalPdf(entries:JournalExportEntry[],accountId:
  let canvas=document.createElement("canvas");canvas.width=W;canvas.height=H;
  let ctx=canvas.getContext("2d");if(!ctx)throw new Error("Não foi possível preparar o PDF.");
  let y=0,pageNo=0;
+ const coverCache=new Map<string,HTMLImageElement|null>();
  const header=()=>{
   pageNo++;const gradient=ctx!.createLinearGradient(0,0,W,H);gradient.addColorStop(0,"#fcf9fd");gradient.addColorStop(1,"#f5f2fa");ctx!.fillStyle=gradient;ctx!.fillRect(0,0,W,H);
   ctx!.fillStyle=colors[0];ctx!.fillRect(0,0,18,H);
@@ -166,6 +167,8 @@ export async function downloadJournalPdf(entries:JournalExportEntry[],accountId:
  };
  header();
  for(const entry of entries){
+  const coverUrl=entry.book.coverUrl||"";
+  if(coverUrl&&!coverCache.has(coverUrl))coverCache.set(coverUrl,await loadDiaryCover(coverUrl));
   const timestamp=new Date(entry.createdAt);
   const date=isNaN(timestamp.getTime())?"Data desconhecida":timestamp.toLocaleDateString("pt-BR",{day:"2-digit",month:"long",year:"numeric"});
   const title=(entry.title||"").trim();
@@ -189,8 +192,9 @@ export async function downloadJournalPdf(entries:JournalExportEntry[],accountId:
    ctx.fillStyle=colors[0];ctx.fillRect(PAD+1,y+27,7,height-54);
    ctx.fillStyle="#6e657e";ctx.font="bold 21px system-ui,sans-serif";ctx.fillText(entry.kind.toUpperCase()+" · "+date+ (cursor>0?" · continuação":""),PAD+32,y+44);
    ctx.fillStyle="#272238";ctx.font="bold 33px Georgia";
-   const bookTitle=entry.book.title.length>54?entry.book.title.slice(0,53)+"…":entry.book.title;
+   const bookTitle=entry.book.title.length>43?entry.book.title.slice(0,42)+"…":entry.book.title;
    ctx.fillText(bookTitle,PAD+32,y+93);
+   coverImage(ctx,coverCache.get(coverUrl)||null,W-PAD-145,y+25,103,144,colors[0]);
    let top=y+132;
    if(entry.book.author){ctx.fillStyle="#726b7f";ctx.font="22px system-ui,sans-serif";ctx.fillText(entry.book.author.slice(0,70),PAD+32,top);top+=32;}
    if(title){ctx.fillStyle="#312844";ctx.font="bold 29px system-ui,sans-serif";ctx.fillText(title.slice(0,60),PAD+32,top+12);top+=65;}
