@@ -1,0 +1,61 @@
+/* LIO — diário como caderno literário (paletas existentes, claro/escuro). */
+.lio-notebook-page{--notebook-a:var(--lio-color-a);--notebook-b:var(--lio-color-b);--notebook-c:var(--lio-color-c);--notebook-d:var(--lio-color-d)}
+.lio-notebook-hero{position:relative;overflow:hidden;background:linear-gradient(117deg,color-mix(in srgb,var(--notebook-a) 22%,var(--card)),color-mix(in srgb,var(--notebook-c) 9%,var(--card)))!important;border:1px solid color-mix(in srgb,var(--notebook-a) 23%,var(--line))!important}
+.lio-notebook-hero::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.42;background:repeating-linear-gradient(0deg,transparent 0 27px,color-mix(in srgb,var(--notebook-b) 10%,transparent) 28px 29px)}
+.lio-notebook-hero>div{position:relative;z-index:1}
+.lio-notebook-page .journal-columns{align-items:start}
+.lio-notebook-page .journal-composer,.lio-notebook-page .journal-timeline{min-width:0}
+.lio-notebook-composer{position:relative;overflow:hidden;border:1px solid color-mix(in srgb,var(--notebook-a) 18%,var(--line))!important;background:linear-gradient(145deg,color-mix(in srgb,var(--card) 94%,transparent),color-mix(in srgb,var(--notebook-a) 6%,var(--card)))!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.lio-notebook-composer::before{content:"";position:absolute;top:0;bottom:0;left:14px;border-left:2px solid color-mix(in srgb,var(--notebook-b) 19%,transparent);pointer-events:none}
+.lio-notebook-composer>*{position:relative}
+.lio-notebook-kicker,.lio-notebook-book-caption{font:700 10px/1.3 system-ui,sans-serif;letter-spacing:.11em;color:var(--muted)}
+.lio-notebook-composer h3{margin-top:8px}
+.lio-notebook-optional{font-weight:400;color:var(--muted);font-size:11px}
+.lio-notebook-mood-field{min-width:0;border:0;margin:6px 0 14px;padding:0}
+.lio-notebook-mood-field legend{font:700 13px/1.4 system-ui,sans-serif;color:var(--ink);padding:0;margin-bottom:10px}
+.lio-notebook-moods{display:flex;gap:7px;flex-wrap:wrap}
+.lio-notebook-moods button{display:flex;align-items:center;gap:5px;background:color-mix(in srgb,var(--card) 78%,transparent);border:1px solid var(--line);border-radius:999px;color:var(--ink);padding:8px 10px;font:600 11px/1.3 system-ui,sans-serif;cursor:pointer}
+.lio-notebook-moods button.active{border-color:var(--notebook-b);background:color-mix(in srgb,var(--notebook-b) 18%,var(--card));box-shadow:0 0 0 1px color-mix(in srgb,var(--notebook-b) 35%,transparent)}
+.lio-notebook-moods button:hover{border-color:var(--notebook-a)}
+.lio-journal-editor{min-width:0;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:color-mix(in srgb,var(--card) 78%,transparent)}
+.lio-journal-format-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding:8px;border-bottom:1px solid var(--line)}
+.lio-journal-format-toolbar button{display:grid;place-items:center;width:32px;height:31px;background:color-mix(in srgb,var(--notebook-a) 9%,var(--card));color:var(--ink);border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.lio-journal-format-toolbar button:hover,.lio-journal-format-toolbar button:focus-visible{border-color:var(--notebook-b)}
+.lio-journal-format-toolbar span{font:400 11px/1.3 system-ui,sans-serif;color:var(--muted)}
+.lio-journal-editor textarea{display:block;width:100%!important;min-height:160px;border:0!important;background:transparent!important;color:var(--ink)!important;border-radius:0!important;box-shadow:none!important;resize:vertical;padding:14px!important;margin:0!important;line-height:1.7}
+.lio-journal-editor:focus-within{outline:2px solid color-mix(in srgb,var(--notebook-b) 45%,transparent)}
+.lio-notebook-page .journal-entry.lio-notebook-entry{position:relative;overflow:hidden;border:1px solid color-mix(in srgb,var(--notebook-a) 20%,var(--line))!important;border-left:4px solid var(--notebook-a)!important;border-radius:18px;background:linear-gradient(136deg,color-mix(in srgb,var(--card) 90%,transparent),color-mix(in srgb,var(--notebook-c) 5%,var(--card)))!important;box-shadow:0 12px 35px rgba(15,10,32,.055);padding:19px 21px 17px}
+.lio-notebook-entry::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.34;background:repeating-linear-gradient(0deg,transparent 0 31px,color-mix(in srgb,var(--notebook-b) 7%,transparent) 32px 33px)}
+.lio-notebook-entry>*{position:relative}
+.lio-notebook-page .journal-kind-resenha{border-left-color:var(--notebook-b)!important}
+.lio-notebook-page .journal-kind-citacao{border-left-color:var(--notebook-c)!important}
+.lio-notebook-page .journal-kind-sessao{border-left-color:var(--notebook-d)!important}
+.lio-notebook-entry-book{display:flex;gap:13px;align-items:center;margin:17px 0}
+.lio-notebook-entry-book img{width:53px;height:76px;object-fit:cover;border-radius:8px;box-shadow:0 6px 17px rgba(0,0,0,.15);flex-shrink:0}
+.lio-notebook-book-placeholder{display:grid;place-items:center;width:53px;height:76px;border-radius:8px;flex:0 0 53px;background:linear-gradient(145deg,var(--notebook-a),var(--notebook-b));color:white}
+.lio-notebook-entry-book>div{min-width:0;flex:1}
+.lio-notebook-entry-book h3{margin:5px 0 4px!important;overflow-wrap:anywhere}
+.lio-notebook-entry-book small{font-size:12px;color:var(--muted)}
+.lio-notebook-entry-title{font:800 17px/1.35 system-ui,sans-serif;letter-spacing:-.015em;color:var(--ink);margin:12px 0}
+.lio-notebook-mood-label{display:inline-flex;align-items:center;gap:4px;background:color-mix(in srgb,var(--notebook-c) 16%,var(--card));border:1px solid color-mix(in srgb,var(--notebook-c) 18%,var(--line));color:var(--ink);padding:5px 10px;border-radius:999px;font-size:11px;font-weight:700;margin-bottom:12px}
+.lio-journal-formatted{overflow-wrap:anywhere;line-height:1.7}
+.lio-notebook-page .journal-entry .lio-journal-formatted p{margin:0 0 8px;line-height:1.7;white-space:pre-wrap}
+.lio-journal-formatted strong{font-weight:800}
+.lio-journal-formatted em{font-style:italic}
+.lio-journal-formatted ul{padding-left:19px;margin:8px 0 14px}
+.lio-journal-formatted li{font-size:14px;line-height:1.7;margin:2px 0}
+.lio-journal-line-break{height:9px}
+.lio-notebook-page .journal-entry-foot{margin-top:16px}
+.lio-notebook-entry-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:end}
+.lio-notebook-entry-actions .secondary-button{min-height:34px;padding:7px 10px}
+.lio-notebook-edit-panel{border:1px solid color-mix(in srgb,var(--notebook-b) 30%,var(--line));border-radius:18px;padding:19px;margin:17px 0;background:color-mix(in srgb,var(--notebook-b) 8%,var(--card));box-shadow:0 10px 22px rgba(15,10,32,.06)}
+.lio-notebook-edit-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.lio-notebook-edit-heading h4{font-size:17px;margin:0}
+.lio-notebook-edit-heading button{border:1px solid var(--line);border-radius:50%;background:transparent;color:var(--ink);font-size:22px;width:36px;height:36px;cursor:pointer}
+.lio-notebook-edit-panel form{display:flex;flex-direction:column;gap:12px}
+.lio-notebook-edit-panel form>label{font-size:12px}
+.lio-notebook-edit-panel form>label input,.lio-notebook-edit-panel form>label select{width:100%;margin-top:6px}
+.lio-notebook-edit-actions{display:flex;gap:8px;flex-wrap:wrap}
+.lio-notebook-success{color:var(--ink);background:color-mix(in srgb,var(--notebook-d) 15%,var(--card));border:1px solid color-mix(in srgb,var(--notebook-d) 35%,var(--line));padding:12px 14px;border-radius:12px;font-weight:650;font-size:13px}
+@media(max-width:600px){.lio-notebook-entry-book img{width:45px;height:66px}.lio-notebook-entry-book{gap:10px}.lio-notebook-page .journal-entry.lio-notebook-entry{padding:15px 15px 13px}.lio-notebook-entry-actions .secondary-button{font-size:11px}.lio-journal-format-toolbar span{flex-basis:100%}}
+@media(prefers-reduced-motion:reduce){.lio-notebook-moods button{transition:none}}
