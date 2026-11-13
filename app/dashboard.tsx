@@ -4,6 +4,8 @@ import { signOut } from "next-auth/react";
 import "./profile-compact.css";
 import "./custom-palette.css";
 import "./journal-notebook.css";
+import "./journal-extras.css";
+import JournalExtras from "./components/journal-extras";
 import JournalTextEditor from "./components/journal-text-editor";
 import JournalFormattedText from "./components/journal-formatted-text";
 import {type JournalMood} from "../lib/journal-content";
@@ -594,6 +596,7 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
           <div className="journal-stats"><span><strong>{entries.filter(e=>e.kind==="Resenha").length}</strong> resenhas</span><span><strong>{entries.filter(e=>e.kind==="Citação").length}</strong> citações</span><span><strong>{entries.filter(e=>e.kind==="Nota").length}</strong> notas</span></div>
         </div><div className="journal-hero-art" aria-hidden="true">❝</div>
       </div>
+      <JournalExtras accountId={accountId} entries={entries}/>
       <div className={"journal-columns"+(diaryLayout==="grid"?" journal-columns-gallery":"")}>
         <div className="journal-composer lio-notebook-composer">
           <span className="lio-notebook-kicker">✦ UMA NOVA PÁGINA</span><h3>Escreva uma nova lembrança</h3><p>O que essa leitura despertou em você?</p>
