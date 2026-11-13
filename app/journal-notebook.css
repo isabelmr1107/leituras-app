@@ -1,12 +1,10 @@
 /* LIO — diário como caderno literário (paletas existentes, claro/escuro). */
 .lio-notebook-page{--notebook-a:var(--lio-color-a);--notebook-b:var(--lio-color-b);--notebook-c:var(--lio-color-c);--notebook-d:var(--lio-color-d)}
 .lio-notebook-hero{position:relative;overflow:hidden;background:linear-gradient(117deg,color-mix(in srgb,var(--notebook-a) 22%,var(--card)),color-mix(in srgb,var(--notebook-c) 9%,var(--card)))!important;border:1px solid color-mix(in srgb,var(--notebook-a) 23%,var(--line))!important}
-.lio-notebook-hero::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.42;background:repeating-linear-gradient(0deg,transparent 0 27px,color-mix(in srgb,var(--notebook-b) 10%,transparent) 28px 29px)}
 .lio-notebook-hero>div{position:relative;z-index:1}
 .lio-notebook-page .journal-columns{align-items:start}
 .lio-notebook-page .journal-composer,.lio-notebook-page .journal-timeline{min-width:0}
 .lio-notebook-composer{position:relative;overflow:hidden;border:1px solid color-mix(in srgb,var(--notebook-a) 18%,var(--line))!important;background:linear-gradient(145deg,color-mix(in srgb,var(--card) 94%,transparent),color-mix(in srgb,var(--notebook-a) 6%,var(--card)))!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-.lio-notebook-composer::before{content:"";position:absolute;top:0;bottom:0;left:14px;border-left:2px solid color-mix(in srgb,var(--notebook-b) 19%,transparent);pointer-events:none}
 .lio-notebook-composer>*{position:relative}
 .lio-notebook-kicker,.lio-notebook-book-caption{font:700 10px/1.3 system-ui,sans-serif;letter-spacing:.11em;color:var(--muted)}
 .lio-notebook-composer h3{margin-top:8px}

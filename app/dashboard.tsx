@@ -92,7 +92,6 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
   const [entryForm,setEntryForm]=useState<{bookId:string;kind:string;content:string;pagesRead:number;title:string;mood:JournalMood|null}>({bookId:"",kind:"Nota",content:"",pagesRead:0,title:"",mood:null});
   const [editingEntryId,setEditingEntryId]=useState<string|null>(null);
   const [editingEntryForm,setEditingEntryForm]=useState<{kind:"Nota"|"Resenha"|"Citação";content:string;title:string;mood:JournalMood|null}>({kind:"Nota",content:"",title:"",mood:null});
-  const [entrySaveMessage,setEntrySaveMessage]=useState("");
   const [error,setError]=useState("");
   const [busy,setBusy]=useState(false);
   const [coverBusy,setCoverBusy]=useState(false);
@@ -468,24 +467,23 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
     try{
       const res=await fetch("/api/entries",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(entryForm)});
       if(!res.ok)throw new Error("Verifique o livro e os dados da anotação.");
-      setEntryForm({bookId:"",kind:"Nota",content:"",pagesRead:0,title:"",mood:null});setEntrySaveMessage("Sua lembrança foi guardada!");await refresh();
+      setEntryForm({bookId:"",kind:"Nota",content:"",pagesRead:0,title:"",mood:null});await refresh();
     }catch(e){setError(e instanceof Error?e.message:"Erro");}finally{setBusy(false);}
   }
   function startEditEntry(entry:Entry){
     if(entry.kind==="Sessão")return;
     setEditingEntryId(entry.id);
     setEditingEntryForm({kind:entry.kind as "Nota"|"Resenha"|"Citação",content:entry.content,title:entry.title||"",mood:entry.mood||null});
-    setEntrySaveMessage("");setError("");
+    setError("");
   }
   async function saveEditedEntry(event:React.FormEvent){
     event.preventDefault();if(!editingEntryId)return;
-    setBusy(true);setError("");setEntrySaveMessage("");
+    setBusy(true);setError("");
     try{
       const res=await fetch("/api/entries",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:editingEntryId,...editingEntryForm})});
       const data=await res.json().catch(()=>({}));
       if(!res.ok)throw new Error(data.error||"Não foi possível salvar a anotação.");
       setEditingEntryId(null);
-      setEntrySaveMessage("Anotação atualizada com sucesso!");
       await refresh();
     }catch(error){setError(error instanceof Error?error.message:"Erro ao salvar a anotação.");}
     finally{setBusy(false);}
@@ -596,7 +594,6 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
           <div className="journal-stats"><span><strong>{entries.filter(e=>e.kind==="Resenha").length}</strong> resenhas</span><span><strong>{entries.filter(e=>e.kind==="Citação").length}</strong> citações</span><span><strong>{entries.filter(e=>e.kind==="Nota").length}</strong> notas</span></div>
         </div><div className="journal-hero-art" aria-hidden="true">❝</div>
       </div>
-      {entrySaveMessage&&<p className="lio-notebook-success" role="status">{entrySaveMessage}</p>}
       <div className={"journal-columns"+(diaryLayout==="grid"?" journal-columns-gallery":"")}>
         <div className="journal-composer lio-notebook-composer">
           <span className="lio-notebook-kicker">✦ UMA NOVA PÁGINA</span><h3>Escreva uma nova lembrança</h3><p>O que essa leitura despertou em você?</p>
