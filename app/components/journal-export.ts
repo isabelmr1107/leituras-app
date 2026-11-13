@@ -84,13 +84,22 @@ export async function shareJournalQuote(entry:JournalExportEntry,accountId:strin
  ctx.fillStyle="#6D687D";ctx.font="27px system-ui,sans-serif";
  drawText(ctx,entry.book.author,pad+290,cardY+282,455,35,2);
  ctx.fillStyle=palette[0];ctx.font="bold 110px Georgia";ctx.fillText("“",pad+88,cardY+495);
- const quote=entry.content.trim().replace(/\*\*|\*/g,"");
+ const quote=entry.content.trim().replace(/\*\*|\*/g,"").replace(/^\s*[-–—]\s+/,"").trim();
  // Keep the book quote legible: crop the image preview when the passage is extremely long.
  const quoteEnd=cardY+cardH-185,quoteStart=cardY+550;
  const lineHeight=format==="story"?66:58;
  ctx.fillStyle="#282438";ctx.font=(format==="story"?"39px":"35px")+" Georgia,serif";
  const maxCount=Math.floor((quoteEnd-quoteStart)/lineHeight);
- drawText(ctx,quote,pad+98,quoteStart,cardH?cardH-210:750,lineHeight,maxCount);
+ // Text must fit the HORIZONTAL glass-card width (not cardH).
+ // Constrain both wrapping and the drawing region, including on Safari canvas.
+ const quoteX=pad+98;
+ const quoteWidth=w-pad*2-195;
+ ctx.save();
+ ctx.beginPath();
+ ctx.rect(quoteX,quoteStart-52,quoteWidth,quoteEnd-quoteStart+76);
+ ctx.clip();
+ drawText(ctx,quote,quoteX,quoteStart,quoteWidth,lineHeight,maxCount);
+ ctx.restore();
  ctx.fillStyle="#655F75";ctx.font="25px system-ui,sans-serif";
  const page=entry.pagesRead>0?" · pág. "+entry.pagesRead:"";
  ctx.fillText("Citação de leitura"+page,pad+95,cardY+cardH-92);
