@@ -5,7 +5,8 @@ import "./profile-compact.css";
 import "./custom-palette.css";
 import "./journal-notebook.css";
 import "./journal-extras.css";
-import JournalExtras from "./components/journal-extras";
+import JournalExtras,{JournalPdfButton} from "./components/journal-extras";
+import JournalQuoteShareButton from "./components/journal-quote-share-button";
 import JournalTextEditor from "./components/journal-text-editor";
 import JournalFormattedText from "./components/journal-formatted-text";
 import {type JournalMood} from "../lib/journal-content";
@@ -89,6 +90,7 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
   const [diaryKind,setDiaryKind]=useState("Todos");
   const [diarySearch,setDiarySearch]=useState("");
   const [diaryLayout,setDiaryLayout]=useState<"scroll"|"grid">("scroll");
+  const [diaryCalendarOpen,setDiaryCalendarOpen]=useState(false);
   const [diaryLayoutLoaded,setDiaryLayoutLoaded]=useState(false);
   const [form,setForm]=useState(blank);
   const [entryForm,setEntryForm]=useState<{bookId:string;kind:string;content:string;pagesRead:number;title:string;mood:JournalMood|null}>({bookId:"",kind:"Nota",content:"",pagesRead:0,title:"",mood:null});
@@ -595,8 +597,9 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
         <div><span className="section-kicker">✦ PÁGINAS DA MEMÓRIA</span><h2>Meu diário literário</h2><p>Um cantinho para eternizar suas emoções, pensamentos e histórias favoritas.</p>
           <div className="journal-stats"><span><strong>{entries.filter(e=>e.kind==="Resenha").length}</strong> resenhas</span><span><strong>{entries.filter(e=>e.kind==="Citação").length}</strong> citações</span><span><strong>{entries.filter(e=>e.kind==="Nota").length}</strong> notas</span></div>
         </div><div className="journal-hero-art" aria-hidden="true">❝</div>
+        <div className="lio-journal-hero-tools"><button type="button" className="lio-journal-hero-button" onClick={()=>setDiaryCalendarOpen(v=>!v)} aria-expanded={diaryCalendarOpen} aria-controls="lio-journal-calendar"><span aria-hidden="true">▦</span> {diaryCalendarOpen?"Fechar calendário":"Calendário"}</button><JournalPdfButton accountId={accountId}/></div>
       </div>
-      <JournalExtras accountId={accountId} entries={entries}/>
+      <JournalExtras open={diaryCalendarOpen}/>
       <div className={"journal-columns"+(diaryLayout==="grid"?" journal-columns-gallery":"")}>
         <div className="journal-composer lio-notebook-composer">
           <span className="lio-notebook-kicker">✦ UMA NOVA PÁGINA</span><h3>Escreva uma nova lembrança</h3><p>O que essa leitura despertou em você?</p>
@@ -636,7 +639,7 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
               const emotion=diaryMoods.find(m=>m.id===e.mood);
               const pagePercent=e.kind!=="Sessão"&&e.pageAtNote!==null&&book?.totalPages?Math.min(100,Math.round(e.pageAtNote/book.totalPages*100)):null;
               return <article key={e.id} className={"journal-entry lio-notebook-entry journal-kind-"+e.kind.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}>
-                <div className="journal-entry-top"><span className="journal-entry-tag">{e.kind}</span><time>{new Date(e.createdAt).toLocaleDateString("pt-BR",{day:"2-digit",month:"short",year:"numeric"})}</time></div>
+                <div className="journal-entry-top"><span className="journal-entry-tag">{e.kind}</span><div className="lio-journal-entry-top-actions"><time>{new Date(e.createdAt).toLocaleDateString("pt-BR",{day:"2-digit",month:"short",year:"numeric"})}</time>{e.kind==="Citação"&&book&&<JournalQuoteShareButton accountId={accountId} entry={{id:e.id,kind:e.kind,content:e.content,title:e.title,mood:e.mood,pagesRead:e.pageAtNote??0,createdAt:e.createdAt,book:{title:book.title,author:book.author,coverUrl:book.coverUrl,totalPages:book.totalPages}}}/>}</div></div>
                 <div className="lio-notebook-entry-book">{book?.coverUrl?<img src={book.coverUrl} alt={"Capa de "+book.title} loading="lazy" onError={ev=>{ev.currentTarget.style.display="none"}}/>:<span className="lio-notebook-book-placeholder" aria-hidden="true">✦</span>}<div><span className="lio-notebook-book-caption">MINHA LEITURA</span><h3>{e.book.title}</h3>{book?.author&&<small>{book.author}</small>}</div></div>
                 {e.title&&<h4 className="lio-notebook-entry-title">{e.title}</h4>}
                 {emotion&&<span className="lio-notebook-mood-label"><span aria-hidden="true">{emotion.emoji}</span> {emotion.label}</span>}
