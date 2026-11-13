@@ -50,3 +50,27 @@
 .lio-journal-extras button:focus-visible{outline:3px solid var(--lio-color-b);outline-offset:2px}
 @media(max-width:710px){.lio-journal-quote-gallery{grid-template-columns:1fr}.lio-journal-extras-top{align-items:flex-start}.lio-journal-export-pdf{width:100%;justify-content:center}}
 @media(max-width:380px){.lio-journal-extras-tabs button{flex:1 1 auto;padding:9px 8px;font-size:11px}.lio-journal-calendar-grid{gap:3px}.lio-journal-calendar-grid button{min-height:43px}.lio-journal-calendar-weekday{font-size:9px}}
+
+/* Compact diary layout: actions live in the hero, only the calendar expands. */
+.lio-notebook-hero{flex-wrap:wrap}
+.lio-notebook-hero>div:first-child{flex:1 1 395px;min-width:0}
+.lio-notebook-hero .journal-hero-art{position:absolute;right:27px;top:18px;opacity:.35;z-index:0!important;pointer-events:none}
+.lio-journal-hero-tools{position:relative;z-index:2!important;display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end;margin-left:auto;align-self:flex-start}
+.lio-journal-hero-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 13px;min-height:40px;border-radius:12px;border:1px solid color-mix(in srgb,var(--lio-color-a) 32%,var(--line));background:color-mix(in srgb,var(--card) 86%,transparent);color:var(--ink);font:700 12px/1.3 system-ui,sans-serif;cursor:pointer;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);white-space:nowrap}
+.lio-journal-hero-button:hover,.lio-journal-hero-button:focus-visible{border-color:var(--lio-color-b);background:color-mix(in srgb,var(--lio-color-a) 13%,var(--card))}
+.lio-journal-hero-button:disabled{opacity:.7;cursor:progress}
+.lio-journal-export-inline{display:flex;flex-direction:column;gap:4px;max-width:100%}
+.lio-journal-extras.lio-journal-extras-compact{max-width:790px;margin:0 auto 23px;padding:clamp(14px,2vw,22px);border-radius:20px}
+.lio-journal-entry-top-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.lio-notebook-page .journal-entry.lio-notebook-entry{overflow:visible!important}
+.lio-notebook-page .lio-notebook-entry::before{border-radius:inherit}
+.lio-journal-inline-share{position:relative;display:inline-flex;flex-direction:column;align-items:flex-end;flex:0 0 auto;z-index:8}
+.lio-journal-share-icon{display:grid;place-items:center;width:34px;height:34px;padding:0;border-radius:11px;border:1px solid color-mix(in srgb,var(--lio-color-a) 30%,var(--line));background:color-mix(in srgb,var(--card) 82%,transparent);color:var(--ink);cursor:pointer}
+.lio-journal-share-icon:hover,.lio-journal-share-icon[aria-expanded="true"]{background:color-mix(in srgb,var(--lio-color-b) 18%,var(--card));border-color:var(--lio-color-b)}
+.lio-journal-share-icon:focus-visible{outline:2px solid var(--lio-color-b);outline-offset:2px}
+.lio-journal-share-options{position:absolute;top:calc(100% + 7px);right:0;z-index:20;min-width:170px;display:flex;flex-direction:column;gap:4px;padding:8px;background:var(--card);border:1px solid var(--line);border-radius:13px;box-shadow:0 12px 32px rgba(17,12,34,.2);backdrop-filter:blur(18px)}
+.lio-journal-share-options button{width:100%;text-align:left;padding:9px 11px;border:0;border-radius:8px;background:transparent;color:var(--ink);font:650 12px system-ui,sans-serif;cursor:pointer}
+.lio-journal-share-options button:hover{background:color-mix(in srgb,var(--lio-color-a) 13%,var(--card))}
+.lio-journal-share-options button:disabled{opacity:.65;cursor:progress}
+.lio-journal-share-error{max-width:230px;display:block;color:var(--ink);background:color-mix(in srgb,#d85d75 11%,var(--card));border:1px solid var(--line);border-radius:9px;padding:7px;font:12px/1.4 system-ui,sans-serif}
+@media(max-width:700px){.lio-journal-hero-tools{width:100%;margin:0;justify-content:flex-start}.lio-notebook-hero>div:first-child{flex-basis:100%}.lio-notebook-hero .journal-hero-art{right:12px;top:12px;opacity:.15}.lio-journal-hero-button{font-size:11px;padding:9px 11px}.lio-journal-entry-top-actions{gap:5px}.lio-journal-share-icon{width:32px;height:32px}}
