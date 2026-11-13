@@ -1,12 +1,15 @@
 import { auth } from "../../../auth";
 import { prisma } from "../../../lib/prisma";
 import { z } from "zod";
+import { isJournalMood,packJournalContent,unpackJournalContent } from "../../../lib/journal-content";
 const schema = z.object({
   bookId: z.string().min(1),
   kind: z.enum(["Nota", "Resenha", "Citação", "Sessão"]),
   content: z.string().trim().max(5000).default(""),
-  pagesRead: z.number().int().min(0).max(100000).default(0)
-}).refine(x => x.kind === "Sessão" ? x.pagesRead > 0 : x.content.length > 0);
+  pagesRead: z.number().int().min(0).max(100000).default(0),
+  title: z.string().trim().max(90).optional().default(""),
+  mood: z.string().nullable().optional().default(null)
+}).refine(x => x.kind === "Sessão" ? x.pagesRead > 0 : x.content.length > 0).refine(x=>x.mood===null||isJournalMood(x.mood));
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return Response.json({ error: "Não autorizado" }, { status: 401 });
@@ -15,6 +18,7 @@ export async function GET() {
   // 0 nos registros anteriores indica que não existe um marco de página conhecido.
   return Response.json(entries.map(entry=>({
     ...entry,
+    ...(entry.kind==="Sessão"?{title:"",mood:null}:unpackJournalContent(entry.content)),
     pageAtNote: entry.kind!=="Sessão"&&entry.kind!=="Plano"&&entry.pagesRead>0?entry.pagesRead:null
   })));
 }
@@ -37,7 +41,9 @@ export async function POST(request: Request) {
     // Em notas/resenhas/citações salvamos o marcador do livro, nunca um número fornecido pelo cliente.
     // Reutilizamos pagesRead apenas nesses tipos; sessões mantêm seu significado original.
     const savedPages=parsed.data.kind==="Sessão"?actualPages:current.currentPage;
-    const created=await tx.readingEntry.create({data:{...parsed.data,pagesRead:savedPages}});
+    const {title,mood,...source}=parsed.data;
+    const content=parsed.data.kind==="Sessão"?parsed.data.content:packJournalContent(parsed.data.content,title,mood as import("../../../lib/journal-content").JournalMood|null);
+    const created=await tx.readingEntry.create({data:{...source,content,pagesRead:savedPages}});
     if(parsed.data.kind==="Sessão"){
       const nextPage=current.currentPage+actualPages;
       const complete=current.totalPages>0&&nextPage===current.totalPages;
@@ -69,4 +75,29 @@ export async function DELETE(request: Request) {
   await prisma.readingEntry.delete({where:{id:entry.id}});
   // A exclusão de sessões não altera automaticamente a página atual: ela também pode ter sido editada manualmente.
   return Response.json({ok:true});
+}
+
+export async function PATCH(request:Request){
+  const session=await auth();
+  if(!session?.user?.id)return Response.json({error:"Não autorizado."},{status:401});
+  const parsed=z.object({
+    id:z.string().min(1).max(100),
+    kind:z.enum(["Nota","Resenha","Citação"]),
+    content:z.string().trim().min(1).max(5000),
+    title:z.string().trim().max(90).default(""),
+    mood:z.string().nullable().default(null)
+  }).safeParse(await request.json().catch(()=>null));
+  if(!parsed.success||!(parsed.data.mood===null||isJournalMood(parsed.data.mood)))return Response.json({error:"Confira o texto, o título e a emoção."},{status:400});
+  const original=await prisma.readingEntry.findFirst({
+    where:{id:parsed.data.id,book:{userId:session.user.id},kind:{in:["Nota","Resenha","Citação"]}},
+    select:{id:true}
+  });
+  if(!original)return Response.json({error:"Anotação não encontrada ou sem permissão."},{status:404});
+  const content=packJournalContent(parsed.data.content,parsed.data.title,parsed.data.mood as import("../../../lib/journal-content").JournalMood|null);
+  const updated=await prisma.readingEntry.updateMany({
+    where:{id:original.id,book:{userId:session.user.id},kind:{in:["Nota","Resenha","Citação"]}},
+    data:{content,kind:parsed.data.kind}
+  });
+  if(!updated.count)return Response.json({error:"Não foi possível alterar a anotação."},{status:409});
+  return Response.json({ok:true},{headers:{"Cache-Control":"no-store"}});
 }
