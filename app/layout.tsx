@@ -7,6 +7,7 @@ import "./home-reading-hub.css";
 import "./final-polish.css";
 import "./desktop-typography.css";
 import "./lio-motion.css";
+import "./mobile-native.css";
 import MobileIntro from "./components/mobile-intro";
 export const metadata: Metadata = {
   title:"LIO — sua biblioteca pessoal",
