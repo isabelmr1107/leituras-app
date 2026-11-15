@@ -108,7 +108,7 @@ export default function ReadingPlanner({books,onProgress,onQuickProgress}:{books
   const deadlineText=plan?dateFrom(plan.deadline).toLocaleDateString("pt-BR"):"Não definido";
   return <section className="reading-planner lio-schedule">
     <div className="lio-schedule-heading">
-      <div><h2>Seu ritmo, sua história.</h2></div>
+      <div><h2>Seu ritmo, sua história.</h2><p>Planeje sua leitura sem pressa e acompanhe cada página conquistada.</p></div>
       <span className="lio-schedule-heading-icon" aria-hidden="true">✧</span>
     </div>
     <div className="lio-schedule-grid">
