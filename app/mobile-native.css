@@ -246,3 +246,58 @@
   .lio-ref-home .lio-ref-home-stats button,
   .lio-ref-home .lio-native-quick-grid button{transition:none!important}
 }
+
+/* Mobile form surfaces: keyboard-friendly sheets instead of desktop-style dialogs. */
+@media(max-width:767px){
+  .lio-book-overlay{
+    align-items:flex-end!important;justify-content:center!important;
+    padding:0!important;
+    background:rgba(16,12,29,.56);
+  }
+  .lio-book-overlay .modal{
+    width:100%!important;max-width:560px!important;
+    max-height:93dvh!important;
+    padding:20px 18px calc(17px + env(safe-area-inset-bottom,0px))!important;
+    border-radius:27px 27px 0 0!important;
+    margin:0!important;
+    background:var(--lio-app-surface,var(--card))!important;
+    color:var(--lio-app-ink,var(--ink))!important;
+    animation:lio-native-sheet-enter 270ms cubic-bezier(.2,.85,.2,1) both;
+  }
+  .lio-book-overlay .modal:before{
+    content:"";display:block;flex:0 0 5px;width:36px;height:5px;
+    border-radius:99px;background:var(--lio-app-border,var(--line));
+    margin:-11px auto 13px;
+  }
+  .lio-book-overlay .modal-head{align-items:center}
+  .lio-book-overlay .modal-head .close{
+    flex:0 0 40px;width:40px;height:40px;border-radius:13px;
+  }
+  .lio-book-overlay .modal-scroll :is(input,select,textarea){
+    font-size:16px!important;min-height:45px;
+  }
+  .lio-book-overlay .modal>.primary.full{min-height:48px}
+  .lio-quick-backdrop{
+    align-items:end!important;justify-items:center!important;
+    padding:0!important;
+  }
+  .lio-quick-dialog{
+    width:100%!important;max-width:560px!important;
+    max-height:92dvh!important;
+    border-radius:27px 27px 0 0!important;
+    border-bottom:0!important;
+    padding:21px 19px calc(18px + env(safe-area-inset-bottom,0px))!important;
+    animation:lio-native-sheet-enter 270ms cubic-bezier(.2,.85,.2,1) both;
+    overscroll-behavior:contain;
+  }
+  .lio-quick-dialog:before{
+    content:"";display:block;width:36px;height:5px;
+    border-radius:99px;background:var(--lio-app-border,var(--line));
+    margin:-11px auto 14px;
+  }
+  .lio-quick-dialog input{font-size:16px!important}
+  .lio-quick-close{width:42px;height:42px}
+}
+@media(max-width:767px) and (prefers-reduced-motion:reduce){
+  .lio-book-overlay .modal,.lio-quick-dialog{animation:none!important}
+}
