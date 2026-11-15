@@ -1927,8 +1927,7 @@ html[data-palette="jardim"] .lio-schedule-track>span{
 @media(max-width:550px){.lio-pwa-card{gap:12px}.lio-pwa-icon{width:53px;height:53px;border-radius:14px;font-size:27px}.lio-pwa-icon span{font-size:10px;right:5px;top:5px}.lio-pwa-copy h3{font-size:19px}}
 
 
-/* Reliable book ordering: keyboard/touch buttons plus drag-and-drop.
-   Ordinary shelves retain their overlapping book-cover aesthetic. */
+/* Book covers are draggable directly: hold, move and release. No arrows. */
 .collection-covers > .lio-reorder-book{
   position:relative;flex:0 0 143px;width:143px;height:204px;
   min-width:0;display:flex;align-items:stretch;
@@ -1936,42 +1935,35 @@ html[data-palette="jardim"] .lio-schedule-track>span{
 .collection-covers > .lio-reorder-book + .lio-reorder-book{margin-left:-24px}
 .collection-covers > .lio-reorder-book > .collection-book{
   display:block;flex:1 1 auto;width:100%;height:100%;min-width:0;margin:0;
+  cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
 }
-.collection-covers.lio-arranging > .lio-reorder-book{
-  margin-left:0!important;margin-right:12px;flex-shrink:0;
+.collection-covers > .lio-reorder-book > .collection-book img{
+  pointer-events:none;user-select:none;-webkit-user-select:none;
 }
-.collection-covers.lio-arranging > .lio-reorder-book > .collection-book{
-  margin-left:0!important;translate:none;transform:none;
-  outline:1px solid #ffffff70;cursor:grab;
+.collection-covers > .lio-reorder-book.is-touch-dragging{
+  transform:translate3d(var(--lio-drag-x,0px),var(--lio-drag-y,0px),0);
+  filter:drop-shadow(0 14px 17px #18102266);
+  transition:none!important;
 }
-.collection-covers.lio-arranging{touch-action:pan-x}
-.lio-shelf-reorder-actions{
-  position:absolute;right:5px;bottom:5px;left:5px;z-index:12;
-  display:flex;justify-content:space-between;gap:6px;
-  pointer-events:auto;
+.collection-covers > .lio-reorder-book.is-touch-dragging > .collection-book{
+  transform:none!important;translate:none!important;opacity:.86;
+  outline:2px solid var(--lio-color-b);cursor:grabbing;
 }
-.lio-shelf-reorder-actions button{
-  flex:1 1 0;min-width:0;min-height:39px;
-  border-radius:10px;border:1px solid #ffffff99;
-  background:#221d38eb;color:#fff;cursor:pointer;
-  font:700 22px/1 system-ui,sans-serif;
-  box-shadow:0 3px 12px #12101c60;
+.collection-covers > .lio-reorder-book > .collection-book.is-drop-target{
+  outline:3px solid var(--lio-color-b);outline-offset:2px;
+  filter:brightness(1.15);
 }
-.lio-shelf-reorder-actions button:hover:not(:disabled){background:#554a7c}
-.lio-shelf-reorder-actions button:focus-visible{outline:3px solid #fff;outline-offset:2px}
-.lio-shelf-reorder-actions button:disabled{opacity:.35;cursor:not-allowed}
+.collection-covers > .lio-reorder-book > .collection-book:active{cursor:grabbing}
 @media(min-width:900px){
   .collection-covers > .lio-reorder-book{flex-basis:160px;width:160px;height:228px}
 }
 @media(max-width:600px){
   .collection-covers > .lio-reorder-book{flex-basis:125px;width:125px;height:179px}
   .collection-covers > .lio-reorder-book + .lio-reorder-book{margin-left:-18px}
-  .collection-covers.lio-arranging > .lio-reorder-book{margin-right:9px}
 }
-
 /* Keep the original gently tilted book arrangement in normal browsing. */
-.collection-covers:not(.lio-arranging) > .lio-reorder-book:nth-child(3n+2) > .collection-book{transform:rotate(2deg);translate:0 -7px}
-.collection-covers:not(.lio-arranging) > .lio-reorder-book:nth-child(3n) > .collection-book{transform:rotate(-1deg);translate:0 3px}
-.collection-covers:not(.lio-arranging) > .lio-reorder-book > .collection-book:hover,
-.collection-covers:not(.lio-arranging) > .lio-reorder-book > .collection-book:focus-visible{transform:rotate(0) scale(1.045);translate:0 -9px}
-.lio-reorder-instructions{margin:10px 0 13px;padding:10px 13px;border:1px solid var(--line);border-radius:12px;color:var(--ink);background:color-mix(in srgb,var(--lio-color-a) 9%,var(--card));font-size:13px;line-height:1.5}
+.collection-covers > .lio-reorder-book:nth-child(3n+2) > .collection-book{transform:rotate(2deg);translate:0 -7px}
+.collection-covers > .lio-reorder-book:nth-child(3n) > .collection-book{transform:rotate(-1deg);translate:0 3px}
+.collection-covers > .lio-reorder-book > .collection-book:hover,
+.collection-covers > .lio-reorder-book > .collection-book:focus-visible{transform:rotate(0) scale(1.045);translate:0 -9px}
+
