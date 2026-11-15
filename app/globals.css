@@ -647,3 +647,38 @@ html[data-theme="light"] .collection-order-item{background:#4f3d75e0}
 html[data-theme="light"] .collection-order-tools>span{color:#625574!important}
 @media(max-width:600px){.collection-order-tools{margin:9px 0 0}.collection-order-item>span{max-width:70px}}
 @media(max-width:480px){.book-date-fields{grid-template-columns:1fr}}
+
+
+/* Ajustes exclusivos para telas pequenas: diário, metas e formulários.
+   A versão desktop e as prateleiras (collection-*) permanecem intactas. */
+@media (max-width: 720px) {
+  .journal-page { min-width: 0; }
+  .journal-hero { border-radius: 20px; padding: 23px 18px; }
+  .journal-hero h2 { font-size: clamp(24px, 7vw, 32px); line-height: 1.15; overflow-wrap: anywhere; }
+  .journal-stats { gap: 7px; margin-top: 16px; }
+  .journal-stats span { padding: 8px 10px; font-size: 12px; }
+  .journal-columns { min-width: 0; gap: 16px; }
+  .journal-composer, .journal-timeline { min-width: 0; padding: 18px 15px; border-radius: 18px; }
+  .journal-composer form { gap: 10px; }
+  .journal-composer label { min-width: 0; }
+  .journal-composer textarea { min-height: 148px; }
+  .journal-composer .primary { width: 100%; min-height: 44px; }
+  .journal-filters { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; padding-bottom: 7px; margin-bottom: 14px; }
+  .journal-filters button { flex: 0 0 auto; min-height: 40px; }
+  .journal-entry { padding: 15px 13px; border-radius: 14px; }
+  .journal-entry-top, .journal-entry-foot { flex-wrap: wrap; }
+  .journal-entry p { overflow-wrap: anywhere; }
+  .goal-card { width: 100%; max-width: 100%; padding: 20px 16px; border-radius: 18px; }
+  .goal-number { font-size: clamp(34px, 10vw, 46px); }
+  .goal-form label, .goal-form input, .goal-form .primary { max-width: 100%; width: 100%; }
+  .goal-form .primary { min-height: 44px; }
+  .modal { width: min(100%, 450px); padding: 18px; max-height: calc(100dvh - 24px); }
+  .modal-scroll { min-height: 0; overscroll-behavior: contain; }
+  .book-detail-modal { width: calc(100vw - 20px); max-height: calc(100dvh - 20px); }
+}
+@media (max-width: 420px) {
+  .journal-hero { padding: 20px 15px; }
+  .journal-timeline-head { align-items: stretch; }
+  .journal-timeline-head input { max-width: 100%; }
+  .journal-entry-foot button { min-height: 40px; }
+}
