@@ -94,6 +94,12 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
   const [diaryLayout,setDiaryLayout]=useState<"scroll"|"grid">("scroll");
   const [diaryCalendarOpen,setDiaryCalendarOpen]=useState(false);
   const [diaryComposerOpen,setDiaryComposerOpen]=useState(false);
+  const [justSavedEntryId,setJustSavedEntryId]=useState<string|null>(null);
+  useEffect(()=>{
+    if(!justSavedEntryId)return;
+    const timer=window.setTimeout(()=>setJustSavedEntryId(null),1000);
+    return ()=>window.clearTimeout(timer);
+  },[justSavedEntryId]);
   const [diaryLayoutLoaded,setDiaryLayoutLoaded]=useState(false);
   const [form,setForm]=useState(blank);
   const [entryForm,setEntryForm]=useState<{bookId:string;kind:string;content:string;pagesRead:number;title:string;mood:JournalMood|null}>({bookId:"",kind:"Nota",content:"",pagesRead:0,title:"",mood:null});
@@ -515,7 +521,10 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
     try{
       const res=await fetch("/api/entries",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(entryForm)});
       if(!res.ok)throw new Error("Verifique o livro e os dados da anotação.");
-      setEntryForm({bookId:"",kind:"Nota",content:"",pagesRead:0,title:"",mood:null});setDiaryComposerOpen(false);await refresh();
+      const saved=await res.json().catch(()=>null);
+      setEntryForm({bookId:"",kind:"Nota",content:"",pagesRead:0,title:"",mood:null});setDiaryComposerOpen(false);
+      if(saved&&typeof saved.id==="string")setJustSavedEntryId(saved.id);
+      await refresh();
     }catch(e){setError(e instanceof Error?e.message:"Erro");}finally{setBusy(false);}
   }
   function startEditEntry(entry:Entry){
@@ -687,7 +696,7 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
               const book=books.find(b=>b.id===e.bookId);
               const emotion=diaryMoods.find(m=>m.id===e.mood);
               const pagePercent=e.kind!=="Sessão"&&e.pageAtNote!==null&&book?.totalPages?Math.min(100,Math.round(e.pageAtNote/book.totalPages*100)):null;
-              return <article key={e.id} className={"journal-entry lio-notebook-entry journal-kind-"+e.kind.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}>
+              return <article key={e.id} className={"journal-entry lio-notebook-entry journal-kind-"+e.kind.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")+(e.id===justSavedEntryId?" lio-entry-just-saved":"")}>
                 <div className="journal-entry-top"><span className="journal-entry-tag">{e.kind}</span><div className="lio-journal-entry-top-actions"><time>{new Date(e.createdAt).toLocaleDateString("pt-BR",{day:"2-digit",month:"short",year:"numeric"})}</time>{e.kind==="Citação"&&book&&<JournalQuoteShareButton accountId={accountId} entry={{id:e.id,kind:e.kind,content:e.content,title:e.title,mood:e.mood,pagesRead:e.pageAtNote??0,createdAt:e.createdAt,book:{title:book.title,author:book.author,coverUrl:book.coverUrl,totalPages:book.totalPages}}}/>}</div></div>
                 <div className="lio-notebook-entry-book">{book?.coverUrl?<img src={book.coverUrl} alt={"Capa de "+book.title} loading="lazy" onError={ev=>{ev.currentTarget.style.display="none"}}/>:<span className="lio-notebook-book-placeholder" aria-hidden="true">✦</span>}<div><span className="lio-notebook-book-caption">MINHA LEITURA</span><h3>{e.book.title}</h3>{book?.author&&<small>{book.author}</small>}</div></div>
                 {e.title&&<h4 className="lio-notebook-entry-title">{e.title}</h4>}
