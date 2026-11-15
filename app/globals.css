@@ -1968,3 +1968,10 @@ html[data-palette="jardim"] .lio-schedule-track>span{
   .collection-covers > .lio-reorder-book + .lio-reorder-book{margin-left:-18px}
   .collection-covers.lio-arranging > .lio-reorder-book{margin-right:9px}
 }
+
+/* Keep the original gently tilted book arrangement in normal browsing. */
+.collection-covers:not(.lio-arranging) > .lio-reorder-book:nth-child(3n+2) > .collection-book{transform:rotate(2deg);translate:0 -7px}
+.collection-covers:not(.lio-arranging) > .lio-reorder-book:nth-child(3n) > .collection-book{transform:rotate(-1deg);translate:0 3px}
+.collection-covers:not(.lio-arranging) > .lio-reorder-book > .collection-book:hover,
+.collection-covers:not(.lio-arranging) > .lio-reorder-book > .collection-book:focus-visible{transform:rotate(0) scale(1.045);translate:0 -9px}
+.lio-reorder-instructions{margin:10px 0 13px;padding:10px 13px;border:1px solid var(--line);border-radius:12px;color:var(--ink);background:color-mix(in srgb,var(--lio-color-a) 9%,var(--card));font-size:13px;line-height:1.5}
