@@ -112,7 +112,7 @@ export default function ReadingChallenges({books,entries}:Props){
     <div className="lio-challenges-header">
       <div>
         
-        <h2 id="lio-challenges-heading">Desafios e conquistas</h2>
+        <h2 id="lio-challenges-heading">Desafios e conquistas</h2><p>Pequenos momentos de leitura também merecem comemoração.</p>
         
       </div>
       <div className="lio-streak-card" aria-label={data.streak+" dias de leitura consecutivos"}>

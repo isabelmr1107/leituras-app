@@ -20,6 +20,7 @@ export default function MobileHome({name,count,read,goal,reading,featured,onAdd,
    </div>
    
    <h1>Olá, {name.split(" ")[0]}!</h1>
+   <p className="lio-ref-home-sub">Que tal continuar a sua leitura hoje?</p>
    
    <div className="lio-ref-home-quick"><button type="button" onClick={onAdd}>＋ Adicionar livro</button></div>
    <section className="lio-ref-home-current" aria-label="Leitura atual">
