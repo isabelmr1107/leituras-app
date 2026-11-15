@@ -108,7 +108,7 @@ export default function ReadingPlanner({books,onProgress,onQuickProgress}:{books
   const deadlineText=plan?dateFrom(plan.deadline).toLocaleDateString("pt-BR"):"Não definido";
   return <section className="reading-planner lio-schedule">
     <div className="lio-schedule-heading">
-      <div><span className="lio-schedule-eyebrow">✦ SUA JORNADA LITERÁRIA</span><h2>Seu ritmo, sua história.</h2><p>Planeje sua leitura sem pressa e acompanhe cada página conquistada.</p></div>
+      <div><h2>Seu ritmo, sua história.</h2></div>
       <span className="lio-schedule-heading-icon" aria-hidden="true">✧</span>
     </div>
     <div className="lio-schedule-grid">
@@ -175,7 +175,7 @@ export default function ReadingPlanner({books,onProgress,onQuickProgress}:{books
       </div>
       <aside className="lio-schedule-side">
         <section className="lio-schedule-card lio-schedule-calculator">
-          <div className="lio-schedule-section-title"><span className="lio-schedule-dot"/> CALCULADORA LITERÁRIA</div>
+          
           <h3>Quantas páginas por dia?</h3><p>Faça uma conta rápida, sem cadastrar nenhum livro.</p>
           <div className="lio-schedule-calc-fields">
             <label>Total de páginas<input type="number" min="1" max="100000" value={quickPages} onChange={e=>setQuickPages(e.target.value)}/></label>
@@ -185,7 +185,7 @@ export default function ReadingPlanner({books,onProgress,onQuickProgress}:{books
           <div className="lio-schedule-calc-result" aria-live="polite"><span>Sua meta diária</span><strong>{quickDaily}</strong><b>páginas / dia</b><small>{quickRemaining} páginas restantes em {quickDayCount} {quickDayCount===1?"dia":"dias"}.</small></div>
         </section>
         <section className="lio-schedule-card lio-schedule-add">
-          <div className="lio-schedule-section-title"><span className="lio-schedule-dot"/> MINHA ESTANTE</div>
+          
           <h3>Uma nova história?</h3><p>Inclua um livro na sua biblioteca para organizar a leitura.</p>
           <button type="button" className="lio-schedule-secondary-button" onClick={()=>setShowRegistration(value=>!value)} aria-expanded={showRegistration}>{showRegistration?"− Fechar cadastro":"＋ Cadastrar livro"}</button>
           {showRegistration&&<form onSubmit={addBook} className="lio-schedule-add-form">
