@@ -105,6 +105,20 @@ export default function ReadingChallenges({books,entries}:Props){
     {id:"streak",icon:"🔥",name:"Três dias seguidos",description:"Registrar leituras em 3 dias consecutivos.",value:data.bestStreak,target:3,unit:"dias",accent:"#df9f83"}
   ];
   const [selectedMedalId,setSelectedMedalId]=useState<string|null>(null);
+  const [newlyEarnedIds,setNewlyEarnedIds]=useState<string[]>([]);
+  const seenUnlockedIds=useRef<string[]|null>(null);
+  const earnedSignature=medals.filter(m=>m.value>=m.target).map(m=>m.id).join("|");
+  useEffect(()=>{
+    const current=earnedSignature?earnedSignature.split("|"):[];
+    const previous=seenUnlockedIds.current;
+    seenUnlockedIds.current=current;
+    if(!previous)return;
+    const justEarned=current.filter(id=>!previous.includes(id));
+    if(!justEarned.length)return;
+    setNewlyEarnedIds(justEarned);
+    const timer=window.setTimeout(()=>setNewlyEarnedIds([]),800);
+    return ()=>window.clearTimeout(timer);
+  },[earnedSignature]);
   const selectedMedal=medals.find(m=>m.id===selectedMedalId);
   const completed=challenges.filter(c=>c.value>=c.target).length;
   const unlocked=medals.filter(m=>m.value>=m.target).length;
@@ -146,7 +160,7 @@ export default function ReadingChallenges({books,entries}:Props){
         const percent=progress(m.value,m.target);
         const unlocked=m.value>=m.target;
         const style={"--lio-medal-accent":m.accent} as CSSProperties;
-        return <button type="button" key={m.id} className={"lio-medal"+(unlocked?" is-unlocked":" is-locked")} style={style} onClick={()=>setSelectedMedalId(m.id)} aria-label={m.name+", "+Math.min(m.value,m.target)+" de "+m.target+". Ver detalhes."}>
+        return <button type="button" key={m.id} className={"lio-medal"+(unlocked?" is-unlocked":" is-locked")+(newlyEarnedIds.includes(m.id)?" lio-medal-newly-earned":"")} style={style} onClick={()=>setSelectedMedalId(m.id)} aria-label={m.name+", "+Math.min(m.value,m.target)+" de "+m.target+". Ver detalhes."}>
           <span className="lio-medal-art" aria-hidden="true">
             <svg viewBox="0 0 120 120" className="lio-medal-ring"><circle className="lio-medal-ring-track" cx="60" cy="60" r="50"/><circle className="lio-medal-ring-value" cx="60" cy="60" r="50" pathLength={100} strokeDasharray={percent+" 100"}/></svg>
             <span className="lio-medal-symbol">{m.icon}</span>
