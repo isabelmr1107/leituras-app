@@ -18,12 +18,12 @@ export default function MobileHome({name,count,read,goal,reading,featured,onAdd,
      <LioLogo title="LIO"/>
      <button className="lio-ref-home-add-icon" type="button" aria-label="Abrir perfil" onClick={onProfile}><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg></button>
    </div>
-   <p className="lio-ref-home-eyebrow">✦ SEU UNIVERSO DE HISTÓRIAS</p>
+   
    <h1>Olá, {name.split(" ")[0]}!</h1>
-   <p className="lio-ref-home-sub">Que tal continuar a sua leitura hoje?</p>
+   
    <div className="lio-ref-home-quick"><button type="button" onClick={onAdd}>＋ Adicionar livro</button></div>
    <section className="lio-ref-home-current" aria-label="Leitura atual">
-     <span className="lio-ref-home-kicker">LEITURA ATUAL</span>
+     
      <div className="lio-ref-home-current-body">
        <div className="lio-ref-home-cover">
          {featured?.coverUrl?<img src={featured.coverUrl} alt={"Capa de "+featured.title}/>:<div aria-hidden="true">✧<span>📖</span></div>}
