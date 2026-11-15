@@ -309,7 +309,7 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
     pointerDrag.current=null;
     if(state.timer)clearTimeout(state.timer);
     if(!state.active)return;
-    const target=document.elementFromPoint(e.clientX,e.clientY)?.closest<HTMLElement>("[data-lio-book-id]");
+    const targetId=bookAtPointer(e.clientX,e.clientY,state.id);
     if(targetId&&targetId!==state.id)void moveBook(state.id,targetId);
     setDraggedBookId(null);
     setDropTargetBookId(null);
