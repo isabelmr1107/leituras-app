@@ -55,8 +55,8 @@
 .lio-original-home .lio-desk-hub-grid>:nth-child(3),
 .lio-original-home .enhanced-stats>.stat:nth-child(3){animation-delay:100ms}
 .lio-original-home .enhanced-stats>.stat:nth-child(4){animation-delay:145ms}
-.lio-desk-track>span,.lio-ref-home-track>span,.progress>span,
-.lio-note-progress-track>span,.lio-schedule-progress>span{
+.lio-desk-track>span,.lio-ref-progress>span,.progress>span,
+.lio-note-progress-track>span,.lio-schedule-track>span{
   transform-origin:left center;
   animation:lio-progress-reveal 520ms var(--lio-motion-ease) both;
   transition:width 360ms var(--lio-motion-ease);
@@ -115,8 +115,8 @@
   .lio-notebook-page .journal-entry.lio-entry-just-saved,
   .lio-medal.is-unlocked.lio-medal-newly-earned .lio-medal-art,
   .lio-challenge-track>span,
-  .lio-desk-track>span,.lio-ref-home-track>span,.progress>span,
-  .lio-note-progress-track>span,.lio-schedule-progress>span{
+  .lio-desk-track>span,.lio-ref-progress>span,.progress>span,
+  .lio-note-progress-track>span,.lio-schedule-track>span{
     animation:none!important;transition:none!important;
   }
   .collection-covers>.lio-reorder-book>.collection-book,
