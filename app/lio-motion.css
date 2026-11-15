@@ -1,0 +1,141 @@
+/* LIO — microinterações discretas: todas usam transform/opacity quando possível. */
+:root{
+  --lio-motion-fast:160ms;
+  --lio-motion-medium:240ms;
+  --lio-motion-slow:360ms;
+  --lio-motion-ease:cubic-bezier(.22,1,.36,1);
+}
+@keyframes lio-soft-appear{
+  from{opacity:0;transform:translate3d(0,9px,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+@keyframes lio-progress-reveal{
+  from{transform:scaleX(0)}
+  to{transform:scaleX(1)}
+}
+@keyframes lio-new-memory{
+  from{opacity:.35;transform:translate3d(0,12px,0);box-shadow:0 0 0 2px color-mix(in srgb,var(--lio-color-b) 18%,transparent)}
+  to{opacity:1;transform:translate3d(0,0,0);box-shadow:0 12px 35px rgba(15,10,32,.055)}
+}
+@keyframes lio-gentle-achievement{
+  0%,100%{filter:brightness(1);transform:scale(1)}
+  45%{filter:brightness(1.12);transform:scale(1.045)}
+}
+
+/* 1. Capas: preserva o drag nativo por Pointer Events e as rotações da estante. */
+.collection-covers>.lio-reorder-book>.collection-book{
+  transition:transform var(--lio-motion-medium) var(--lio-motion-ease),translate var(--lio-motion-medium) var(--lio-motion-ease),filter var(--lio-motion-medium) ease,box-shadow var(--lio-motion-medium) ease;
+}
+.collection-covers>.lio-reorder-book>.collection-book:hover:not(.is-dragging){
+  box-shadow:0 15px 30px rgba(24,16,46,.23),3px 0 7px rgba(0,0,0,.1);
+}
+.collection-covers>.lio-reorder-book.is-touch-dragging{
+  transition:none!important;
+  will-change:transform;
+}
+.collection-covers>.lio-reorder-book>.collection-book.is-drop-target{
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--lio-color-b) 35%,transparent),0 13px 28px rgba(30,17,61,.2);
+}
+.shelf-book,.lio-desk-cover,.lio-ref-home-cover{
+  transition:transform var(--lio-motion-medium) var(--lio-motion-ease),box-shadow var(--lio-motion-medium) ease;
+}
+.shelf-book:hover{transform:translateY(-4px)}
+.lio-desk-cover:hover,.lio-ref-home-cover:hover{transform:translateY(-3px)}
+
+/* 2. Dashboard: entrada única dos cartões quando a visualização é montada. */
+.lio-original-home .welcome-banner,
+.lio-original-home .lio-desk-hub-grid>*,
+.lio-original-home .enhanced-stats>.stat,
+.lio-original-home .reading-summary,
+.lio-ref-home .lio-ref-home-current{
+  animation:lio-soft-appear var(--lio-motion-slow) var(--lio-motion-ease) both;
+}
+.lio-original-home .lio-desk-hub-grid>:nth-child(2),
+.lio-original-home .enhanced-stats>.stat:nth-child(2){animation-delay:55ms}
+.lio-original-home .lio-desk-hub-grid>:nth-child(3),
+.lio-original-home .enhanced-stats>.stat:nth-child(3){animation-delay:100ms}
+.lio-original-home .enhanced-stats>.stat:nth-child(4){animation-delay:145ms}
+.lio-desk-track>span,.lio-ref-home-track>span,.progress>span,
+.lio-note-progress-track>span,.lio-schedule-progress>span{
+  transform-origin:left center;
+  animation:lio-progress-reveal 520ms var(--lio-motion-ease) both;
+  transition:width 360ms var(--lio-motion-ease);
+}
+
+/* 3. Diário: feedback emocional e nova memória, sem recarregar o formulário. */
+.lio-notebook-page .lio-notebook-moods button,
+.lio-notebook-page .lio-journal-composer-toggle,
+.lio-notebook-page .lio-journal-composer-toggle-arrow{
+  transition:background-color var(--lio-motion-fast) ease,border-color var(--lio-motion-fast) ease,transform var(--lio-motion-fast) var(--lio-motion-ease),box-shadow var(--lio-motion-fast) ease;
+}
+.lio-notebook-page .lio-notebook-moods button:hover{transform:translateY(-2px)}
+.lio-notebook-page .lio-notebook-moods button:active{transform:scale(.97)}
+.lio-notebook-page .lio-notebook-moods button.active{
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--notebook-b) 25%,transparent);
+}
+.lio-notebook-page .lio-journal-composer-toggle:active{transform:scale(.996)}
+.lio-notebook-page .lio-journal-composer-collapsible.is-open .lio-journal-composer-toggle-arrow{transform:translateY(-2px)}
+.lio-notebook-page .lio-journal-composer-panel{animation:lio-soft-appear 260ms var(--lio-motion-ease) both}
+.lio-notebook-page .journal-entry.lio-entry-just-saved{animation:lio-new-memory 460ms var(--lio-motion-ease) both}
+
+/* 4. Navegação, botões e diálogos: pequenos sinais de resposta. */
+.nav-button,.lio-app-tab,.mobile-nav .filter,.lio-desk-hub-add,
+.lio-desk-primary,.lio-desk-secondary,.welcome-button,.stat-button,
+.lio-schedule button,.lio-challenges button{
+  transition:transform var(--lio-motion-fast) var(--lio-motion-ease),background-color var(--lio-motion-fast) ease,border-color var(--lio-motion-fast) ease,box-shadow var(--lio-motion-fast) ease;
+}
+.nav-button:active,.lio-app-tab:active,.mobile-nav .filter:active,
+.lio-desk-hub-add:active,.lio-desk-primary:active,.lio-desk-secondary:active,
+.welcome-button:active,.stat-button:active,.lio-schedule button:active,
+.lio-challenges button:active{transform:scale(.975)}
+.nav-button.active,.lio-app-tab.active{transition:background-color 210ms ease,color 210ms ease,box-shadow 210ms ease}
+.modal:not(.lio-book-details),.lio-medal-dialog{animation:lio-soft-appear 240ms var(--lio-motion-ease) both}
+
+/* 5. Conquistas: progresso e destaque uma única vez quando uma medalha é liberada. */
+.lio-challenge-track>span{
+  transform-origin:left center;
+  animation:lio-progress-reveal 540ms var(--lio-motion-ease) both;
+  transition:width 380ms var(--lio-motion-ease);
+}
+.lio-medal.is-unlocked.lio-medal-newly-earned .lio-medal-art{
+  animation:lio-gentle-achievement 650ms var(--lio-motion-ease) both;
+}
+.lio-medal.is-unlocked.lio-medal-newly-earned{
+  box-shadow:0 9px 23px color-mix(in srgb,var(--lio-medal-accent) 19%,transparent);
+}
+
+/* Acessibilidade: sem movimentos para quem prefere animação reduzida. */
+@media(prefers-reduced-motion:reduce){
+  .lio-original-home .welcome-banner,
+  .lio-original-home .lio-desk-hub-grid>*,
+  .lio-original-home .enhanced-stats>.stat,
+  .lio-original-home .reading-summary,
+  .lio-ref-home .lio-ref-home-current,
+  .lio-notebook-page .lio-journal-composer-panel,
+  .lio-notebook-page .journal-entry.lio-entry-just-saved,
+  .lio-medal.is-unlocked.lio-medal-newly-earned .lio-medal-art,
+  .lio-challenge-track>span,
+  .lio-desk-track>span,.lio-ref-home-track>span,.progress>span,
+  .lio-note-progress-track>span,.lio-schedule-progress>span{
+    animation:none!important;transition:none!important;
+  }
+  .collection-covers>.lio-reorder-book>.collection-book,
+  .shelf-book,.lio-desk-cover,.lio-ref-home-cover,
+  .lio-notebook-page .lio-notebook-moods button,
+  .lio-notebook-page .lio-journal-composer-toggle,
+  .lio-notebook-page .lio-journal-composer-toggle-arrow,
+  .nav-button,.lio-app-tab,.mobile-nav .filter,.lio-desk-hub-add,
+  .lio-desk-primary,.lio-desk-secondary,.welcome-button,.stat-button,
+  .lio-schedule button,.lio-challenges button{
+    transition:none!important;
+  }
+  .shelf-book:hover,.lio-desk-cover:hover,.lio-ref-home-cover:hover,
+  .lio-notebook-page .lio-notebook-moods button:hover,
+  .nav-button:active,.lio-app-tab:active,.mobile-nav .filter:active,
+  .lio-desk-hub-add:active,.lio-desk-primary:active,.lio-desk-secondary:active,
+  .welcome-button:active,.stat-button:active,.lio-schedule button:active,
+  .lio-challenges button:active{transform:none!important}
+  .collection-covers>.lio-reorder-book.is-touch-dragging{
+    transform:translate3d(var(--lio-drag-x,0px),var(--lio-drag-y,0px),0)!important;
+  }
+}
