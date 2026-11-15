@@ -47,8 +47,11 @@ export default function MobileHome({name,count,read,goal,reading,featured,onAdd,
      <button type="button" onClick={onGoals}><span>◎</span><strong>{goalPct}%</strong><small>da meta</small></button>
      <button type="button" onClick={onShelf}><span>▤</span><strong>{reading}</strong><small>lendo agora</small></button>
    </div>
-   <div className="lio-ref-home-heading"><h2>Minha biblioteca</h2><button type="button" onClick={onShelf}>Ver estante →</button></div>
-   <div className="lio-ref-home-links"><button type="button" onClick={onShelf}>📚 Explorar livros</button><button type="button" onClick={onDiary}>✎ Abrir diário</button></div>
-   <button type="button" className="lio-ref-home-shortcut" onClick={onSchedule}>▦ Organizar meu cronograma →</button>
+   <div className="lio-native-quick-heading"><h2>Acesso rápido</h2><p>O que vamos fazer hoje?</p></div>
+   <div className="lio-native-quick-grid" role="group" aria-label="Acessos rápidos do LIO">
+     <button type="button" onClick={onShelf} aria-label="Explorar minha biblioteca"><span className="lio-native-quick-icon" aria-hidden="true">📚</span><strong>Minha estante</strong><small>Ver meus livros</small></button>
+     <button type="button" onClick={onDiary} aria-label="Abrir meu diário literário"><span className="lio-native-quick-icon" aria-hidden="true">✎</span><strong>Meu diário</strong><small>Guardar memórias</small></button>
+     <button type="button" onClick={onSchedule} aria-label="Abrir meu cronograma de leitura"><span className="lio-native-quick-icon" aria-hidden="true">◷</span><strong>Cronograma</strong><small>Meu ritmo</small></button>
+   </div>
  </div>;
 }

@@ -1,0 +1,303 @@
+/* LIO — phone-first app shell.
+   Intentionally excludes all shelf / collection geometry and drag controls.
+   Desktop and tablet widths above 767px remain unchanged. */
+.lio-native-page-kicker,.lio-native-page-profile,
+.lio-native-diary-create,.lio-native-sheet-backdrop,
+.lio-native-quick-heading,.lio-native-quick-grid{display:none}
+@keyframes lio-native-screen-enter{
+  from{opacity:.5;transform:translate3d(0,9px,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+@keyframes lio-native-sheet-enter{
+  from{transform:translate3d(0,100%,0)}
+  to{transform:translate3d(0,0,0)}
+}
+@keyframes lio-native-backdrop-enter{
+  from{opacity:0}to{opacity:1}
+}
+@media(max-width:767px){
+  html{overscroll-behavior-y:none}
+  html[data-theme] .shell>.content{
+    padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))!important;
+    min-height:100dvh;
+  }
+  /* Each tab behaves as a screen, rather than a long desktop page shrunk down. */
+  .shell[data-lio-view]:not([data-lio-view="library"]) .content>.section,
+  .shell[data-lio-view="schedule"] .content>.reading-planner{
+    animation:lio-native-screen-enter 260ms cubic-bezier(.2,.85,.25,1) both;
+  }
+  /* The dashboard already has its own logo, greeting and profile action. */
+  .shell[data-lio-view="home"] .content>.topbar,
+  .shell[data-lio-view="home"] .content>.lio-mobile-top-actions{display:none!important}
+  /* Compact, app-like contextual header; no effect on library shelves. */
+  .shell[data-lio-view]:not([data-lio-view="home"]) .content>.topbar{
+    display:flex!important;align-items:center;justify-content:space-between;
+    gap:12px;margin:0 0 20px!important;padding:7px 0 14px!important;
+    border-bottom:1px solid var(--lio-app-border,var(--line));
+    background:transparent!important;
+  }
+  .shell[data-lio-view]:not([data-lio-view="home"]) .content>.topbar>div:first-child{
+    flex:1;min-width:0;
+  }
+  .shell[data-lio-view]:not([data-lio-view="home"]) .content>.topbar h1{
+    font-size:clamp(25px,6.6vw,31px)!important;
+    font-weight:800!important;line-height:1.18!important;
+    margin:5px 0 3px!important;letter-spacing:-.045em;
+  }
+  .shell[data-lio-view]:not([data-lio-view="home"]) .content>.topbar .header-subtitle{
+    font-size:12px!important;line-height:1.48!important;margin:0!important;
+  }
+  .shell[data-lio-view]:not([data-lio-view="home"]) .content>.topbar .topbar-actions{
+    display:none!important;
+  }
+  .shell[data-lio-view]:not([data-lio-view="home"]) .content>.lio-mobile-top-actions{
+    display:none!important;
+  }
+  .shell .lio-native-page-kicker{
+    display:inline-flex;align-items:center;gap:7px;
+    font-size:9px;font-weight:800;letter-spacing:.12em;
+    color:var(--lio-color-a)!important;
+  }
+  .shell .lio-native-page-kicker>span{font-size:9px}
+  .shell .lio-native-page-profile{
+    display:grid;place-items:center;flex:0 0 44px;
+    width:44px;height:44px;padding:0!important;
+    border-radius:15px;border:1px solid var(--lio-app-border,var(--line));
+    background:var(--lio-app-surface,var(--card));
+    color:var(--lio-app-ink,var(--ink));box-shadow:0 4px 14px var(--lio-app-shadow,rgba(0,0,0,.09));
+  }
+  .shell .lio-native-page-profile svg{width:21px;height:21px}
+
+  /* True five-destination thumb navigation; never overlays the phone safe area. */
+  html[data-theme] .lio-app-bottom-nav{
+    left:50%;width:min(100%,560px);
+    gap:3px!important;
+    padding:7px 8px calc(7px + env(safe-area-inset-bottom,0px))!important;
+    border-top:1px solid var(--lio-app-border,var(--line))!important;
+    border-radius:22px 22px 0 0!important;
+    box-shadow:0 -9px 28px var(--lio-app-shadow,rgba(31,19,49,.1))!important;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .shell .lio-app-bottom-nav .lio-app-tab{
+    position:relative;min-height:57px!important;
+    gap:4px;padding:7px 2px!important;border-radius:15px!important;
+    font-size:10px!important;touch-action:manipulation;
+  }
+  .shell .lio-app-bottom-nav .lio-app-tab-icon{
+    width:33px;height:32px;border-radius:12px;
+    transition:transform 180ms cubic-bezier(.2,.85,.2,1),background-color 180ms ease;
+  }
+  .shell .lio-app-bottom-nav .lio-app-tab.active .lio-app-tab-icon{
+    transform:translateY(-2px);
+    box-shadow:0 3px 9px color-mix(in srgb,var(--lio-color-a) 12%,transparent);
+  }
+  .shell .lio-app-bottom-nav .lio-app-tab:active .lio-app-tab-icon{
+    transform:scale(.9)
+  }
+  .shell .lio-app-bottom-nav .lio-app-tab.active:after{
+    content:"";position:absolute;bottom:1px;left:50%;transform:translateX(-50%);
+    width:14px;height:3px;border-radius:5px;background:var(--lio-color-a);
+  }
+
+  /* The reading-first home screen, inspired by a native reading dashboard. */
+  .lio-ref-home{padding-bottom:10px!important}
+  .lio-ref-home>.lio-ref-home-top{margin-bottom:14px!important}
+  .lio-ref-home>h1{font-size:clamp(27px,7vw,34px)!important;line-height:1.16;margin-bottom:5px!important}
+  .lio-ref-home>.lio-ref-home-sub{line-height:1.52;margin-bottom:16px!important}
+  .lio-ref-home .lio-ref-home-current{
+    border-radius:26px!important;
+    box-shadow:0 14px 33px var(--lio-app-shadow,rgba(35,17,61,.1))!important;
+  }
+  .lio-ref-home .lio-ref-home-open,
+  .lio-ref-home .lio-ref-home-add-icon{touch-action:manipulation}
+  .lio-ref-home .lio-ref-home-open:active,
+  .lio-ref-home .lio-ref-home-add-icon:active{transform:scale(.93)}
+  .lio-ref-home .lio-ref-home-stats button{
+    min-height:110px;touch-action:manipulation;
+    transition:transform 160ms ease,box-shadow 160ms ease;
+  }
+  .lio-ref-home .lio-ref-home-stats button:active{transform:scale(.97)}
+  .lio-ref-home .lio-ref-home-heading{margin-top:23px}
+  .lio-ref-home .lio-native-quick-heading{
+    display:flex;flex-direction:column;gap:3px;margin:25px 0 12px;
+  }
+  .lio-ref-home .lio-native-quick-heading h2{
+    font-size:20px;font-weight:800;letter-spacing:-.03em;
+    color:var(--lio-app-ink,var(--ink));margin:0;
+  }
+  .lio-ref-home .lio-native-quick-heading p{
+    margin:0;color:var(--lio-app-muted,var(--muted));font-size:12px;
+  }
+  .lio-ref-home .lio-native-quick-grid{
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;
+  }
+  .lio-ref-home .lio-native-quick-grid button{
+    min-width:0;min-height:112px;display:flex;flex-direction:column;
+    align-items:flex-start;justify-content:center;gap:6px;
+    padding:12px 11px!important;text-align:left;
+    border-radius:18px!important;
+    border:1px solid var(--lio-app-border,var(--line))!important;
+    background:var(--lio-app-surface,var(--card))!important;
+    color:var(--lio-app-ink,var(--ink))!important;
+    box-shadow:0 5px 19px var(--lio-app-shadow,rgba(0,0,0,.07));
+    touch-action:manipulation;
+    transition:transform 170ms ease,box-shadow 170ms ease;
+  }
+  .lio-ref-home .lio-native-quick-grid button:active{
+    transform:scale(.965);box-shadow:0 2px 8px var(--lio-app-shadow,rgba(0,0,0,.07));
+  }
+  .lio-ref-home .lio-native-quick-icon{
+    display:grid;place-items:center;width:34px;height:34px;
+    background:color-mix(in srgb,var(--lio-color-a) 12%,var(--lio-app-surface,var(--card)));
+    color:var(--lio-color-a);border-radius:11px;font-size:18px;
+  }
+  .lio-ref-home .lio-native-quick-grid button:nth-child(2) .lio-native-quick-icon{
+    background:color-mix(in srgb,var(--lio-color-b) 15%,var(--lio-app-surface,var(--card)));
+  }
+  .lio-ref-home .lio-native-quick-grid strong{
+    font-size:12px;line-height:1.2;font-weight:750;white-space:normal;
+  }
+  .lio-ref-home .lio-native-quick-grid small{
+    font-size:10px;line-height:1.25;color:var(--lio-app-muted,var(--muted));
+  }
+
+  /* Diary becomes a focused native-style bottom sheet only while writing. */
+  .shell[data-lio-view="diary"] .lio-notebook-page{position:relative}
+  .shell[data-lio-view="diary"] .lio-native-diary-create{
+    display:flex;align-items:center;justify-content:center;gap:9px;
+    width:100%;min-height:52px;margin:0 0 16px;
+    border:0;border-radius:17px;
+    background:linear-gradient(110deg,var(--lio-color-a),var(--lio-color-b));
+    color:#fff;font-size:14px;font-weight:750;
+    box-shadow:0 9px 20px color-mix(in srgb,var(--lio-color-a) 20%,transparent);
+    touch-action:manipulation;
+  }
+  .shell[data-lio-view="diary"] .lio-native-diary-create:active{transform:scale(.985)}
+  .shell[data-lio-view="diary"] .lio-native-sheet-backdrop{
+    display:block;position:fixed;inset:0;z-index:1600;
+    border:0;border-radius:0;padding:0;
+    background:rgba(18,13,33,.56);
+    animation:lio-native-backdrop-enter 200ms ease both;
+  }
+  .shell[data-lio-view="diary"] .lio-notebook-page .journal-composer.lio-journal-composer-collapsible.is-closed{
+    display:none!important;
+  }
+  html[data-theme] .shell[data-lio-view="diary"] .lio-notebook-page .journal-composer.lio-journal-composer-collapsible.is-open{
+    position:fixed!important;inset:auto 0 0!important;z-index:1601;
+    width:100%!important;max-width:560px;max-height:90dvh;
+    margin:0 auto!important;padding:7px 0 calc(8px + env(safe-area-inset-bottom,0px))!important;
+    background:var(--lio-app-surface,var(--card))!important;
+    border:1px solid var(--lio-app-border,var(--line))!important;
+    border-bottom:0!important;border-radius:26px 26px 0 0!important;
+    box-shadow:0 -24px 65px rgba(13,9,29,.28)!important;
+    overflow-y:auto!important;overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+    animation:lio-native-sheet-enter 290ms cubic-bezier(.2,.85,.2,1) both;
+  }
+  .shell[data-lio-view="diary"] .lio-journal-composer-collapsible.is-open:before{
+    content:"";display:block;width:36px;height:5px;margin:3px auto 6px;
+    background:var(--lio-app-border,var(--line));border-radius:99px;
+  }
+  .shell[data-lio-view="diary"] .lio-journal-composer-toggle{
+    padding:10px 18px 15px!important;position:sticky!important;top:0;
+    z-index:2;background:var(--lio-app-surface,var(--card));
+  }
+  .shell[data-lio-view="diary"] .lio-journal-composer-toggle-copy small{
+    font-size:11px!important;
+  }
+  .shell[data-lio-view="diary"] .lio-journal-composer-panel{
+    border-top:1px solid var(--lio-app-border,var(--line));
+    padding:15px 18px 18px!important;animation:none!important;
+  }
+  .shell[data-lio-view="diary"] .lio-journal-composer-panel :is(input,textarea,select){
+    font-size:16px!important;min-height:45px;
+  }
+  .shell[data-lio-view="diary"] .lio-journal-composer-panel form>button[type="submit"]{
+    min-height:49px;font-size:14px;
+  }
+  /* Mobile cards and tabs are built for touch, not desktop hover. */
+  .shell[data-lio-view="diary"] .journal-timeline,
+  .shell[data-lio-view="goals"] .goal-card,
+  .shell[data-lio-view="schedule"] .lio-schedule-card{
+    border-radius:20px!important;
+  }
+  .shell[data-lio-view="diary"] .journal-filters,
+  .shell[data-lio-view="diary"] .journal-layout-options{
+    -webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;
+  }
+  .shell[data-lio-view="diary"] .journal-filters button,
+  .shell[data-lio-view="goals"] .lio-medal,
+  .shell[data-lio-view="schedule"] button{
+    touch-action:manipulation;
+  }
+  .shell[data-lio-view="goals"] .lio-challenge-card{
+    border-radius:19px;
+  }
+  /* Keep every mobile shelf, book cover and long-press gesture untouched. */
+}
+@media(max-width:767px) and (prefers-reduced-motion:reduce){
+  .shell[data-lio-view]:not([data-lio-view="library"]) .content>.section,
+  .shell[data-lio-view="schedule"] .content>.reading-planner,
+  html[data-theme] .shell[data-lio-view="diary"] .lio-notebook-page .journal-composer.lio-journal-composer-collapsible.is-open,
+  .shell[data-lio-view="diary"] .lio-native-sheet-backdrop{
+    animation:none!important;
+  }
+  .shell .lio-app-bottom-nav .lio-app-tab-icon,
+  .lio-ref-home .lio-ref-home-stats button,
+  .lio-ref-home .lio-native-quick-grid button{transition:none!important}
+}
+
+/* Mobile form surfaces: keyboard-friendly sheets instead of desktop-style dialogs. */
+@media(max-width:767px){
+  .lio-book-overlay{
+    align-items:flex-end!important;justify-content:center!important;
+    padding:0!important;
+    background:rgba(16,12,29,.56);
+  }
+  .lio-book-overlay .modal{
+    width:100%!important;max-width:560px!important;
+    max-height:93dvh!important;
+    padding:20px 18px calc(17px + env(safe-area-inset-bottom,0px))!important;
+    border-radius:27px 27px 0 0!important;
+    margin:0!important;
+    background:var(--lio-app-surface,var(--card))!important;
+    color:var(--lio-app-ink,var(--ink))!important;
+    animation:lio-native-sheet-enter 270ms cubic-bezier(.2,.85,.2,1) both;
+  }
+  .lio-book-overlay .modal:before{
+    content:"";display:block;flex:0 0 5px;width:36px;height:5px;
+    border-radius:99px;background:var(--lio-app-border,var(--line));
+    margin:-11px auto 13px;
+  }
+  .lio-book-overlay .modal-head{align-items:center}
+  .lio-book-overlay .modal-head .close{
+    flex:0 0 40px;width:40px;height:40px;border-radius:13px;
+  }
+  .lio-book-overlay .modal-scroll :is(input,select,textarea){
+    font-size:16px!important;min-height:45px;
+  }
+  .lio-book-overlay .modal>.primary.full{min-height:48px}
+  .lio-quick-backdrop{
+    align-items:end!important;justify-items:center!important;
+    padding:0!important;
+  }
+  .lio-quick-dialog{
+    width:100%!important;max-width:560px!important;
+    max-height:92dvh!important;
+    border-radius:27px 27px 0 0!important;
+    border-bottom:0!important;
+    padding:21px 19px calc(18px + env(safe-area-inset-bottom,0px))!important;
+    animation:lio-native-sheet-enter 270ms cubic-bezier(.2,.85,.2,1) both;
+    overscroll-behavior:contain;
+  }
+  .lio-quick-dialog:before{
+    content:"";display:block;width:36px;height:5px;
+    border-radius:99px;background:var(--lio-app-border,var(--line));
+    margin:-11px auto 14px;
+  }
+  .lio-quick-dialog input{font-size:16px!important}
+  .lio-quick-close{width:42px;height:42px}
+}
+@media(max-width:767px) and (prefers-reduced-motion:reduce){
+  .lio-book-overlay .modal,.lio-quick-dialog{animation:none!important}
+}
