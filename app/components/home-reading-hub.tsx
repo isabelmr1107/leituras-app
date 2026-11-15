@@ -19,7 +19,7 @@ export default function HomeReadingHub({reading,featured,finished,goal,total,pag
  const annual=goal>0?Math.max(0,Math.min(100,Math.round(finished/goal*100))):0;
  return <section className="lio-desk-hub" aria-label="Painel da sua jornada de leitura">
   <div className="lio-desk-hub-heading">
-   <div><h2>Sua jornada, em um só lugar</h2></div>
+   <div><h2>Sua jornada, em um só lugar</h2><p>Continue de onde parou ou escolha o seu próximo capítulo.</p></div>
    <button type="button" className="lio-desk-hub-add" onClick={onAdd}>＋ Adicionar livro</button>
   </div>
   <div className="lio-desk-hub-grid">
