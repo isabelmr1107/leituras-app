@@ -91,6 +91,7 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
   const [diarySearch,setDiarySearch]=useState("");
   const [diaryLayout,setDiaryLayout]=useState<"scroll"|"grid">("scroll");
   const [diaryCalendarOpen,setDiaryCalendarOpen]=useState(false);
+  const [diaryComposerOpen,setDiaryComposerOpen]=useState(false);
   const [diaryLayoutLoaded,setDiaryLayoutLoaded]=useState(false);
   const [form,setForm]=useState(blank);
   const [entryForm,setEntryForm]=useState<{bookId:string;kind:string;content:string;pagesRead:number;title:string;mood:JournalMood|null}>({bookId:"",kind:"Nota",content:"",pagesRead:0,title:"",mood:null});
@@ -471,7 +472,7 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
     try{
       const res=await fetch("/api/entries",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(entryForm)});
       if(!res.ok)throw new Error("Verifique o livro e os dados da anotação.");
-      setEntryForm({bookId:"",kind:"Nota",content:"",pagesRead:0,title:"",mood:null});await refresh();
+      setEntryForm({bookId:"",kind:"Nota",content:"",pagesRead:0,title:"",mood:null});setDiaryComposerOpen(false);await refresh();
     }catch(e){setError(e instanceof Error?e.message:"Erro");}finally{setBusy(false);}
   }
   function startEditEntry(entry:Entry){
@@ -603,8 +604,9 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
       </div>
       <JournalExtras open={diaryCalendarOpen}/>
       <div className={"journal-columns"+(diaryLayout==="grid"?" journal-columns-gallery":"")}>
-        <div className="journal-composer lio-notebook-composer">
-          <h3>Escreva uma nova lembrança</h3>
+        <div className={"journal-composer lio-notebook-composer lio-journal-composer-collapsible"+(diaryComposerOpen?" is-open":" is-closed")}>
+          <button type="button" className="lio-journal-composer-toggle" aria-expanded={diaryComposerOpen} aria-controls="lio-journal-composer-form" onClick={()=>setDiaryComposerOpen(value=>!value)}><span className="lio-journal-composer-toggle-copy"><span className="lio-journal-composer-toggle-icon" aria-hidden="true">✎</span><span><strong>Escreva uma nova lembrança</strong><small>{entryForm.bookId||entryForm.content||entryForm.title||entryForm.pagesRead?"Rascunho em andamento":"Registrar nota, citação ou resenha"}</small></span></span><span className="lio-journal-composer-toggle-arrow" aria-hidden="true">{diaryComposerOpen?"⌃":"⌄"}</span></button>
+          {diaryComposerOpen&&<div id="lio-journal-composer-form" className="lio-journal-composer-panel">
           {books.length?<form onSubmit={addEntry}>
             <label>Livro<select required value={entryForm.bookId} onChange={e=>setEntryForm({...entryForm,bookId:e.target.value})}><option value="">Escolha uma história…</option>{books.map(b=><option key={b.id} value={b.id}>{b.title}</option>)}</select></label>
             <label>Tipo de registro<select value={entryForm.kind} onChange={e=>setEntryForm({...entryForm,kind:e.target.value})}>{["Nota","Resenha","Citação","Sessão"].map(k=><option key={k}>{k}</option>)}</select></label>
@@ -619,6 +621,7 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
             {entryForm.kind!=="Sessão"&&entryForm.bookId&&<div className="lio-note-page-preview">Progresso que será registrado: <strong>{books.find(b=>b.id===entryForm.bookId)?.totalPages?Math.min(100,Math.round((books.find(b=>b.id===entryForm.bookId)?.currentPage||0)/(books.find(b=>b.id===entryForm.bookId)?.totalPages||1)*100))+"%":"total de páginas não informado"}</strong>{!!books.find(b=>b.id===entryForm.bookId)?.totalPages&&<div className="lio-note-progress-track"><span style={{width:Math.min(100,Math.round((books.find(b=>b.id===entryForm.bookId)?.currentPage||0)/(books.find(b=>b.id===entryForm.bookId)?.totalPages||1)*100))+"%"}}/></div>}</div>}
             <button type="submit" className="primary" disabled={busy}>{busy?"Salvando…":"Guardar no diário →"}</button>
           </form>:<p>Adicione seu primeiro livro para começar.</p>}
+          </div>}
         </div>
         <div className="journal-timeline">
           <div className="journal-timeline-head"><div><h3>Memórias registradas</h3></div><label className="sr-only" htmlFor="journal-search">Buscar no diário</label><input id="journal-search" value={diarySearch} placeholder="Pesquisar…" onChange={e=>setDiarySearch(e.target.value)}/></div>

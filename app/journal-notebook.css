@@ -57,3 +57,19 @@
 .lio-notebook-success{color:var(--ink);background:color-mix(in srgb,var(--notebook-d) 15%,var(--card));border:1px solid color-mix(in srgb,var(--notebook-d) 35%,var(--line));padding:12px 14px;border-radius:12px;font-weight:650;font-size:13px}
 @media(max-width:600px){.lio-notebook-entry-book img{width:45px;height:66px}.lio-notebook-entry-book{gap:10px}.lio-notebook-page .journal-entry.lio-notebook-entry{padding:15px 15px 13px}.lio-notebook-entry-actions .secondary-button{font-size:11px}.lio-journal-format-toolbar span{flex-basis:100%}}
 @media(prefers-reduced-motion:reduce){.lio-notebook-moods button{transition:none}}
+
+/* Compact creation card: form is mounted only when expanded; React retains the draft. */
+.lio-notebook-page .lio-journal-composer-collapsible{padding:0!important;overflow:hidden!important;align-self:start}
+.lio-journal-composer-toggle{width:100%;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 19px;border:0;background:transparent;color:var(--ink);text-align:left;cursor:pointer;font-family:inherit}
+.lio-journal-composer-toggle-copy{display:flex;align-items:center;gap:12px;min-width:0}
+.lio-journal-composer-toggle-icon{display:grid;place-items:center;width:43px;height:43px;flex:0 0 43px;border-radius:13px;background:color-mix(in srgb,var(--notebook-a) 16%,var(--card));color:var(--ink);font-size:21px}
+.lio-journal-composer-toggle-copy strong{display:block;color:var(--ink);font-size:16px;line-height:1.35;font-weight:750}
+.lio-journal-composer-toggle-copy small{display:block;color:var(--muted);font-size:12px;font-weight:450;line-height:1.45;margin-top:4px}
+.lio-journal-composer-toggle-arrow{font-size:23px;font-weight:600;color:var(--muted);flex-shrink:0}
+.lio-journal-composer-toggle:hover{background:color-mix(in srgb,var(--notebook-a) 6%,transparent)}
+.lio-journal-composer-toggle:focus-visible{outline:2px solid var(--notebook-b);outline-offset:-3px;border-radius:16px}
+.lio-journal-composer-panel{border-top:1px solid var(--line);padding:19px 20px 23px;animation:lio-journal-composer-enter .2s ease-out}
+.lio-journal-composer-panel form{margin:0}
+@keyframes lio-journal-composer-enter{from{opacity:.2;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.lio-journal-composer-panel{animation:none}}
+@media(max-width:640px){.lio-journal-composer-toggle{padding:14px 15px}.lio-journal-composer-toggle-copy strong{font-size:14px}.lio-journal-composer-toggle-icon{width:39px;height:39px;flex-basis:39px}.lio-journal-composer-panel{padding:15px}}
