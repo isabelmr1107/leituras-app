@@ -57,8 +57,10 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
   const [query,setQuery]=useState("");
   const [sortBy,setSortBy]=useState<"personalizada"|"recentes"|"titulo"|"autor"|"progresso">("personalizada");
   const [draggedBookId,setDraggedBookId]=useState<string|null>(null);
-  const [arrangingBooks,setArrangingBooks]=useState(false);
-  const touchDrag=useRef<{id:string;x:number;y:number;active:boolean;timer:ReturnType<typeof setTimeout>|null}|null>(null);
+  const [dropTargetBookId,setDropTargetBookId]=useState<string|null>(null);
+  const [dragSourceShelf,setDragSourceShelf]=useState<string|null>(null);
+  const [dragOffset,setDragOffset]=useState({x:0,y:0});
+  const pointerDrag=useRef<{id:string;shelf:string;element:HTMLButtonElement;pointerId:number;pointerType:string;x:number;y:number;active:boolean;timer:ReturnType<typeof setTimeout>|null}|null>(null);
   const ignoreBookClick=useRef(false);
   const ratingDisplayed=useRef(new Map<string,number>());
   const ratingTimers=useRef(new Map<string,ReturnType<typeof setTimeout>>());
@@ -231,21 +233,17 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
   const selectedShelf=shelves.find(s=>s.id===activeShelf);
   const libraryBooks=activeShelf==="favorites"?filtered.filter(b=>b.favorite):selectedShelf?filtered.filter(b=>selectedShelf.bookIds.includes(b.id)):filtered;
   async function moveBook(bookId:string,targetId:string){
-    if(bookId===targetId||orderBusy||!arrangingBooks)return;
+    if(bookId===targetId||orderBusy)return;
     const ordered=[...books].sort(personalOrder);
     const source=ordered.find(b=>b.id===bookId),target=ordered.find(b=>b.id===targetId);
     if(!source||!target)return;
-    // A custom shelf can contain books with different reading statuses.
-    // Within a status preserve unrelated positions; across statuses reorder
-    // the global order without changing any book's reading status or shelf.
-    const sameStatus=source.status===target.status;
-    const scope=sameStatus?ordered.filter(b=>b.status===source.status):[...ordered];
-    const from=scope.findIndex(b=>b.id===bookId),to=scope.findIndex(b=>b.id===targetId);
+    // Reorder by the exact visual destination without changing shelf membership
+    // or reading status, including custom shelves with mixed statuses.
+    const from=ordered.findIndex(b=>b.id===bookId),to=ordered.findIndex(b=>b.id===targetId);
     if(from<0||to<0||from===to)return;
-    const [item]=scope.splice(from,1);
-    scope.splice(to,0,item);
-    let offset=0;
-    const reordered=sameStatus?ordered.map(b=>b.status===source.status?scope[offset++]:b):scope;
+    const [item]=ordered.splice(from,1);
+    ordered.splice(to,0,item);
+    const reordered=ordered;
     const updated=reordered.map((b,i)=>({...b,sortOrder:i+1}));
     const previous=books;
     setBooks(updated);setSortBy("personalizada");setOrderBusy(true);setError("");
@@ -264,34 +262,80 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
       setError(e instanceof Error?e.message:"Erro ao organizar.");
     }finally{setOrderBusy(false);setDraggedBookId(null);}
   }
-    function startBookTouch(bookId:string,e:React.TouchEvent){
-    const p=e.touches[0];if(!p||orderBusy||!arrangingBooks)return;
-    if(touchDrag.current?.timer)clearTimeout(touchDrag.current.timer);
-    const state={id:bookId,x:p.clientX,y:p.clientY,active:false,timer:null as ReturnType<typeof setTimeout>|null};
-    state.timer=setTimeout(()=>{state.active=true;setDraggedBookId(bookId)},320);
-    touchDrag.current=state;
-  }
-  function moveBookTouch(e:React.TouchEvent){
-    const state=touchDrag.current,p=e.touches[0];if(!state||!p)return;
-    if(!state.active&&Math.hypot(p.clientX-state.x,p.clientY-state.y)>12){
-      if(state.timer)clearTimeout(state.timer);touchDrag.current=null;
+  // Holding a cover begins a real drag on touch devices. The browser's
+  // pointer capture keeps events flowing to the starting book while moving.
+  function beginBookPointer(bookId:string,shelf:string,e:React.PointerEvent<HTMLButtonElement>){
+    if(orderBusy||!e.isPrimary||(e.pointerType==="mouse"&&e.button!==0))return;
+    if(pointerDrag.current?.timer)clearTimeout(pointerDrag.current.timer);
+    const state={id:bookId,shelf,element:e.currentTarget,pointerId:e.pointerId,pointerType:e.pointerType,x:e.clientX,y:e.clientY,active:false,timer:null as ReturnType<typeof setTimeout>|null};
+    pointerDrag.current=state;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    if(e.pointerType!=="mouse"){
+      state.timer=setTimeout(()=>{
+        if(pointerDrag.current!==state)return;
+        state.active=true;
+        ignoreBookClick.current=true;
+        setDraggedBookId(bookId);
+        setDragSourceShelf(shelf);
+        setDragOffset({x:0,y:0});
+      },320);
     }
   }
-  function endBookTouch(e:React.TouchEvent){
-    const state=touchDrag.current;touchDrag.current=null;
-    if(!state)return;
+  function bookAtPointer(x:number,y:number,draggedElement:HTMLButtonElement){
+    // Remove the lifted cover from hit testing, so overlapping books can be
+    // targeted even while the cover is visibly following the finger.
+    const wrapper=draggedElement.closest<HTMLElement>(".lio-reorder-book");
+    const previous=wrapper?.style.pointerEvents;
+    if(wrapper)wrapper.style.pointerEvents="none";
+    const target=document.elementFromPoint(x,y)?.closest<HTMLElement>("[data-lio-book-id]");
+    if(wrapper)wrapper.style.pointerEvents=previous||"";
+    return target?.dataset.lioBookId||null;
+  }
+  function moveBookPointer(e:React.PointerEvent<HTMLButtonElement>){
+    const state=pointerDrag.current;
+    if(!state||state.pointerId!==e.pointerId)return;
+    const dx=e.clientX-state.x,dy=e.clientY-state.y;
+    if(!state.active){
+      if(state.pointerType==="mouse"&&Math.hypot(dx,dy)>8){
+        state.active=true;
+        ignoreBookClick.current=true;
+        setDraggedBookId(state.id);
+        setDragSourceShelf(state.shelf);
+      }else{
+        if(Math.hypot(dx,dy)>12){
+          if(state.timer)clearTimeout(state.timer);
+          pointerDrag.current=null;
+        }
+        return;
+      }
+    }
+    e.preventDefault();
+    setDragOffset({x:dx,y:dy});
+    const targetId=bookAtPointer(e.clientX,e.clientY,state.element);
+    setDropTargetBookId(targetId!==state.id?targetId:null);
+  }
+  function endBookPointer(e:React.PointerEvent<HTMLButtonElement>){
+    const state=pointerDrag.current;
+    if(!state||state.pointerId!==e.pointerId)return;
+    pointerDrag.current=null;
     if(state.timer)clearTimeout(state.timer);
     if(!state.active)return;
-    ignoreBookClick.current=true;
-    const p=e.changedTouches[0];
-    const target=p&&document.elementFromPoint(p.clientX,p.clientY)?.closest<HTMLElement>("[data-lio-book-id]");
-    if(target?.dataset.lioBookId&&target.dataset.lioBookId!==state.id)void moveBook(state.id,target.dataset.lioBookId);
+    const targetId=bookAtPointer(e.clientX,e.clientY,state.element);
+    if(targetId&&targetId!==state.id)void moveBook(state.id,targetId);
     setDraggedBookId(null);
-    window.setTimeout(()=>{ignoreBookClick.current=false},250);
+    setDragSourceShelf(null);
+    setDropTargetBookId(null);
+    setDragOffset({x:0,y:0});
+    window.setTimeout(()=>{ignoreBookClick.current=false},400);
   }
-  function shiftBook(bookId:string,direction:-1|1,visible:Book[]){
-    const index=visible.findIndex(b=>b.id===bookId),target=visible[index+direction];
-    if(target)moveBook(bookId,target.id);
+  function cancelBookPointer(){
+    if(pointerDrag.current?.timer)clearTimeout(pointerDrag.current.timer);
+    pointerDrag.current=null;
+    setDraggedBookId(null);
+    setDragSourceShelf(null);
+    setDropTargetBookId(null);
+    setDragOffset({x:0,y:0});
+    window.setTimeout(()=>{ignoreBookClick.current=false},300);
   }
   async function addShelf(event:React.FormEvent){
     event.preventDefault();if(!newShelfName.trim())return;
@@ -591,7 +635,7 @@ export default function Dashboard({name,email,accountId}:{name:string;email:stri
         {selectedShelf&&<div className="shelf-compact-actions"><span>{selectedShelf.bookIds.length} livros nesta coleção</span><button type="button" className="secondary-button" onClick={()=>setShowShelfManager(v=>!v)}>{showShelfManager?"Concluir":"Organizar esta estante"}</button></div>}
         {showShelfManager&&selectedShelf&&<div className="shelf-settings"><h3>Livros de {selectedShelf.name}</h3><p>Selecione os livros. Um mesmo livro pode estar em várias estantes.</p><div className="custom-shelf-book-list">{books.map(book=><label key={book.id} className="custom-shelf-check"><input type="checkbox" disabled={shelfBusy} checked={selectedShelf.bookIds.includes(book.id)} onChange={e=>toggleShelfBook(selectedShelf.id,book.id,e.target.checked)}/><span>{book.title}<small>{book.author}</small></span></label>)}</div><button className="shelf-delete-link" type="button" disabled={shelfBusy} onClick={()=>deleteShelf(selectedShelf)}>Excluir esta estante (os livros serão preservados)</button></div>}
       </div>
-      <div className="section-head"><div><h2>{activeShelf==="favorites"?"Meus favoritos":selectedShelf?selectedShelf.name:"Todos os meus livros"}</h2><p>Organize e redescubra suas próximas histórias.</p></div><div className="filters">{(["Todos","Quero ler","Lendo","Lido","Abandonado"] as const).map(s=><button key={s} className={filter===s?"filter active":"filter"} onClick={()=>setFilter(s)}>{s}</button>)}</div></div><div className="library-toolbar"><label className="library-search"><span className="sr-only">Pesquisar livros</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="⌕  Buscar por título, autor ou categoria"/></label><label className="lio-category-filter"><span className="sr-only">Gênero</span><select aria-label="Filtrar livros por gênero" value={categoryFilter} onChange={e=>setCategoryFilter(e.target.value)}><option value="Todas">Todos os gêneros</option>{categories.map(c=><option key={c} value={c}>{c}</option>)}<option value="Sem categoria">Sem categoria</option></select></label><label className="library-sort"><span className="sr-only">Ordenar livros</span><select value={sortBy} onChange={e=>setSortBy(e.target.value as typeof sortBy)}><option value="personalizada">Minha ordem</option><option value="recentes">Mais recentes</option><option value="titulo">Título A–Z</option><option value="autor">Autor A–Z</option><option value="progresso">Progresso</option></select></label><button className={"lio-arrange-toggle"+(arrangingBooks?" is-active":"")} type="button" aria-pressed={arrangingBooks} onClick={()=>{setArrangingBooks(v=>!v);setShelfMode("grid");setSortBy("personalizada");setDraggedBookId(null)}}>{arrangingBooks?"✓ Concluir organização":"⇄ Organizar ordem"}</button><div className="view-switch" role="group" aria-label="Modo de visualização"><button type="button" aria-label="Visualizar em grade" aria-pressed={shelfMode==="grid"} className={shelfMode==="grid"?"active":""} onClick={()=>setShelfMode("grid")}>▦</button><button type="button" aria-label="Visualizar em lista" aria-pressed={shelfMode==="list"} className={shelfMode==="list"?"active":""} onClick={()=>setShelfMode("list")}>☷</button></div></div>{arrangingBooks&&<p className="lio-reorder-instructions" role="status">Use as setas nas capas para mudar a posição dos livros, ou arraste as capas no computador. A ordem é salva automaticamente.</p>}<div className="lio-library-result-row"><p className="result-count">{libraryBooks.length} {libraryBooks.length===1?"livro encontrado":"livros encontrados"}{selectedShelf?" em "+selectedShelf.name:""}</p>{(query||filter!=="Todos"||categoryFilter!=="Todas")&&<button className="lio-clear-filters" type="button" onClick={()=>{setQuery("");setFilter("Todos");setCategoryFilter("Todas")}}>✕ Limpar filtros</button>}</div>{shelfMode==="list"?bookCards(libraryBooks):<div className="collection-shelves">{libraryBooks.length===0?<div className="empty-shelf"><h3>Sua estante está esperando histórias!</h3><p>Adicione um livro ou experimente outro filtro.</p><button className="primary" onClick={()=>edit()}>Adicionar livro</button></div>:([{status:"Lendo",label:"Lendo agora",description:"Histórias em andamento"},{status:"Quero ler",label:"Próximas leituras",description:"Livros que quero descobrir"},{status:"Lido",label:"Já li",description:"Histórias que ficam comigo"},{status:"Abandonado",label:"Pausados",description:"Talvez em outro momento"}] as const).map((group,index)=>{const groupBooks=libraryBooks.filter(b=>b.status===group.status);if(!groupBooks.length)return null;return <section className={"collection-section collection-theme-"+index} key={group.status} aria-label={group.label}><div className="collection-heading"><div><h3>{group.label}</h3><p>{groupBooks.length} {groupBooks.length===1?"livro":"livros"} · {group.description}</p></div><button className="collection-add" type="button" onClick={()=>{edit();setForm({...blank,status:group.status});}} aria-label={"Adicionar livro em "+group.label} title={"Adicionar em "+group.label}>+</button></div><div className="collection-stage"><div className={"collection-covers"+(arrangingBooks?" lio-arranging":"")}>{groupBooks.map((b,i)=><div className="lio-reorder-book" style={{zIndex:groupBooks.length-i}} key={b.id}><button className={"collection-book"+(draggedBookId===b.id?" is-dragging":"")} data-lio-book-id={b.id} style={{zIndex:groupBooks.length-i}} key={b.id} type="button" onClick={()=>{if(!ignoreBookClick.current)openDetail(b)}} onTouchStart={e=>{if(arrangingBooks)startBookTouch(b.id,e)}} onTouchMove={moveBookTouch} onTouchEnd={endBookTouch} onTouchCancel={()=>{if(touchDrag.current?.timer)clearTimeout(touchDrag.current.timer);touchDrag.current=null;setDraggedBookId(null)}} aria-label={"Ver detalhes de "+b.title+" de "+b.author} title={b.title+" — "+b.author} draggable={arrangingBooks&&!orderBusy} onDragStart={e=>{if(!arrangingBooks){e.preventDefault();return}e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",b.id);setDraggedBookId(b.id)}} onDragOver={e=>{if(arrangingBooks&&draggedBookId&&draggedBookId!==b.id)e.preventDefault()}} onDrop={e=>{e.preventDefault();if(!arrangingBooks)return;const source=e.dataTransfer.getData("text/plain")||draggedBookId;if(source)moveBook(source,b.id)}} onDragEnd={()=>setDraggedBookId(null)}>{b.coverUrl&&!brokenCovers.includes(b.id)?<img src={b.coverUrl} alt="" loading="lazy" onError={()=>setBrokenCovers(prev=>[...prev,b.id])}/>:<span className="collection-cover-fallback"><strong>{b.title}</strong><small>{b.author}</small></span>}</button>{arrangingBooks&&<div className="lio-shelf-reorder-actions" aria-label={"Mover "+b.title+" na prateleira"}><button type="button" disabled={orderBusy||i===0} aria-label={"Mover "+b.title+" para a esquerda"} title="Mover para a esquerda" onClick={()=>shiftBook(b.id,-1,groupBooks)}>←</button><button type="button" disabled={orderBusy||i===groupBooks.length-1} aria-label={"Mover "+b.title+" para a direita"} title="Mover para a direita" onClick={()=>shiftBook(b.id,1,groupBooks)}>→</button></div>}</div>)}</div><div className="collection-glass" aria-hidden="true"/><div className="collection-stage-actions"><button type="button" onClick={()=>{edit();setForm({...blank,status:group.status});}} aria-label={"Adicionar livro em "+group.label}>+</button><button type="button" onClick={()=>setShelfMode("list")} aria-label={"Ver detalhes dos livros em "+group.label}>···</button></div></div></section>})}</div>}{<div className="collection-shelves lio-custom-collections">{activeShelf!=="favorites"&&shelves.map((shelf,index)=>{const shelfBooks=filtered.filter(b=>shelf.bookIds.includes(b.id));return <section className={"collection-section collection-theme-"+(index%4)} key={shelf.id} aria-label={"Prateleira "+shelf.name}><div className="collection-heading"><div><h3>{shelf.name}</h3><p>{shelfBooks.length} {shelfBooks.length===1?"livro":"livros"} · Sua coleção personalizada</p></div><button type="button" className="secondary-button" onClick={()=>{setActiveShelf(shelf.id);setShowShelfManager(true);window.scrollTo({top:0,behavior:"smooth"})}}>Organizar</button></div><div className="collection-stage"><div className={"collection-covers"+(arrangingBooks?" lio-arranging":"")}>{shelfBooks.length?shelfBooks.map((b,i)=><div className="lio-reorder-book" style={{zIndex:shelfBooks.length-i}} key={b.id}><button className={"collection-book"+(draggedBookId===b.id?" is-dragging":"")} data-lio-book-id={b.id} style={{zIndex:shelfBooks.length-i}} key={b.id} type="button" onClick={()=>{if(!ignoreBookClick.current)openDetail(b)}} onTouchStart={e=>{if(arrangingBooks)startBookTouch(b.id,e)}} onTouchMove={moveBookTouch} onTouchEnd={endBookTouch} onTouchCancel={()=>{if(touchDrag.current?.timer)clearTimeout(touchDrag.current.timer);touchDrag.current=null;setDraggedBookId(null)}} aria-label={"Ver detalhes de "+b.title} draggable={arrangingBooks&&!orderBusy} onDragStart={e=>{if(!arrangingBooks){e.preventDefault();return}e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",b.id);setDraggedBookId(b.id)}} onDragOver={e=>{if(arrangingBooks&&draggedBookId&&draggedBookId!==b.id)e.preventDefault()}} onDrop={e=>{e.preventDefault();if(!arrangingBooks)return;const source=e.dataTransfer.getData("text/plain")||draggedBookId;if(source)moveBook(source,b.id)}} onDragEnd={()=>setDraggedBookId(null)}>{b.coverUrl&&!brokenCovers.includes(b.id)?<img src={b.coverUrl} alt="" loading="lazy" onError={()=>setBrokenCovers(prev=>[...prev,b.id])}/>:<span className="collection-cover-fallback"><strong>{b.title}</strong><small>{b.author}</small></span>}</button>{arrangingBooks&&<div className="lio-shelf-reorder-actions" aria-label={"Mover "+b.title+" na prateleira"}><button type="button" disabled={orderBusy||i===0} aria-label={"Mover "+b.title+" para a esquerda"} title="Mover para a esquerda" onClick={()=>shiftBook(b.id,-1,shelfBooks)}>←</button><button type="button" disabled={orderBusy||i===shelfBooks.length-1} aria-label={"Mover "+b.title+" para a direita"} title="Mover para a direita" onClick={()=>shiftBook(b.id,1,shelfBooks)}>→</button></div>}</div>):<p className="lio-empty-custom-shelf">Ainda não há livros nesta prateleira. Clique em Organizar para adicionar.</p>}</div><div className="collection-glass" aria-hidden="true"/><div className="collection-stage-actions"><button type="button" onClick={()=>{setActiveShelf(shelf.id);setShowShelfManager(true);window.scrollTo({top:0,behavior:"smooth"})}} aria-label={"Organizar prateleira "+shelf.name}>+</button><button type="button" onClick={()=>setShelfMode("list")} aria-label="Ver seus livros em lista">···</button></div></div></section>})}</div>}</section>}
+      <div className="section-head"><div><h2>{activeShelf==="favorites"?"Meus favoritos":selectedShelf?selectedShelf.name:"Todos os meus livros"}</h2><p>Organize e redescubra suas próximas histórias.</p></div><div className="filters">{(["Todos","Quero ler","Lendo","Lido","Abandonado"] as const).map(s=><button key={s} className={filter===s?"filter active":"filter"} onClick={()=>setFilter(s)}>{s}</button>)}</div></div><div className="library-toolbar"><label className="library-search"><span className="sr-only">Pesquisar livros</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="⌕  Buscar por título, autor ou categoria"/></label><label className="lio-category-filter"><span className="sr-only">Gênero</span><select aria-label="Filtrar livros por gênero" value={categoryFilter} onChange={e=>setCategoryFilter(e.target.value)}><option value="Todas">Todos os gêneros</option>{categories.map(c=><option key={c} value={c}>{c}</option>)}<option value="Sem categoria">Sem categoria</option></select></label><label className="library-sort"><span className="sr-only">Ordenar livros</span><select value={sortBy} onChange={e=>setSortBy(e.target.value as typeof sortBy)}><option value="personalizada">Minha ordem</option><option value="recentes">Mais recentes</option><option value="titulo">Título A–Z</option><option value="autor">Autor A–Z</option><option value="progresso">Progresso</option></select></label><div className="view-switch" role="group" aria-label="Modo de visualização"><button type="button" aria-label="Visualizar em grade" aria-pressed={shelfMode==="grid"} className={shelfMode==="grid"?"active":""} onClick={()=>setShelfMode("grid")}>▦</button><button type="button" aria-label="Visualizar em lista" aria-pressed={shelfMode==="list"} className={shelfMode==="list"?"active":""} onClick={()=>setShelfMode("list")}>☷</button></div></div><div className="lio-library-result-row"><p className="result-count">{libraryBooks.length} {libraryBooks.length===1?"livro encontrado":"livros encontrados"}{selectedShelf?" em "+selectedShelf.name:""}</p>{(query||filter!=="Todos"||categoryFilter!=="Todas")&&<button className="lio-clear-filters" type="button" onClick={()=>{setQuery("");setFilter("Todos");setCategoryFilter("Todas")}}>✕ Limpar filtros</button>}</div>{shelfMode==="list"?bookCards(libraryBooks):<div className="collection-shelves">{libraryBooks.length===0?<div className="empty-shelf"><h3>Sua estante está esperando histórias!</h3><p>Adicione um livro ou experimente outro filtro.</p><button className="primary" onClick={()=>edit()}>Adicionar livro</button></div>:([{status:"Lendo",label:"Lendo agora",description:"Histórias em andamento"},{status:"Quero ler",label:"Próximas leituras",description:"Livros que quero descobrir"},{status:"Lido",label:"Já li",description:"Histórias que ficam comigo"},{status:"Abandonado",label:"Pausados",description:"Talvez em outro momento"}] as const).map((group,index)=>{const groupBooks=libraryBooks.filter(b=>b.status===group.status);if(!groupBooks.length)return null;return <section className={"collection-section collection-theme-"+index} key={group.status} aria-label={group.label}><div className="collection-heading"><div><h3>{group.label}</h3><p>{groupBooks.length} {groupBooks.length===1?"livro":"livros"} · {group.description}</p></div><button className="collection-add" type="button" onClick={()=>{edit();setForm({...blank,status:group.status});}} aria-label={"Adicionar livro em "+group.label} title={"Adicionar em "+group.label}>+</button></div><div className="collection-stage"><div className="collection-covers">{groupBooks.map((b,i)=><div className={"lio-reorder-book"+(draggedBookId===b.id&&dragSourceShelf===group.status?" is-touch-dragging":"")} style={{zIndex:draggedBookId===b.id&&dragSourceShelf===group.status?999:groupBooks.length-i,...(draggedBookId===b.id&&dragSourceShelf===group.status?{"--lio-drag-x":dragOffset.x+"px","--lio-drag-y":dragOffset.y+"px"}:{})} as React.CSSProperties} key={b.id}><button className={"collection-book"+(draggedBookId===b.id?" is-dragging":"")+(dropTargetBookId===b.id?" is-drop-target":"")} data-lio-book-id={b.id} type="button" onClick={()=>{if(!ignoreBookClick.current)openDetail(b)}} onPointerDown={e=>beginBookPointer(b.id,group.status,e)} onPointerMove={moveBookPointer} onPointerUp={endBookPointer} onPointerCancel={cancelBookPointer} onContextMenu={e=>{if(draggedBookId===b.id)e.preventDefault()}} aria-label={"Ver detalhes de "+b.title+" de "+b.author} title={b.title+" — "+b.author}>{b.coverUrl&&!brokenCovers.includes(b.id)?<img src={b.coverUrl} alt="" loading="lazy" onError={()=>setBrokenCovers(prev=>[...prev,b.id])}/>:<span className="collection-cover-fallback"><strong>{b.title}</strong><small>{b.author}</small></span>}</button></div>)}</div><div className="collection-glass" aria-hidden="true"/><div className="collection-stage-actions"><button type="button" onClick={()=>{edit();setForm({...blank,status:group.status});}} aria-label={"Adicionar livro em "+group.label}>+</button><button type="button" onClick={()=>setShelfMode("list")} aria-label={"Ver detalhes dos livros em "+group.label}>···</button></div></div></section>})}</div>}{<div className="collection-shelves lio-custom-collections">{activeShelf!=="favorites"&&shelves.map((shelf,index)=>{const shelfBooks=filtered.filter(b=>shelf.bookIds.includes(b.id));return <section className={"collection-section collection-theme-"+(index%4)} key={shelf.id} aria-label={"Prateleira "+shelf.name}><div className="collection-heading"><div><h3>{shelf.name}</h3><p>{shelfBooks.length} {shelfBooks.length===1?"livro":"livros"} · Sua coleção personalizada</p></div><button type="button" className="secondary-button" onClick={()=>{setActiveShelf(shelf.id);setShowShelfManager(true);window.scrollTo({top:0,behavior:"smooth"})}}>Organizar</button></div><div className="collection-stage"><div className="collection-covers">{shelfBooks.length?shelfBooks.map((b,i)=><div className={"lio-reorder-book"+(draggedBookId===b.id&&dragSourceShelf===shelf.id?" is-touch-dragging":"")} style={{zIndex:draggedBookId===b.id&&dragSourceShelf===shelf.id?999:shelfBooks.length-i,...(draggedBookId===b.id&&dragSourceShelf===shelf.id?{"--lio-drag-x":dragOffset.x+"px","--lio-drag-y":dragOffset.y+"px"}:{})} as React.CSSProperties} key={b.id}><button className={"collection-book"+(draggedBookId===b.id?" is-dragging":"")+(dropTargetBookId===b.id?" is-drop-target":"")} data-lio-book-id={b.id} type="button" onClick={()=>{if(!ignoreBookClick.current)openDetail(b)}} onPointerDown={e=>beginBookPointer(b.id,shelf.id,e)} onPointerMove={moveBookPointer} onPointerUp={endBookPointer} onPointerCancel={cancelBookPointer} onContextMenu={e=>{if(draggedBookId===b.id)e.preventDefault()}} aria-label={"Ver detalhes de "+b.title}>{b.coverUrl&&!brokenCovers.includes(b.id)?<img src={b.coverUrl} alt="" loading="lazy" onError={()=>setBrokenCovers(prev=>[...prev,b.id])}/>:<span className="collection-cover-fallback"><strong>{b.title}</strong><small>{b.author}</small></span>}</button></div>):<p className="lio-empty-custom-shelf">Ainda não há livros nesta prateleira. Clique em Organizar para adicionar.</p>}</div><div className="collection-glass" aria-hidden="true"/><div className="collection-stage-actions"><button type="button" onClick={()=>{setActiveShelf(shelf.id);setShowShelfManager(true);window.scrollTo({top:0,behavior:"smooth"})}} aria-label={"Organizar prateleira "+shelf.name}>+</button><button type="button" onClick={()=>setShelfMode("list")} aria-label="Ver seus livros em lista">···</button></div></div></section>})}</div>}</section>}
     {view==="Diário"&&<section className="section journal-page lio-notebook-page">
       <div className="journal-hero lio-notebook-hero">
         <div className="lio-journal-hero-heading"><h2>Meu diário literário</h2><p>Um cantinho para eternizar suas emoções, pensamentos e histórias favoritas.</p></div>
