@@ -1925,3 +1925,46 @@ html[data-palette="jardim"] .lio-schedule-track>span{
 .lio-pwa-copy>.lio-pwa-status{color:var(--lio-color-c);font-weight:750}
 .lio-pwa-copy button{padding:12px 20px;border-radius:12px}
 @media(max-width:550px){.lio-pwa-card{gap:12px}.lio-pwa-icon{width:53px;height:53px;border-radius:14px;font-size:27px}.lio-pwa-icon span{font-size:10px;right:5px;top:5px}.lio-pwa-copy h3{font-size:19px}}
+
+
+/* Reliable book ordering: keyboard/touch buttons plus drag-and-drop.
+   Ordinary shelves retain their overlapping book-cover aesthetic. */
+.collection-covers > .lio-reorder-book{
+  position:relative;flex:0 0 143px;width:143px;height:204px;
+  min-width:0;display:flex;align-items:stretch;
+}
+.collection-covers > .lio-reorder-book + .lio-reorder-book{margin-left:-24px}
+.collection-covers > .lio-reorder-book > .collection-book{
+  display:block;flex:1 1 auto;width:100%;height:100%;min-width:0;margin:0;
+}
+.collection-covers.lio-arranging > .lio-reorder-book{
+  margin-left:0!important;margin-right:12px;flex-shrink:0;
+}
+.collection-covers.lio-arranging > .lio-reorder-book > .collection-book{
+  margin-left:0!important;translate:none;transform:none;
+  outline:1px solid #ffffff70;cursor:grab;
+}
+.collection-covers.lio-arranging{touch-action:pan-x}
+.lio-shelf-reorder-actions{
+  position:absolute;right:5px;bottom:5px;left:5px;z-index:12;
+  display:flex;justify-content:space-between;gap:6px;
+  pointer-events:auto;
+}
+.lio-shelf-reorder-actions button{
+  flex:1 1 0;min-width:0;min-height:39px;
+  border-radius:10px;border:1px solid #ffffff99;
+  background:#221d38eb;color:#fff;cursor:pointer;
+  font:700 22px/1 system-ui,sans-serif;
+  box-shadow:0 3px 12px #12101c60;
+}
+.lio-shelf-reorder-actions button:hover:not(:disabled){background:#554a7c}
+.lio-shelf-reorder-actions button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.lio-shelf-reorder-actions button:disabled{opacity:.35;cursor:not-allowed}
+@media(min-width:900px){
+  .collection-covers > .lio-reorder-book{flex-basis:160px;width:160px;height:228px}
+}
+@media(max-width:600px){
+  .collection-covers > .lio-reorder-book{flex-basis:125px;width:125px;height:179px}
+  .collection-covers > .lio-reorder-book + .lio-reorder-book{margin-left:-18px}
+  .collection-covers.lio-arranging > .lio-reorder-book{margin-right:9px}
+}
