@@ -39,7 +39,7 @@ function MedalDetails({medal,onClose}:{medal:Medal;onClose:()=>void}){
         <svg viewBox="0 0 120 120" className="lio-medal-ring"><circle className="lio-medal-ring-track" cx="60" cy="60" r="50"/><circle className="lio-medal-ring-value" cx="60" cy="60" r="50" pathLength={100} strokeDasharray={percent+" 100"}/></svg>
         <span className="lio-medal-symbol">{medal.icon}</span>
       </div>
-      <span className="lio-medal-dialog-eyebrow">✦ CONQUISTAS LIO</span>
+      
       <h3 id="lio-medal-detail-title">{medal.name}</h3>
       <p id="lio-medal-detail-description">{medal.description}</p>
       <div className="lio-medal-dialog-progress">
@@ -111,9 +111,9 @@ export default function ReadingChallenges({books,entries}:Props){
   return <section className="lio-challenges" aria-labelledby="lio-challenges-heading">
     <div className="lio-challenges-header">
       <div>
-        <p className="eyebrow">✦ SUA JORNADA, SEU RITMO</p>
+        
         <h2 id="lio-challenges-heading">Desafios e conquistas</h2>
-        <p>Pequenos momentos de leitura também merecem comemoração.</p>
+        
       </div>
       <div className="lio-streak-card" aria-label={data.streak+" dias de leitura consecutivos"}>
         <span aria-hidden="true">🔥</span>
